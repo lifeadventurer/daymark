@@ -178,7 +178,11 @@ function beginDrag(pieceId: string, event: PointerEvent) {
 function getOrientationIndex(piece: (typeof temporaryPieces)[number]) {
   const orientations = generateOrientations(piece);
   if (orientations.length === 0) return 0;
-  return ((pieceOrientations.value[piece.id] ?? 0) % orientations.length + orientations.length) % orientations.length;
+  return (
+    (((pieceOrientations.value[piece.id] ?? 0) % orientations.length) +
+      orientations.length) %
+    orientations.length
+  );
 }
 
 function changeSelectedOrientation(action: "rotate" | "flip") {
@@ -191,7 +195,8 @@ function changeSelectedOrientation(action: "rotate" | "flip") {
   const current = orientations[currentIndex] ?? orientations[0];
   if (!current) return;
 
-  const transformed = action === "rotate" ? rotateCells(current) : reflectCells(current);
+  const transformed =
+    action === "rotate" ? rotateCells(current) : reflectCells(current);
   const nextIndex = orientations.findIndex(
     (candidate) => orientationKey(candidate) === orientationKey(transformed),
   );
@@ -273,10 +278,7 @@ function endDrag() {
 
   const piece = draggedPiece.value;
   const placedSuccessfully =
-    piece &&
-    dragMoved.value &&
-    previewPlacement.value &&
-    previewValid.value;
+    piece && dragMoved.value && previewPlacement.value && previewValid.value;
   if (placedSuccessfully && piece && previewPlacement.value) {
     placedPieces.value = [
       ...placedPieces.value,
@@ -355,7 +357,10 @@ function loadPuzzleForDate(dateKey: string) {
   if (saved && saved.placements.length <= pieceLimit) {
     for (const savedPlacement of saved.placements) {
       const piece = piecesById.get(savedPlacement.pieceId);
-      if (!piece || nextPlacements.some(({ piece: placed }) => placed.id === piece.id)) {
+      if (
+        !piece ||
+        nextPlacements.some(({ piece: placed }) => placed.id === piece.id)
+      ) {
         savedStateValid = false;
         nextPlacements.length = 0;
         break;
@@ -395,9 +400,9 @@ function loadPuzzleForDate(dateKey: string) {
 
   placedPieces.value = nextPlacements;
   pieceOrientations.value = nextOrientations;
-  moveCount.value = savedStateValid ? saved?.moveCount ?? 0 : 0;
+  moveCount.value = savedStateValid ? (saved?.moveCount ?? 0) : 0;
   completed.value = false;
-  completedAt.value = savedStateValid ? saved?.completedAt ?? null : null;
+  completedAt.value = savedStateValid ? (saved?.completedAt ?? null) : null;
   evaluateCompletion();
 }
 

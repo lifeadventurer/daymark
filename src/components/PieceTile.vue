@@ -36,7 +36,10 @@ function startDrag(event: PointerEvent) {
 <template>
   <button
     class="piece-tile"
-    :class="{ 'piece-tile--selected': selected, 'piece-tile--unavailable': !canPlace && !placed }"
+    :class="{
+      'piece-tile--selected': selected,
+      'piece-tile--unavailable': !canPlace && !placed,
+    }"
     type="button"
     :disabled="placed || !canPlace"
     :aria-label="`${label} piece${selected ? ', selected' : ''}`"

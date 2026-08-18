@@ -2,13 +2,18 @@
 
 ## Product shape
 
-Daymark should feel like a quiet, premium daily puzzle rather than a long landing page. The primary desktop experience is a single-screen layout with the date, board, and piece tray visible without page scrolling.
+Daymark should feel like a quiet, premium daily puzzle rather than a long
+landing page. The primary desktop experience is a single-screen layout with the
+date, board, and piece tray visible without page scrolling.
 
-On smaller screens, the layout should stay compact and prioritize the puzzle. If every control cannot fit comfortably, use a compact tray or panel treatment instead of shrinking the board until it becomes difficult to play.
+On smaller screens, the layout should stay compact and prioritize the puzzle. If
+every control cannot fit comfortably, use a compact tray or panel treatment
+instead of shrinking the board until it becomes difficult to play.
 
 ## Persistence and accounts
 
-The first version does not require login or a server. Puzzle progress and completed records are stored locally in the browser with `localStorage`.
+The first version does not require login or a server. Puzzle progress and
+completed records are stored locally in the browser with `localStorage`.
 
 Use one versioned storage key:
 
@@ -16,7 +21,9 @@ Use one versioned storage key:
 daymark:records:v1
 ```
 
-The value is a JSON object keyed by puzzle date. A saved puzzle contains the placed pieces, each piece's board origin and orientation, the move count, and completion information.
+The value is a JSON object keyed by puzzle date. A saved puzzle contains the
+placed pieces, each piece's board origin and orientation, the move count, and
+completion information.
 
 ```ts
 {
@@ -38,8 +45,14 @@ The value is a JSON object keyed by puzzle date. A saved puzzle contains the pla
 }
 ```
 
-The saved-data schema version is intentionally separate from the `package.json` app version. App releases and PWA cache versions may change frequently; the schema version changes only when the stored data format changes and a migration is needed.
+The saved-data schema version is intentionally separate from the `package.json`
+app version. App releases and PWA cache versions may change frequently; the
+schema version changes only when the stored data format changes and a migration
+is needed.
 
 ## Future account layer
 
-Login should remain optional until cross-device history, streaks, leaderboards, or profiles are genuinely needed. When that time comes, local records can be merged into a server account rather than making login a prerequisite for playing.
+Login should remain optional until cross-device history, streaks, leaderboards,
+or profiles are genuinely needed. When that time comes, local records can be
+merged into a server account rather than making login a prerequisite for
+playing.

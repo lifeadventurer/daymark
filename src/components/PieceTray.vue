@@ -22,20 +22,28 @@ const emit = defineEmits<{
 
 <template>
   <section class="tray" aria-label="Piece tray">
-    <div v-if="selectedPieceId" class="piece-controls" aria-label="Piece controls">
+    <div
+      v-if="selectedPieceId"
+      class="piece-controls"
+      aria-label="Piece controls"
+    >
       <div class="piece-controls__buttons">
         <button
           type="button"
           aria-label="Rotate selected piece"
           title="Rotate"
           @click.stop="emit('rotate')"
-        >↻</button>
+        >
+          ↻
+        </button>
         <button
           type="button"
           aria-label="Flip selected piece"
           title="Flip"
           @click.stop="emit('flip')"
-        >⇄</button>
+        >
+          ⇄
+        </button>
       </div>
     </div>
     <div class="piece-grid">

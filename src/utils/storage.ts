@@ -103,7 +103,8 @@ function parsePuzzleRecord(value: unknown): SavedPuzzleRecord | undefined {
         ? Math.floor(value.moveCount)
         : 0,
     completed: value.completed === true,
-    completedAt: typeof value.completedAt === "string" ? value.completedAt : null,
+    completedAt:
+      typeof value.completedAt === "string" ? value.completedAt : null,
   };
 }
 
