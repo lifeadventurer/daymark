@@ -1,6 +1,24 @@
+<script setup lang="ts">
+import { computed } from "vue";
+
+const props = withDefaults(
+  defineProps<{
+    size?: number | string;
+  }>(),
+  {
+    size: 24,
+  },
+);
+
+const markSize = computed(() =>
+  typeof props.size === "number" ? `${props.size}px` : props.size,
+);
+</script>
+
 <template>
   <svg
     class="daymark-mark"
+    :style="{ width: markSize, height: markSize }"
     viewBox="0 0 28 28"
     aria-hidden="true"
     focusable="false"

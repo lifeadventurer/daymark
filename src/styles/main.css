@@ -92,8 +92,6 @@ button {
 }
 .daymark-mark {
   display: block;
-  width: 24px;
-  height: 24px;
   flex: 0 0 auto;
   overflow: visible;
 }

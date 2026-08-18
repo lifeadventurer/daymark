@@ -416,7 +416,7 @@ onBeforeUnmount(endDrag);
   <main class="app-shell">
     <header class="topbar">
       <a class="wordmark" href="/" aria-label="Daymark home">
-        <DaymarkMark />
+        <DaymarkMark :size="40" />
         <span>Daymark</span>
       </a>
     </header>
