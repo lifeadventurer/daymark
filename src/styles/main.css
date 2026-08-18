@@ -320,12 +320,12 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   opacity: 0.45;
 }
 .piece-tile--disabled {
-  background: rgba(235, 233, 225, 0.45);
-  border-color: #e7e5dc;
-  opacity: 0.52;
+  background: #ecebe5;
+  border-color: #dedcd3;
+  opacity: 0.48;
 }
 .piece-tile--disabled .piece-svg {
-  filter: saturate(0.55);
+  filter: saturate(0.35);
 }
 .piece-tile--unavailable {
   opacity: 0.45;
@@ -334,6 +334,14 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   border-color: #e1e1d9;
   background: rgba(255, 255, 255, 0.42);
   transform: none;
+}
+.piece-tile--disabled:disabled:hover {
+  cursor: not-allowed;
+  border-color: #dedcd3;
+  background: #ecebe5;
+}
+.piece-tile--disabled:disabled {
+  cursor: not-allowed;
 }
 .piece-tile--selected {
   border-color: #d66d4d;
