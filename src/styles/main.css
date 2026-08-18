@@ -322,10 +322,10 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .piece-tile--disabled {
   background: rgba(235, 233, 225, 0.45);
   border-color: #e7e5dc;
-  opacity: 0.42;
+  opacity: 0.52;
 }
 .piece-tile--disabled .piece-svg {
-  filter: grayscale(1);
+  filter: saturate(0.55);
 }
 .piece-tile--unavailable {
   opacity: 0.45;
