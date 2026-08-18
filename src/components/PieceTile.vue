@@ -17,6 +17,7 @@ const emit = defineEmits<{ select: []; "drag-start": [event: PointerEvent] }>();
 const orientation = computed(
   () => generateOrientations(props.piece)[props.orientationIndex] ?? [],
 );
+const isDisabled = computed(() => props.piece.enabled === false);
 const maxX = computed(() =>
   Math.max(...orientation.value.map((cell) => cell.x), 0),
 );
@@ -25,7 +26,7 @@ const maxY = computed(() =>
 );
 
 function startDrag(event: PointerEvent) {
-  if (props.placed) return;
+  if (isDisabled.value || props.placed || !props.canPlace) return;
   const target = event.currentTarget;
   if (target instanceof HTMLElement) target.setPointerCapture(event.pointerId);
   event.preventDefault();
@@ -38,11 +39,12 @@ function startDrag(event: PointerEvent) {
     class="piece-tile"
     :class="{
       'piece-tile--selected': selected,
+      'piece-tile--disabled': isDisabled,
       'piece-tile--unavailable': !canPlace && !placed,
     }"
     type="button"
-    :disabled="placed || !canPlace"
-    :aria-label="`${label} piece${selected ? ', selected' : ''}`"
+    :disabled="isDisabled || placed || !canPlace"
+    :aria-label="`${label} piece${isDisabled ? ', unavailable' : selected ? ', selected' : ''}`"
     @pointerdown="startDrag"
     @keydown.enter.prevent="emit('select')"
     @keydown.space.prevent="emit('select')"

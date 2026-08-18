@@ -8,6 +8,7 @@ export interface PieceDefinition {
   cells: GridPoint[];
   allowRotation: boolean;
   allowReflection: boolean;
+  enabled?: boolean;
 }
 
 export interface BoardCell extends GridPoint {

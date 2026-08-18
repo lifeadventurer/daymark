@@ -100,6 +100,7 @@ function startDrag(pieceId: string, event: PointerEvent) {
   const piece = temporaryPieces.find((candidate) => candidate.id === pieceId);
   if (
     !piece ||
+    piece.enabled === false ||
     placedPieceIds.value.includes(pieceId) ||
     placedPieces.value.length >= pieceLimit
   )
@@ -360,6 +361,7 @@ function loadPuzzleForDate(dateKey: string) {
       const piece = piecesById.get(savedPlacement.pieceId);
       if (
         !piece ||
+        piece.enabled === false ||
         nextPlacements.some(({ piece: placed }) => placed.id === piece.id)
       ) {
         savedStateValid = false;

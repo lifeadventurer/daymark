@@ -20,9 +20,9 @@ export const temporaryBoard: BoardDefinition = createBoardDefinition(
 
 /**
  * Initial photo-derived piece set.
- * These are the photo-derived pentomino silhouettes, with seven available
- * pieces so the player can choose six: red P, blue L, green T, orange N,
- * purple U, black V, and white Z.
+ * The tray shows all twelve pentomino silhouettes in a 3x4 grid. The first
+ * seven are enabled so the player can choose six; the remaining five are
+ * reserved for later boards.
  */
 export const temporaryPieces: PieceDefinition[] = [
   {
@@ -111,6 +111,76 @@ export const temporaryPieces: PieceDefinition[] = [
     allowRotation: true,
     allowReflection: true,
   },
+  {
+    id: "cyan",
+    // F pentomino: .XX / XX. / .X.
+    cells: [
+      { x: 1, y: 0 },
+      { x: 2, y: 0 },
+      { x: 0, y: 1 },
+      { x: 1, y: 1 },
+      { x: 1, y: 2 },
+    ],
+    allowRotation: true,
+    allowReflection: true,
+    enabled: false,
+  },
+  {
+    id: "teal",
+    // I pentomino: XXXXX
+    cells: [
+      { x: 0, y: 0 },
+      { x: 0, y: 1 },
+      { x: 0, y: 2 },
+      { x: 0, y: 3 },
+      { x: 0, y: 4 },
+    ],
+    allowRotation: true,
+    allowReflection: true,
+    enabled: false,
+  },
+  {
+    id: "yellow",
+    // T pentomino: XXX / .X. / .X.
+    cells: [
+      { x: 0, y: 0 },
+      { x: 1, y: 0 },
+      { x: 2, y: 0 },
+      { x: 1, y: 1 },
+      { x: 1, y: 2 },
+    ],
+    allowRotation: true,
+    allowReflection: true,
+    enabled: false,
+  },
+  {
+    id: "pink",
+    // W pentomino: X.. / XX. / .XX
+    cells: [
+      { x: 0, y: 0 },
+      { x: 0, y: 1 },
+      { x: 1, y: 1 },
+      { x: 1, y: 2 },
+      { x: 2, y: 2 },
+    ],
+    allowRotation: true,
+    allowReflection: true,
+    enabled: false,
+  },
+  {
+    id: "navy",
+    // X pentomino: .X. / XXX / .X.
+    cells: [
+      { x: 1, y: 0 },
+      { x: 0, y: 1 },
+      { x: 1, y: 1 },
+      { x: 2, y: 1 },
+      { x: 1, y: 2 },
+    ],
+    allowRotation: true,
+    allowReflection: true,
+    enabled: false,
+  },
 ];
 
 export const pieceLabels: Record<string, string> = {
@@ -121,6 +191,11 @@ export const pieceLabels: Record<string, string> = {
   purple: "Purple",
   black: "Black",
   white: "White",
+  cyan: "Cyan",
+  teal: "Teal",
+  yellow: "Yellow",
+  pink: "Pink",
+  navy: "Navy",
 };
 
 export const pieceColors: Record<string, string> = {
@@ -131,4 +206,9 @@ export const pieceColors: Record<string, string> = {
   purple: "#8e6098",
   black: "#3f3c3a",
   white: "#f1eee5",
+  cyan: "#5ca8a0",
+  teal: "#4d8c8a",
+  yellow: "#d5ae55",
+  pink: "#c77f91",
+  navy: "#58708f",
 };
