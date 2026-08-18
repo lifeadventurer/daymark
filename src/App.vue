@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref } from "vue";
+import DaymarkMark from "./components/DaymarkMark.vue";
 import PuzzleBoard from "./components/PuzzleBoard.vue";
 import PieceTray from "./components/PieceTray.vue";
 import {
@@ -415,9 +416,7 @@ onBeforeUnmount(endDrag);
   <main class="app-shell">
     <header class="topbar">
       <a class="wordmark" href="/" aria-label="Daymark home">
-        <span class="wordmark-mark" aria-hidden="true"
-          ><span></span><span></span><span></span
-        ></span>
+        <DaymarkMark />
         <span>Daymark</span>
       </a>
     </header>

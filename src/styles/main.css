@@ -75,29 +75,12 @@ button {
   font-weight: 730;
   letter-spacing: -0.04em;
 }
-.wordmark-mark {
-  display: inline-grid;
-  grid-template-columns: repeat(3, 5px);
-  gap: 2px;
-  align-items: end;
-  width: 19px;
-  height: 19px;
-}
-.wordmark-mark span {
+.daymark-mark {
   display: block;
-  background: #e26e4e;
-  border-radius: 2px;
-}
-.wordmark-mark span:nth-child(1) {
-  height: 7px;
-}
-.wordmark-mark span:nth-child(2) {
-  height: 13px;
-  background: #e2a464;
-}
-.wordmark-mark span:nth-child(3) {
-  height: 19px;
-  background: #698a77;
+  width: 24px;
+  height: 24px;
+  flex: 0 0 auto;
+  overflow: visible;
 }
 .intro {
   display: flex;
@@ -409,18 +392,21 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     width: calc(100% - 28px);
   }
   .board-shell {
-    padding: 20px;
+    padding: 14px;
     border-radius: 20px;
+  }
+  .side-panel {
+    padding-top: 28px;
   }
   .piece-grid {
     gap: 7px;
   }
   .piece-tile {
-    min-height: 112px;
-    padding: 10px;
+    min-height: 88px;
+    padding: 8px;
   }
   .piece-svg {
-    height: 54px;
+    height: 48px;
   }
 }
 
