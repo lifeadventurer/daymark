@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: "Zeyada";
+  src: url("/fonts/Zeyada.ttf") format("truetype");
+  font-display: swap;
+  font-style: normal;
+  font-weight: 400;
+}
+
 :root {
   color: #222923;
   background: #f6f4ef;
@@ -74,6 +82,13 @@ button {
   font-size: 18px;
   font-weight: 730;
   letter-spacing: -0.04em;
+}
+.wordmark span {
+  font-family: "Zeyada", cursive;
+  font-size: clamp(30px, 2.5vw, 36px);
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1;
 }
 .daymark-mark {
   display: block;
