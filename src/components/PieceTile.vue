@@ -18,12 +18,17 @@ const orientation = computed(
   () => generateOrientations(props.piece)[props.orientationIndex] ?? [],
 );
 const isDisabled = computed(() => props.piece.enabled === false);
-const maxX = computed(() =>
-  Math.max(...orientation.value.map((cell) => cell.x), 0),
-);
-const maxY = computed(() =>
-  Math.max(...orientation.value.map((cell) => cell.y), 0),
-);
+const centeredOrientation = computed(() => {
+  const maxX = Math.max(...orientation.value.map((cell) => cell.x), 0);
+  const maxY = Math.max(...orientation.value.map((cell) => cell.y), 0);
+  const offsetX = (5 - (maxX + 1)) / 2;
+  const offsetY = (5 - (maxY + 1)) / 2;
+
+  return orientation.value.map((cell) => ({
+    x: cell.x + offsetX,
+    y: cell.y + offsetY,
+  }));
+});
 
 function startDrag(event: PointerEvent) {
   if (isDisabled.value || props.placed || !props.canPlace) return;
@@ -49,13 +54,9 @@ function startDrag(event: PointerEvent) {
     @keydown.enter.prevent="emit('select')"
     @keydown.space.prevent="emit('select')"
   >
-    <svg
-      class="piece-svg"
-      :viewBox="`-0.1 -0.1 ${maxX + 1.2} ${maxY + 1.2}`"
-      aria-hidden="true"
-    >
+    <svg class="piece-svg" viewBox="-0.05 -0.05 5.1 5.1" aria-hidden="true">
       <rect
-        v-for="cell in orientation"
+        v-for="cell in centeredOrientation"
         :key="`${cell.x}-${cell.y}`"
         :x="cell.x + 0.05"
         :y="cell.y + 0.05"
