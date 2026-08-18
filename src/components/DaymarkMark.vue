@@ -40,20 +40,23 @@ const markSize = computed(() =>
       stroke-linecap="round"
       stroke-width="1.8"
     />
-    <rect x="7" y="14" width="4" height="4" rx="1" fill="#e26e4e" />
-    <rect x="12" y="14" width="4" height="4" rx="1" fill="#e2a464" />
-    <rect x="17" y="14" width="4" height="4" rx="1" fill="#698a77" />
-    <rect x="12" y="19" width="4" height="4" rx="1" fill="#698a77" />
+    <rect x="7" y="13" width="4" height="3" rx="0.9" fill="#e26e4e" />
+    <rect x="12" y="13" width="4" height="3" rx="0.9" fill="#e2a464" />
+    <rect x="17" y="13" width="4" height="3" rx="0.9" fill="#e2a464" />
+    <rect x="7" y="17" width="4" height="3" rx="0.9" fill="#e26e4e" />
+    <rect x="12" y="17" width="4" height="3" rx="0.9" fill="#698a77" />
+    <rect x="17" y="17" width="4" height="3" rx="0.9" fill="#698a77" />
+    <rect x="7" y="20.5" width="4" height="3" rx="0.9" fill="#e26e4e" />
+    <rect x="17" y="20.5" width="4" height="3" rx="0.9" fill="#698a77" />
     <rect
-      x="17"
-      y="19"
+      x="12"
+      y="20.5"
       width="4"
-      height="4"
-      rx="1"
-      fill="none"
+      height="3"
+      rx="0.9"
+      fill="#fff6e8"
       stroke="#e26e4e"
-      stroke-dasharray="1 1"
-      stroke-width="1"
+      stroke-width="0.8"
     />
   </svg>
 </template>
