@@ -89,6 +89,7 @@ button {
   font-weight: 400;
   letter-spacing: 0;
   line-height: 1;
+  transform: translateY(5px);
 }
 .daymark-mark {
   display: block;
