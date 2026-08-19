@@ -13,6 +13,7 @@ import {
   generateOrientations,
   orientationKey,
   reflectCells,
+  reflectCellsVertically,
   rotateCells,
 } from "./engine/geometry";
 import { isBoardStateLegal, isPlacementLegal } from "./engine/placement";
@@ -49,6 +50,9 @@ const boardRef = ref<{
 const dateContext = computed(() => getDateContext(selectedDate.value));
 const placedPieceIds = computed(() =>
   placedPieces.value.map(({ piece }) => piece.id),
+);
+const canReset = computed(
+  () => placedPieces.value.length > 0 || Boolean(dragReturn.value),
 );
 const draggedPiece = computed(() =>
   temporaryPieces.find((piece) => piece.id === draggingPieceId.value),
@@ -230,7 +234,9 @@ function getOrientationIndex(piece: (typeof temporaryPieces)[number]) {
   );
 }
 
-function changeSelectedOrientation(action: "rotate" | "flip") {
+function changeSelectedOrientation(
+  action: "rotate-left" | "rotate-right" | "flip-horizontal" | "flip-vertical",
+) {
   const pieceId = selectedPieceId.value;
   const piece = temporaryPieces.find((candidate) => candidate.id === pieceId);
   if (!piece || draggingPieceId.value) return;
@@ -240,8 +246,18 @@ function changeSelectedOrientation(action: "rotate" | "flip") {
   const current = orientations[currentIndex] ?? orientations[0];
   if (!current) return;
 
-  const transformed =
-    action === "rotate" ? rotateCells(current) : reflectCells(current);
+  const transformed = (() => {
+    switch (action) {
+      case "rotate-left":
+        return rotateCells(rotateCells(rotateCells(current)));
+      case "rotate-right":
+        return rotateCells(current);
+      case "flip-horizontal":
+        return reflectCells(current);
+      case "flip-vertical":
+        return reflectCellsVertically(current);
+    }
+  })();
   const nextIndex = orientations.findIndex(
     (candidate) => orientationKey(candidate) === orientationKey(transformed),
   );
@@ -550,22 +566,16 @@ onBeforeUnmount(cancelDrag);
           :colors="pieceColors"
           :orientations="pieceOrientations"
           :can-place-more="placedPieces.length < pieceLimit"
+          :can-reset="canReset"
+          :dragging="Boolean(draggingPieceId)"
           @select="selectPiece"
           @drag-start="startDrag"
-          @rotate="changeSelectedOrientation('rotate')"
-          @flip="changeSelectedOrientation('flip')"
+          @rotate-left="changeSelectedOrientation('rotate-left')"
+          @rotate-right="changeSelectedOrientation('rotate-right')"
+          @flip-horizontal="changeSelectedOrientation('flip-horizontal')"
+          @flip-vertical="changeSelectedOrientation('flip-vertical')"
+          @reset="resetPuzzle"
         />
-        <div class="side-actions">
-          <button
-            class="reset-button"
-            type="button"
-            aria-label="Reset pieces"
-            title="Reset pieces"
-            @click="resetPuzzle"
-          >
-            <span class="reset-icon" aria-hidden="true">↺</span>
-          </button>
-        </div>
       </aside>
     </section>
   </main>

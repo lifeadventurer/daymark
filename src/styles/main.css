@@ -62,8 +62,7 @@ button {
   overflow: hidden;
 }
 
-.topbar,
-.side-actions {
+.topbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -303,27 +302,51 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .piece-controls {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  gap: 12px;
+  justify-content: space-between;
   margin: 0 0 12px;
 }
 .piece-controls__buttons {
   display: flex;
-  gap: 5px;
+  gap: 6px;
 }
-.piece-controls__buttons button {
-  width: 27px;
-  height: 27px;
+.piece-controls button {
+  display: inline-flex;
+  width: 32px;
+  height: 32px;
+  align-items: center;
+  justify-content: center;
   padding: 0;
   border: 1px solid #d7dad1;
-  border-radius: 6px;
+  border-radius: 8px;
   background: #fffdf8;
   color: #68746b;
-  font-size: 10px;
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease,
+    background 0.2s ease,
+    opacity 0.2s ease;
 }
-.piece-controls__buttons button:hover {
+.piece-controls button:not(:disabled):hover {
   border-color: #d66d4d;
   color: #d66d4d;
+  background: #fffaf2;
+}
+.piece-controls button:disabled {
+  cursor: default;
+  opacity: 0.38;
+}
+.piece-control-icon {
+  display: block;
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.5;
+}
+.piece-controls__reset {
+  margin-left: auto;
 }
 .piece-grid {
   display: grid;
@@ -421,29 +444,6 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .piece-svg rect {
   stroke: rgba(42, 49, 43, 0.18);
   stroke-width: 0.035;
-}
-.side-actions {
-  justify-content: flex-end;
-  padding-top: 16px;
-}
-.reset-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 30px;
-  height: 30px;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  color: #6d786f;
-  font-size: 12px;
-}
-.reset-button:hover {
-  color: #d66d4d;
-}
-.reset-icon {
-  font-size: 22px;
-  line-height: 1;
 }
 @media (max-width: 880px) {
   .app-shell {

@@ -19,6 +19,10 @@ export function reflectCells(cells: GridPoint[]): GridPoint[] {
   return normalizeCells(cells.map(({ x, y }) => ({ x: -x, y })));
 }
 
+export function reflectCellsVertically(cells: GridPoint[]): GridPoint[] {
+  return normalizeCells(cells.map(({ x, y }) => ({ x, y: -y })));
+}
+
 export function generateOrientations(piece: PieceDefinition): Orientation[] {
   const orientations: Orientation[] = [];
   const candidates: GridPoint[][] = [piece.cells];
@@ -34,6 +38,7 @@ export function generateOrientations(piece: PieceDefinition): Orientation[] {
   if (piece.allowReflection) {
     const reflected = reflectCells(piece.cells);
     candidates.push(reflected);
+    candidates.push(reflectCellsVertically(piece.cells));
 
     if (piece.allowRotation) {
       let rotated = reflected;

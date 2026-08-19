@@ -3,6 +3,7 @@ import {
   generateOrientations,
   normalizeCells,
   reflectCells,
+  reflectCellsVertically,
   rotateCells,
 } from "./geometry";
 
@@ -46,6 +47,20 @@ describe("piece geometry", () => {
       { x: 0, y: 0 },
       { x: 1, y: 0 },
       { x: 0, y: 1 },
+    ]);
+  });
+
+  it("reflects a shape across the horizontal axis", () => {
+    expect(
+      reflectCellsVertically([
+        { x: 0, y: 0 },
+        { x: 1, y: 0 },
+        { x: 1, y: 1 },
+      ]),
+    ).toEqual([
+      { x: 1, y: 0 },
+      { x: 0, y: 1 },
+      { x: 1, y: 1 },
     ]);
   });
 
