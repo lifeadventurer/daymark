@@ -179,6 +179,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .board-cell--target {
   fill: #e97352;
   stroke: #d9674a;
+  stroke-width: 0.04;
 }
 .board-number {
   fill: #5c665d;
@@ -199,13 +200,6 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 }
 .target-dot {
   fill: #fff6e8;
-}
-.target-outline {
-  fill: none;
-  stroke: #d9674a;
-  stroke-width: 0.045;
-  stroke-dasharray: 0.1 0.06;
-  pointer-events: none;
 }
 .placed-piece rect {
   stroke: rgba(255, 250, 240, 0.5);

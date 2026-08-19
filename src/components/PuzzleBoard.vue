@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import { getBoardBounds, getCellForDate } from "../engine/board";
+import { getBoardBounds } from "../engine/board";
 import { getPlacementCells } from "../engine/placement";
 import type {
   BoardDefinition,
@@ -30,9 +30,6 @@ const emit = defineEmits<{
 
 const svgRef = ref<SVGSVGElement | null>(null);
 const bounds = computed(() => getBoardBounds(props.board));
-const targetCell = computed(() =>
-  getCellForDate(props.board, props.targetDate),
-);
 const viewBox = computed(
   () =>
     `${bounds.value.minX - 0.12} ${bounds.value.minY - 0.12} ${bounds.value.maxX - bounds.value.minX + 1.24} ${bounds.value.maxY - bounds.value.minY + 1.24}`,
@@ -178,15 +175,6 @@ defineExpose({ getGridPointFromClient });
           :fill="preview.color"
         />
       </g>
-      <rect
-        v-if="targetCell"
-        :x="targetCell.x + 0.045"
-        :y="targetCell.y + 0.045"
-        width="0.91"
-        height="0.91"
-        rx="0.16"
-        class="target-outline"
-      />
     </svg>
   </div>
 </template>
