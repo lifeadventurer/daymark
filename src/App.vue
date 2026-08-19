@@ -82,6 +82,8 @@ const dragGhostStyle = computed(() => {
 });
 const boardStatus = computed(() => {
   if (completed.value) return "Complete";
+  if (draggingPieceId.value && dragReturn.value && !dragMoved.value)
+    return "Selected piece — drag to move or release to keep";
   if (draggingPieceId.value && previewPlacement.value)
     return previewValid.value
       ? "Good fit — release to place"
@@ -199,12 +201,18 @@ function beginDrag(
   event: PointerEvent,
   startsOutsideBoard = false,
 ) {
+  const initialPlacement = dragReturn.value?.piece.placement;
   event.preventDefault();
   selectedPieceId.value = pieceId;
   draggingPieceId.value = pieceId;
   dragPointer.value = { x: event.clientX, y: event.clientY };
-  previewPlacement.value = null;
-  previewValid.value = false;
+  previewPlacement.value = initialPlacement
+    ? {
+        ...initialPlacement,
+        origin: { ...initialPlacement.origin },
+      }
+    : null;
+  previewValid.value = Boolean(initialPlacement);
   dragMoved.value = false;
   dragOutsideBoard.value = startsOutsideBoard;
   window.addEventListener("pointermove", handlePointerMove);
