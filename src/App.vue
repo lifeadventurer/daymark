@@ -37,10 +37,12 @@ const dragPointer = ref<{ x: number; y: number } | null>(null);
 const dragReturn = ref<{ piece: RenderedPiece; index: number } | null>(null);
 const moveCount = ref(0);
 const completed = ref(false);
+const completionCelebration = ref(false);
 const completedAt = ref<string | null>(null);
 const records = ref(loadRecordStore());
 const pieceOrientations = ref<Record<string, number>>({});
 const pieceLimit = 6;
+let completionCelebrationTimer: ReturnType<typeof setTimeout> | undefined;
 const boardRef = ref<{
   getGridPointFromClient: (
     clientX: number,
@@ -122,9 +124,27 @@ function resetPuzzle() {
   placedPieces.value = [];
   moveCount.value = 0;
   completed.value = false;
+  stopCompletionCelebration();
   completedAt.value = null;
   pieceOrientations.value = {};
   saveCurrentPuzzle();
+}
+
+function stopCompletionCelebration() {
+  completionCelebration.value = false;
+  if (completionCelebrationTimer) {
+    clearTimeout(completionCelebrationTimer);
+    completionCelebrationTimer = undefined;
+  }
+}
+
+function celebrateCompletion() {
+  stopCompletionCelebration();
+  completionCelebration.value = true;
+  completionCelebrationTimer = setTimeout(() => {
+    completionCelebration.value = false;
+    completionCelebrationTimer = undefined;
+  }, 1200);
 }
 
 function selectPiece(pieceId: string) {
@@ -390,7 +410,8 @@ function cancelDrag() {
   endDrag(undefined, true);
 }
 
-function evaluateCompletion() {
+function evaluateCompletion(shouldCelebrate = true) {
+  const wasComplete = completed.value;
   const isComplete =
     placedPieces.value.length === pieceLimit &&
     isBoardStateLegal(
@@ -401,6 +422,7 @@ function evaluateCompletion() {
     );
 
   completed.value = isComplete;
+  if (shouldCelebrate && isComplete && !wasComplete) celebrateCompletion();
   completedAt.value = isComplete
     ? (completedAt.value ?? new Date().toISOString())
     : null;
@@ -480,13 +502,17 @@ function loadPuzzleForDate(dateKey: string) {
   pieceOrientations.value = nextOrientations;
   moveCount.value = savedStateValid ? (saved?.moveCount ?? 0) : 0;
   completed.value = false;
+  stopCompletionCelebration();
   completedAt.value = savedStateValid ? (saved?.completedAt ?? null) : null;
-  evaluateCompletion();
+  evaluateCompletion(false);
 }
 
 loadPuzzleForDate(dateContext.value.isoDate);
 
-onBeforeUnmount(cancelDrag);
+onBeforeUnmount(() => {
+  cancelDrag();
+  stopCompletionCelebration();
+});
 </script>
 
 <template>
@@ -520,7 +546,13 @@ onBeforeUnmount(cancelDrag);
     </header>
 
     <section class="puzzle-layout" aria-label="Daymark puzzle">
-      <div class="board-column">
+      <div
+        class="board-column"
+        :class="{
+          'board-column--complete': completed && !draggingPieceId,
+          'board-column--celebrate': completionCelebration,
+        }"
+      >
         <span class="sr-only" aria-live="polite">
           {{ boardStatus }}
         </span>

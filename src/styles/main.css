@@ -139,6 +139,17 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     0 20px 42px rgba(50, 53, 44, 0.07),
     inset 0 1px rgba(255, 255, 255, 0.7);
 }
+.board-column--complete .board-shell {
+  border-color: #b9d0bd;
+  box-shadow:
+    0 0 0 1px rgba(110, 152, 126, 0.18),
+    0 0 24px rgba(110, 152, 126, 0.2),
+    0 20px 42px rgba(50, 53, 44, 0.07),
+    inset 0 1px rgba(255, 255, 255, 0.7);
+}
+.board-column--celebrate .board-shell {
+  animation: board-completion-glow 1.2s ease-out;
+}
 .board-heading {
   position: relative;
   display: flex;
@@ -241,6 +252,9 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   color: #5c896f;
   font-size: 17px;
   line-height: 1;
+}
+.board-column--celebrate .completion-mark {
+  animation: completion-mark-pop 0.55s ease-out;
 }
 .preview-piece {
   opacity: 0.68;
@@ -445,6 +459,53 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   stroke: rgba(42, 49, 43, 0.18);
   stroke-width: 0.035;
 }
+
+@keyframes board-completion-glow {
+  0% {
+    box-shadow:
+      0 0 0 1px rgba(110, 152, 126, 0.18),
+      0 0 0 rgba(110, 152, 126, 0),
+      0 20px 42px rgba(50, 53, 44, 0.07),
+      inset 0 1px rgba(255, 255, 255, 0.7);
+  }
+  45% {
+    box-shadow:
+      0 0 0 4px rgba(110, 152, 126, 0.16),
+      0 0 34px rgba(110, 152, 126, 0.32),
+      0 20px 42px rgba(50, 53, 44, 0.07),
+      inset 0 1px rgba(255, 255, 255, 0.7);
+  }
+  100% {
+    box-shadow:
+      0 0 0 1px rgba(110, 152, 126, 0.18),
+      0 0 24px rgba(110, 152, 126, 0.2),
+      0 20px 42px rgba(50, 53, 44, 0.07),
+      inset 0 1px rgba(255, 255, 255, 0.7);
+  }
+}
+
+@keyframes completion-mark-pop {
+  0% {
+    opacity: 0.65;
+    transform: scale(0.82);
+  }
+  65% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .board-column--celebrate .board-shell,
+  .board-column--celebrate .completion-mark {
+    animation: none;
+  }
+}
+
 @media (max-width: 880px) {
   .app-shell {
     width: min(100% - 40px, 680px);
