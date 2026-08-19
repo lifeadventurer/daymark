@@ -44,6 +44,15 @@ function getGridPointFromClient(clientX: number, clientY: number) {
   if (!svg) return undefined;
 
   const rect = svg.getBoundingClientRect();
+  if (
+    clientX < rect.left ||
+    clientX > rect.right ||
+    clientY < rect.top ||
+    clientY > rect.bottom
+  ) {
+    return undefined;
+  }
+
   const logicalWidth = bounds.value.maxX - bounds.value.minX + 1.24;
   const logicalHeight = bounds.value.maxY - bounds.value.minY + 1.24;
   return {

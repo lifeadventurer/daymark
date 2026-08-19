@@ -31,6 +31,8 @@ const draggingPieceId = ref<string | null>(null);
 const previewPlacement = ref<PiecePlacement | null>(null);
 const previewValid = ref(false);
 const dragMoved = ref(false);
+const dragOutsideBoard = ref(false);
+const dragPointer = ref<{ x: number; y: number } | null>(null);
 const dragReturn = ref<{ piece: RenderedPiece; index: number } | null>(null);
 const moveCount = ref(0);
 const completed = ref(false);
@@ -51,6 +53,33 @@ const placedPieceIds = computed(() =>
 const draggedPiece = computed(() =>
   temporaryPieces.find((piece) => piece.id === draggingPieceId.value),
 );
+const dragGhostOrientation = computed(() => {
+  if (!draggedPiece.value) return [];
+  return (
+    generateOrientations(draggedPiece.value)[
+      getOrientationIndex(draggedPiece.value)
+    ] ?? []
+  );
+});
+const dragGhostSize = computed(() => ({
+  width: Math.max(...dragGhostOrientation.value.map((cell) => cell.x), 0) + 1,
+  height: Math.max(...dragGhostOrientation.value.map((cell) => cell.y), 0) + 1,
+}));
+const dragGhostViewBox = computed(
+  () =>
+    `-0.08 -0.08 ${dragGhostSize.value.width + 0.16} ${dragGhostSize.value.height + 0.16}`,
+);
+const dragGhostStyle = computed(() => {
+  if (!dragPointer.value) return {};
+
+  const cellSize = 34;
+  return {
+    left: `${dragPointer.value.x + 14}px`,
+    top: `${dragPointer.value.y + 14}px`,
+    width: `${dragGhostSize.value.width * cellSize}px`,
+    height: `${dragGhostSize.value.height * cellSize}px`,
+  };
+});
 const boardStatus = computed(() => {
   if (completed.value) return "Complete";
   if (draggingPieceId.value && previewPlacement.value)
@@ -106,7 +135,7 @@ function startDrag(pieceId: string, event: PointerEvent) {
   )
     return;
 
-  beginDrag(pieceId, event);
+  beginDrag(pieceId, event, true);
 }
 
 function startPlacedDrag(pieceId: string, event: PointerEvent) {
@@ -165,16 +194,22 @@ function nudgePlacedPiece(pieceId: string, delta: GridPoint) {
   saveCurrentPuzzle();
 }
 
-function beginDrag(pieceId: string, event: PointerEvent) {
+function beginDrag(
+  pieceId: string,
+  event: PointerEvent,
+  startsOutsideBoard = false,
+) {
   event.preventDefault();
   selectedPieceId.value = pieceId;
   draggingPieceId.value = pieceId;
+  dragPointer.value = { x: event.clientX, y: event.clientY };
   previewPlacement.value = null;
   previewValid.value = false;
   dragMoved.value = false;
+  dragOutsideBoard.value = startsOutsideBoard;
   window.addEventListener("pointermove", handlePointerMove);
   window.addEventListener("pointerup", endDrag);
-  window.addEventListener("pointercancel", endDrag);
+  window.addEventListener("pointercancel", cancelDrag);
 }
 
 function getOrientationIndex(piece: (typeof temporaryPieces)[number]) {
@@ -243,13 +278,20 @@ function changeSelectedOrientation(action: "rotate" | "flip") {
 function handlePointerMove(event: PointerEvent) {
   if (!draggedPiece.value || !boardRef.value) return;
 
+  dragPointer.value = { x: event.clientX, y: event.clientY };
+  dragMoved.value = true;
   const point = boardRef.value.getGridPointFromClient(
     event.clientX,
     event.clientY,
   );
-  if (!point) return;
+  if (!point) {
+    dragOutsideBoard.value = true;
+    previewPlacement.value = null;
+    previewValid.value = false;
+    return;
+  }
 
-  dragMoved.value = true;
+  dragOutsideBoard.value = false;
   const orientationIndex = getOrientationIndex(draggedPiece.value);
   const orientation =
     generateOrientations(draggedPiece.value)[orientationIndex] ?? [];
@@ -275,7 +317,7 @@ function handlePointerMove(event: PointerEvent) {
   );
 }
 
-function endDrag() {
+function endDrag(_event?: PointerEvent, restorePlacedPiece = false) {
   if (!draggingPieceId.value) return;
 
   const piece = draggedPiece.value;
@@ -296,7 +338,10 @@ function endDrag() {
       [piece.id]: previewPlacement.value.orientation,
     };
     selectedPieceId.value = null;
-  } else if (dragReturn.value) {
+  } else if (
+    dragReturn.value &&
+    (restorePlacedPiece || !dragOutsideBoard.value)
+  ) {
     const restored = [...placedPieces.value];
     restored.splice(dragReturn.value.index, 0, dragReturn.value.piece);
     placedPieces.value = restored;
@@ -307,12 +352,18 @@ function endDrag() {
 
   window.removeEventListener("pointermove", handlePointerMove);
   window.removeEventListener("pointerup", endDrag);
-  window.removeEventListener("pointercancel", endDrag);
+  window.removeEventListener("pointercancel", cancelDrag);
   draggingPieceId.value = null;
   previewPlacement.value = null;
   previewValid.value = false;
   dragMoved.value = false;
+  dragOutsideBoard.value = false;
+  dragPointer.value = null;
   dragReturn.value = null;
+}
+
+function cancelDrag() {
+  endDrag(undefined, true);
 }
 
 function evaluateCompletion() {
@@ -411,11 +462,32 @@ function loadPuzzleForDate(dateKey: string) {
 
 loadPuzzleForDate(dateContext.value.isoDate);
 
-onBeforeUnmount(endDrag);
+onBeforeUnmount(cancelDrag);
 </script>
 
 <template>
   <main class="app-shell">
+    <div
+      v-if="dragOutsideBoard && draggedPiece && dragPointer"
+      class="drag-ghost"
+      :style="dragGhostStyle"
+      aria-hidden="true"
+    >
+      <svg class="drag-ghost__svg" :viewBox="dragGhostViewBox">
+        <rect
+          v-for="cell in dragGhostOrientation"
+          :key="`drag-ghost-${cell.x}-${cell.y}`"
+          :x="cell.x + 0.05"
+          :y="cell.y + 0.05"
+          width="0.9"
+          height="0.9"
+          rx="0.15"
+          :fill="pieceColors[draggedPiece.id] ?? '#718277'"
+          :stroke="pieceColors[draggedPiece.id] ?? '#718277'"
+        />
+      </svg>
+      <span class="drag-ghost__return" aria-hidden="true">↩</span>
+    </div>
     <header class="topbar">
       <a class="wordmark" href="/" aria-label="Daymark home">
         <DaymarkMark :size="40" />
