@@ -310,6 +310,52 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   min-height: 0;
   padding-top: 0;
 }
+.difficulty-picker {
+  margin: 0 0 14px;
+  padding: 0;
+  border: 0;
+}
+.difficulty-picker legend {
+  margin-bottom: 7px;
+  color: #68746b;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+.difficulty-picker__options {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+.difficulty-picker__options button {
+  min-height: 32px;
+  padding: 5px 8px;
+  border: 1px solid #d7dad1;
+  border-radius: 8px;
+  background: #fffdf8;
+  color: #68746b;
+  font-size: 13px;
+  font-weight: 650;
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease,
+    background 0.2s ease;
+}
+.difficulty-picker__options button:hover,
+.difficulty-picker__options button:focus-visible {
+  border-color: #b7c5b9;
+  color: #4e5b52;
+  background: #fffaf2;
+}
+.difficulty-picker__options button:focus-visible {
+  outline: 2px solid rgba(214, 109, 77, 0.72);
+  outline-offset: 2px;
+}
+.difficulty-picker__option--selected {
+  border-color: #6e987e !important;
+  background: #edf5ee !important;
+  color: #41694e !important;
+}
 .tray {
   padding: 0;
 }

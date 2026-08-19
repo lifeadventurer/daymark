@@ -4,11 +4,18 @@ import DaymarkMark from "./components/DaymarkMark.vue";
 import PuzzleBoard from "./components/PuzzleBoard.vue";
 import PieceTray from "./components/PieceTray.vue";
 import {
-  temporaryBoard,
-  temporaryPieces,
+  difficultyDefinitions,
+  difficultyOptions,
+  type PuzzleDifficulty,
+  calendar31Board,
+  calendar31PuzzleRules,
+} from "./data/puzzleCatalog";
+import {
+  legacyPieceIdAliases,
   pieceColors,
+  pieceDefinitions,
   pieceLabels,
-} from "./data/temporaryPuzzle";
+} from "./data/pieces";
 import {
   generateOrientations,
   orientationKey,
@@ -26,6 +33,7 @@ import {
 } from "./utils/storage";
 
 const selectedDate = ref(new Date());
+const selectedDifficulty = ref<PuzzleDifficulty>("hard");
 const selectedPieceId = ref<string | null>(null);
 const placedPieces = ref<RenderedPiece[]>([]);
 const draggingPieceId = ref<string | null>(null);
@@ -41,7 +49,7 @@ const completionCelebration = ref(false);
 const completedAt = ref<string | null>(null);
 const records = ref(loadRecordStore());
 const pieceOrientations = ref<Record<string, number>>({});
-const pieceLimit = 6;
+const pieceLimit = calendar31PuzzleRules.requiredPieceCount;
 let completionCelebrationTimer: ReturnType<typeof setTimeout> | undefined;
 const boardRef = ref<{
   getGridPointFromClient: (
@@ -50,6 +58,16 @@ const boardRef = ref<{
   ) => { x: number; y: number } | undefined;
 } | null>(null);
 const dateContext = computed(() => getDateContext(selectedDate.value));
+const currentDifficulty = computed(
+  () => difficultyDefinitions[selectedDifficulty.value],
+);
+const availablePieces = computed(() => {
+  const availableIds = new Set(currentDifficulty.value.pieceIds);
+  return pieceDefinitions.filter((piece) => availableIds.has(piece.id));
+});
+const availablePiecesById = computed(
+  () => new Map(availablePieces.value.map((piece) => [piece.id, piece])),
+);
 const placedPieceIds = computed(() =>
   placedPieces.value.map(({ piece }) => piece.id),
 );
@@ -57,7 +75,7 @@ const canReset = computed(
   () => placedPieces.value.length > 0 || Boolean(dragReturn.value),
 );
 const draggedPiece = computed(() =>
-  temporaryPieces.find((piece) => piece.id === draggingPieceId.value),
+  availablePieces.value.find((piece) => piece.id === draggingPieceId.value),
 );
 const dragGhostOrientation = computed(() => {
   if (!draggedPiece.value) return [];
@@ -101,7 +119,7 @@ const boardStatus = computed(() => {
 });
 
 interface RenderedPiece {
-  piece: (typeof temporaryPieces)[number];
+  piece: (typeof pieceDefinitions)[number];
   placement: PiecePlacement;
   color: string;
 }
@@ -116,6 +134,16 @@ function updateDate(event: Event) {
   saveCurrentPuzzle();
   selectedDate.value = nextDate;
   loadPuzzleForDate(input.value);
+}
+
+function changeDifficulty(nextDifficulty: PuzzleDifficulty) {
+  if (selectedDifficulty.value === nextDifficulty) return;
+
+  endDrag();
+  saveCurrentPuzzle();
+  selectedDifficulty.value = nextDifficulty;
+  selectedPieceId.value = null;
+  loadPuzzleForDate(dateContext.value.isoDate, nextDifficulty);
 }
 
 function resetPuzzle() {
@@ -152,7 +180,9 @@ function selectPiece(pieceId: string) {
 }
 
 function startDrag(pieceId: string, event: PointerEvent) {
-  const piece = temporaryPieces.find((candidate) => candidate.id === pieceId);
+  const piece = availablePieces.value.find(
+    (candidate) => candidate.id === pieceId,
+  );
   if (
     !piece ||
     piece.enabled === false ||
@@ -201,11 +231,11 @@ function nudgePlacedPiece(pieceId: string, delta: GridPoint) {
     .map(({ placement }) => placement);
   if (
     !isPlacementLegal(
-      temporaryBoard,
+      calendar31Board,
       renderedPiece.piece,
       candidatePlacement,
       otherPlacements,
-      new Map(temporaryPieces.map((piece) => [piece.id, piece])),
+      availablePiecesById.value,
       dateContext.value.dateNumber,
     )
   ) {
@@ -244,7 +274,7 @@ function beginDrag(
   window.addEventListener("pointercancel", cancelDrag);
 }
 
-function getOrientationIndex(piece: (typeof temporaryPieces)[number]) {
+function getOrientationIndex(piece: (typeof pieceDefinitions)[number]) {
   const orientations = generateOrientations(piece);
   if (orientations.length === 0) return 0;
   return (
@@ -258,7 +288,9 @@ function changeSelectedOrientation(
   action: "rotate-left" | "rotate-right" | "flip-horizontal" | "flip-vertical",
 ) {
   const pieceId = selectedPieceId.value;
-  const piece = temporaryPieces.find((candidate) => candidate.id === pieceId);
+  const piece = availablePieces.value.find(
+    (candidate) => candidate.id === pieceId,
+  );
   if (!piece || draggingPieceId.value) return;
 
   const orientations = generateOrientations(piece);
@@ -293,11 +325,11 @@ function changeSelectedOrientation(
       .filter((_, index) => index !== placedIndex)
       .map(({ placement }) => placement);
     const isLegal = isPlacementLegal(
-      temporaryBoard,
+      calendar31Board,
       piece,
       candidatePlacement,
       otherPlacements,
-      new Map(temporaryPieces.map((candidate) => [candidate.id, candidate])),
+      availablePiecesById.value,
       dateContext.value.dateNumber,
     );
     if (!isLegal) return;
@@ -352,11 +384,11 @@ function handlePointerMove(event: PointerEvent) {
 
   previewPlacement.value = placement;
   previewValid.value = isPlacementLegal(
-    temporaryBoard,
+    calendar31Board,
     draggedPiece.value,
     placement,
     placedPieces.value.map(({ placement: existing }) => existing),
-    new Map(temporaryPieces.map((piece) => [piece.id, piece])),
+    availablePiecesById.value,
     dateContext.value.dateNumber,
   );
 }
@@ -415,8 +447,8 @@ function evaluateCompletion(shouldCelebrate = true) {
   const isComplete =
     placedPieces.value.length === pieceLimit &&
     isBoardStateLegal(
-      temporaryBoard,
-      new Map(temporaryPieces.map((piece) => [piece.id, piece])),
+      calendar31Board,
+      availablePiecesById.value,
       placedPieces.value.map(({ placement }) => placement),
       dateContext.value.dateNumber,
     );
@@ -428,7 +460,17 @@ function evaluateCompletion(shouldCelebrate = true) {
     : null;
 }
 
-function saveCurrentPuzzle(dateKey = dateContext.value.isoDate) {
+function getPuzzleStorageKey(
+  dateKey: string,
+  difficulty: PuzzleDifficulty,
+): string {
+  return `${dateKey}:${difficulty}`;
+}
+
+function saveCurrentPuzzle(
+  dateKey = dateContext.value.isoDate,
+  difficulty = selectedDifficulty.value,
+) {
   const puzzle: SavedPuzzleRecord = {
     placements: placedPieces.value.map(({ placement }) => ({
       pieceId: placement.pieceId,
@@ -441,21 +483,31 @@ function saveCurrentPuzzle(dateKey = dateContext.value.isoDate) {
   };
   records.value = {
     ...records.value,
-    puzzles: { ...records.value.puzzles, [dateKey]: puzzle },
+    puzzles: {
+      ...records.value.puzzles,
+      [getPuzzleStorageKey(dateKey, difficulty)]: puzzle,
+    },
   };
   saveRecordStore(records.value);
 }
 
-function loadPuzzleForDate(dateKey: string) {
-  const saved = records.value.puzzles[dateKey];
-  const piecesById = new Map(temporaryPieces.map((piece) => [piece.id, piece]));
+function loadPuzzleForDate(
+  dateKey: string,
+  difficulty = selectedDifficulty.value,
+) {
+  const saved =
+    records.value.puzzles[getPuzzleStorageKey(dateKey, difficulty)] ??
+    (difficulty === "hard" ? records.value.puzzles[dateKey] : undefined);
+  const piecesById = availablePiecesById.value;
   const nextPlacements: RenderedPiece[] = [];
   const nextOrientations: Record<string, number> = {};
   let savedStateValid = !saved || saved.placements.length <= pieceLimit;
 
   if (saved && saved.placements.length <= pieceLimit) {
     for (const savedPlacement of saved.placements) {
-      const piece = piecesById.get(savedPlacement.pieceId);
+      const pieceId =
+        legacyPieceIdAliases[savedPlacement.pieceId] ?? savedPlacement.pieceId;
+      const piece = piecesById.get(pieceId);
       if (
         !piece ||
         piece.enabled === false ||
@@ -477,7 +529,7 @@ function loadPuzzleForDate(dateKey: string) {
       };
       if (
         !isPlacementLegal(
-          temporaryBoard,
+          calendar31Board,
           piece,
           placement,
           nextPlacements.map(({ placement: existing }) => existing),
@@ -558,7 +610,7 @@ onBeforeUnmount(() => {
         </span>
         <PuzzleBoard
           ref="boardRef"
-          :board="temporaryBoard"
+          :board="calendar31Board"
           :target-date="dateContext.dateNumber"
           :month-name="dateContext.monthName"
           :date-value="dateContext.isoDate"
@@ -590,8 +642,27 @@ onBeforeUnmount(() => {
       </div>
 
       <aside class="side-panel">
+        <fieldset class="difficulty-picker">
+          <legend>Difficulty</legend>
+          <div class="difficulty-picker__options">
+            <button
+              v-for="difficulty in difficultyOptions"
+              :key="difficulty.id"
+              type="button"
+              :class="{
+                'difficulty-picker__option--selected':
+                  selectedDifficulty === difficulty.id,
+              }"
+              :aria-pressed="selectedDifficulty === difficulty.id"
+              :title="difficulty.description"
+              @click="changeDifficulty(difficulty.id)"
+            >
+              {{ difficulty.label }}
+            </button>
+          </div>
+        </fieldset>
         <PieceTray
-          :pieces="temporaryPieces"
+          :pieces="availablePieces"
           :selected-piece-id="selectedPieceId"
           :placed-piece-ids="placedPieceIds"
           :labels="pieceLabels"

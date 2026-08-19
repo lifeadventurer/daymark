@@ -1,32 +1,9 @@
-import { createBoardDefinition } from "../engine/board";
-import type { BoardDefinition, PieceDefinition } from "../engine/types";
+import type { PieceDefinition } from "../engine/types";
 
-/**
- * Initial photo-derived fixture.
- * The physical board is represented as a calendar: seven columns and five
- * rows, with the final row containing only dates 29–31.
- */
-const temporaryCalendarCells = Array.from({ length: 31 }, (_, index) => ({
-  x: index % 7,
-  y: Math.floor(index / 7),
-  date: index + 1,
-  playable: true,
-}));
-
-export const temporaryBoard: BoardDefinition = createBoardDefinition(
-  "temporary-calendar-tile",
-  temporaryCalendarCells,
-);
-
-/**
- * Initial photo-derived piece set.
- * The tray shows all twelve pentomino silhouettes in a 3x4 grid. The first
- * seven are enabled so the player can choose six; the remaining five are
- * reserved for later boards.
- */
-export const temporaryPieces: PieceDefinition[] = [
+/** Canonical pentomino definitions. Visual colors are kept separate from IDs. */
+export const pieceDefinitions: PieceDefinition[] = [
   {
-    id: "red",
+    id: "p",
     cells: [
       { x: 0, y: 0 },
       { x: 1, y: 0 },
@@ -38,7 +15,7 @@ export const temporaryPieces: PieceDefinition[] = [
     allowReflection: true,
   },
   {
-    id: "blue",
+    id: "l",
     cells: [
       { x: 0, y: 0 },
       { x: 0, y: 1 },
@@ -50,7 +27,7 @@ export const temporaryPieces: PieceDefinition[] = [
     allowReflection: true,
   },
   {
-    id: "green",
+    id: "y",
     cells: [
       { x: 0, y: 0 },
       { x: 1, y: 0 },
@@ -62,7 +39,7 @@ export const temporaryPieces: PieceDefinition[] = [
     allowReflection: true,
   },
   {
-    id: "orange",
+    id: "n",
     cells: [
       { x: 0, y: 0 },
       { x: 1, y: 0 },
@@ -74,7 +51,7 @@ export const temporaryPieces: PieceDefinition[] = [
     allowReflection: true,
   },
   {
-    id: "purple",
+    id: "u",
     cells: [
       { x: 0, y: 0 },
       { x: 2, y: 0 },
@@ -86,7 +63,7 @@ export const temporaryPieces: PieceDefinition[] = [
     allowReflection: true,
   },
   {
-    id: "black",
+    id: "v",
     // V pentomino: X.. / X.. / XXX
     cells: [
       { x: 0, y: 0 },
@@ -99,7 +76,7 @@ export const temporaryPieces: PieceDefinition[] = [
     allowReflection: true,
   },
   {
-    id: "white",
+    id: "z",
     // Z pentomino: XX. / .X. / .XX
     cells: [
       { x: 0, y: 0 },
@@ -112,7 +89,7 @@ export const temporaryPieces: PieceDefinition[] = [
     allowReflection: true,
   },
   {
-    id: "cyan",
+    id: "f",
     // F pentomino: .XX / XX. / .X.
     cells: [
       { x: 1, y: 0 },
@@ -123,10 +100,9 @@ export const temporaryPieces: PieceDefinition[] = [
     ],
     allowRotation: true,
     allowReflection: true,
-    enabled: false,
   },
   {
-    id: "teal",
+    id: "i",
     // I pentomino: XXXXX
     cells: [
       { x: 0, y: 0 },
@@ -137,10 +113,9 @@ export const temporaryPieces: PieceDefinition[] = [
     ],
     allowRotation: true,
     allowReflection: true,
-    enabled: false,
   },
   {
-    id: "yellow",
+    id: "t",
     // T pentomino: XXX / .X. / .X.
     cells: [
       { x: 0, y: 0 },
@@ -151,10 +126,9 @@ export const temporaryPieces: PieceDefinition[] = [
     ],
     allowRotation: true,
     allowReflection: true,
-    enabled: false,
   },
   {
-    id: "pink",
+    id: "w",
     // W pentomino: X.. / XX. / .XX
     cells: [
       { x: 0, y: 0 },
@@ -165,10 +139,9 @@ export const temporaryPieces: PieceDefinition[] = [
     ],
     allowRotation: true,
     allowReflection: true,
-    enabled: false,
   },
   {
-    id: "navy",
+    id: "x",
     // X pentomino: .X. / XXX / .X.
     cells: [
       { x: 1, y: 0 },
@@ -179,36 +152,50 @@ export const temporaryPieces: PieceDefinition[] = [
     ],
     allowRotation: true,
     allowReflection: true,
-    enabled: false,
   },
 ];
 
 export const pieceLabels: Record<string, string> = {
-  red: "Red",
-  blue: "Blue",
-  green: "Green",
-  orange: "Orange",
-  purple: "Purple",
-  black: "Black",
-  white: "Sand",
-  cyan: "Cyan",
-  teal: "Teal",
-  yellow: "Yellow",
-  pink: "Pink",
-  navy: "Navy",
+  p: "P pentomino",
+  l: "L pentomino",
+  y: "Y pentomino",
+  n: "N pentomino",
+  u: "U pentomino",
+  v: "V pentomino",
+  z: "Z pentomino",
+  f: "F pentomino",
+  i: "I pentomino",
+  t: "T pentomino",
+  w: "W pentomino",
+  x: "X pentomino",
 };
 
 export const pieceColors: Record<string, string> = {
-  red: "#d36458",
-  blue: "#5a79aa",
-  green: "#6aa276",
-  orange: "#d99d3d",
-  purple: "#8e6a96",
-  black: "#4b4845",
-  white: "#ad9a80",
-  cyan: "#64a09a",
-  teal: "#528b87",
-  yellow: "#c4a45a",
-  pink: "#b97b87",
-  navy: "#607797",
+  p: "#d36458",
+  l: "#5a79aa",
+  y: "#6aa276",
+  n: "#d99d3d",
+  u: "#8e6a96",
+  v: "#4b4845",
+  z: "#ad9a80",
+  f: "#64a09a",
+  i: "#528b87",
+  t: "#c4a45a",
+  w: "#b97b87",
+  x: "#607797",
+};
+
+export const legacyPieceIdAliases: Record<string, string> = {
+  red: "p",
+  blue: "l",
+  green: "y",
+  orange: "n",
+  purple: "u",
+  black: "v",
+  white: "z",
+  cyan: "f",
+  teal: "i",
+  yellow: "t",
+  pink: "w",
+  navy: "x",
 };
