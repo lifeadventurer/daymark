@@ -49,6 +49,7 @@ function startDrag(event: PointerEvent) {
     }"
     type="button"
     :disabled="isDisabled || placed || !canPlace"
+    :aria-pressed="selected"
     :aria-label="`${label} piece${isDisabled ? ', unavailable' : selected ? ', selected' : ''}`"
     @pointerdown="startDrag"
     @keydown.enter.prevent="emit('select')"
