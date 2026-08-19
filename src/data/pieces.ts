@@ -171,18 +171,18 @@ export const pieceLabels: Record<string, string> = {
 };
 
 export const pieceColors: Record<string, string> = {
-  p: "#d36458",
-  l: "#5a79aa",
-  y: "#6aa276",
-  n: "#d99d3d",
-  u: "#8e6a96",
-  v: "#4b4845",
-  z: "#ad9a80",
-  f: "#64a09a",
-  i: "#528b87",
-  t: "#c4a45a",
-  w: "#b97b87",
-  x: "#607797",
+  p: "#d7625a",
+  l: "#4f7ebb",
+  y: "#6ba879",
+  n: "#d87932",
+  u: "#916ca8",
+  v: "#4e4c49",
+  z: "#a99378",
+  f: "#55aaa1",
+  i: "#2f7888",
+  t: "#b3a041",
+  w: "#be7f90",
+  x: "#635ca7",
 };
 
 export const legacyPieceIdAliases: Record<string, string> = {
