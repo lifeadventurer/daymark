@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import { getBoardBounds } from "../engine/board";
+import { getBoardBounds, getBoardCell } from "../engine/board";
 import { getPlacementCells } from "../engine/placement";
 import type {
   BoardDefinition,
@@ -55,7 +55,7 @@ function getGridPointFromClient(clientX: number, clientY: number) {
 
   const logicalWidth = bounds.value.maxX - bounds.value.minX + 1.24;
   const logicalHeight = bounds.value.maxY - bounds.value.minY + 1.24;
-  return {
+  const point = {
     x:
       ((clientX - rect.left) / rect.width) * logicalWidth +
       bounds.value.minX -
@@ -65,6 +65,13 @@ function getGridPointFromClient(clientX: number, clientY: number) {
       bounds.value.minY -
       0.12,
   };
+
+  return getBoardCell(props.board, {
+    x: Math.floor(point.x),
+    y: Math.floor(point.y),
+  })
+    ? point
+    : undefined;
 }
 
 function handlePieceKeydown(event: KeyboardEvent, pieceId: string) {
