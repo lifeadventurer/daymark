@@ -503,24 +503,6 @@ onBeforeUnmount(cancelDrag);
       </a>
     </header>
 
-    <section class="intro" aria-label="Puzzle date">
-      <div class="date-control">
-        <div class="date-row">
-          <span class="date-display"
-            >{{ dateContext.weekdayName }}, {{ dateContext.monthName }}
-            {{ dateContext.dateNumber }}</span
-          >
-          <input
-            id="date-picker"
-            :value="dateContext.isoDate"
-            type="date"
-            aria-label="Choose puzzle date"
-            @change="updateDate"
-          />
-        </div>
-      </div>
-    </section>
-
     <section class="puzzle-layout" aria-label="Daymark puzzle">
       <div class="board-column">
         <span class="sr-only" aria-live="polite">
@@ -530,6 +512,8 @@ onBeforeUnmount(cancelDrag);
           ref="boardRef"
           :board="temporaryBoard"
           :target-date="dateContext.dateNumber"
+          :month-name="dateContext.monthName"
+          :date-value="dateContext.isoDate"
           :placed-pieces="placedPieces"
           :preview="
             draggedPiece && previewPlacement
@@ -541,6 +525,7 @@ onBeforeUnmount(cancelDrag);
               : null
           "
           :preview-valid="previewValid"
+          @date-change="updateDate"
           @drag-start="startPlacedDrag"
           @select-piece="selectPlacedPiece"
           @nudge="nudgePlacedPiece"

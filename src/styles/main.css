@@ -63,8 +63,7 @@ button {
 }
 
 .topbar,
-.side-actions,
-.date-row {
+.side-actions {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -96,27 +95,6 @@ button {
   flex: 0 0 auto;
   overflow: visible;
 }
-.intro {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  flex: none;
-  padding: 14px 8.5% 18px;
-}
-.date-control {
-  width: auto;
-}
-.date-row {
-  gap: 10px;
-  padding-bottom: 0;
-}
-.date-display {
-  color: #253028;
-  font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
-  font-size: 17px;
-  letter-spacing: -0.035em;
-  white-space: nowrap;
-}
 input[type="date"] {
   width: 26px;
   height: 28px;
@@ -139,6 +117,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   align-items: stretch;
   flex: 1;
   min-height: 0;
+  margin-top: clamp(18px, 3vh, 32px);
   padding: 0 8.5%;
 }
 .board-column {
@@ -152,7 +131,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   flex: 1;
   min-height: 0;
   display: flex;
-  align-items: center;
+  flex-direction: column;
   padding: clamp(16px, 2vw, 30px);
   border: 1px solid #e4e1d8;
   border-radius: 27px;
@@ -160,6 +139,36 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   box-shadow:
     0 20px 42px rgba(50, 53, 44, 0.07),
     inset 0 1px rgba(255, 255, 255, 0.7);
+}
+.board-heading {
+  position: relative;
+  display: flex;
+  flex: none;
+  min-height: 30px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-bottom: 10px;
+}
+.board-heading__month {
+  color: #253028;
+  font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  font-size: clamp(19px, 2.2vw, 25px);
+  letter-spacing: -0.04em;
+  white-space: nowrap;
+}
+.board-heading input[type="date"] {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+}
+.board-graphic {
+  display: flex;
+  min-height: 0;
+  flex: 1;
+  align-items: center;
+  width: 100%;
 }
 .board-svg {
   display: block;
@@ -444,13 +453,6 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     overflow: visible;
     padding-top: 21px;
   }
-  .intro {
-    align-items: end;
-    padding: 20px 0 24px;
-  }
-  .date-control {
-    width: min(100%, 340px);
-  }
   .puzzle-layout {
     display: block;
     flex: none;
@@ -466,10 +468,6 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     min-height: 620px;
     padding-top: 17px;
     padding-bottom: 12px;
-  }
-  .intro {
-    padding-top: 20px;
-    padding-bottom: 18px;
   }
   .piece-tile {
     min-height: 88px;

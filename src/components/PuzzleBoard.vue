@@ -17,6 +17,8 @@ interface BoardPiece {
 const props = defineProps<{
   board: BoardDefinition;
   targetDate: number;
+  monthName: string;
+  dateValue: string;
   placedPieces: BoardPiece[];
   preview: BoardPiece | null;
   previewValid: boolean;
@@ -26,6 +28,7 @@ const emit = defineEmits<{
   "drag-start": [pieceId: string, event: PointerEvent];
   "select-piece": [pieceId: string];
   nudge: [pieceId: string, delta: { x: number; y: number }];
+  "date-change": [event: Event];
 }>();
 
 const svgRef = ref<SVGSVGElement | null>(null);
@@ -98,99 +101,112 @@ defineExpose({ getGridPointFromClient });
 
 <template>
   <div class="board-shell">
-    <svg
-      ref="svgRef"
-      class="board-svg"
-      :viewBox="viewBox"
-      role="img"
-      :aria-label="`Calendar puzzle board. Leave date ${targetDate} open.`"
-    >
-      <defs>
-        <filter id="cell-shadow" x="-30%" y="-30%" width="160%" height="170%">
-          <feDropShadow
-            dx="0"
-            dy="0.07"
-            stdDeviation="0.06"
-            flood-color="#17211c"
-            flood-opacity="0.14"
-          />
-        </filter>
-      </defs>
-      <g filter="url(#cell-shadow)">
-        <g v-for="cell in board.cells" :key="`${cell.x}-${cell.y}`">
+    <div class="board-heading">
+      <span class="board-heading__month" aria-live="polite">
+        {{ monthName }}
+      </span>
+      <input
+        :value="dateValue"
+        type="date"
+        aria-label="Choose puzzle date"
+        @change="emit('date-change', $event)"
+      />
+    </div>
+    <div class="board-graphic">
+      <svg
+        ref="svgRef"
+        class="board-svg"
+        :viewBox="viewBox"
+        role="img"
+        :aria-label="`Calendar puzzle board. Leave date ${targetDate} open.`"
+      >
+        <defs>
+          <filter id="cell-shadow" x="-30%" y="-30%" width="160%" height="170%">
+            <feDropShadow
+              dx="0"
+              dy="0.07"
+              stdDeviation="0.06"
+              flood-color="#17211c"
+              flood-opacity="0.14"
+            />
+          </filter>
+        </defs>
+        <g filter="url(#cell-shadow)">
+          <g v-for="cell in board.cells" :key="`${cell.x}-${cell.y}`">
+            <rect
+              :x="cell.x + 0.045"
+              :y="cell.y + 0.045"
+              width="0.91"
+              height="0.91"
+              rx="0.16"
+              :class="[
+                'board-cell',
+                {
+                  'board-cell--target': cell.date === targetDate,
+                  'board-cell--blank': cell.playable === false,
+                },
+              ]"
+            />
+            <text
+              v-if="cell.date !== undefined"
+              :x="cell.x + 0.5"
+              :y="cell.y + 0.59"
+              text-anchor="middle"
+              :class="[
+                'board-number',
+                { 'board-number--target': cell.date === targetDate },
+              ]"
+            >
+              {{ cell.date }}
+            </text>
+            <circle
+              v-if="cell.date === targetDate"
+              :cx="cell.x + 0.5"
+              :cy="cell.y + 0.81"
+              r="0.025"
+              class="target-dot"
+            />
+          </g>
+        </g>
+        <g
+          v-for="boardPiece in placedPieces"
+          :key="boardPiece.piece.id"
+          class="placed-piece"
+          role="button"
+          tabindex="0"
+          :aria-label="`Placed ${boardPiece.piece.id} piece. Use arrow keys to move.`"
+          @pointerdown="emit('drag-start', boardPiece.piece.id, $event)"
+          @keydown="handlePieceKeydown($event, boardPiece.piece.id)"
+        >
           <rect
-            :x="cell.x + 0.045"
-            :y="cell.y + 0.045"
-            width="0.91"
-            height="0.91"
-            rx="0.16"
-            :class="[
-              'board-cell',
-              {
-                'board-cell--target': cell.date === targetDate,
-                'board-cell--blank': cell.playable === false,
-              },
-            ]"
-          />
-          <text
-            v-if="cell.date !== undefined"
-            :x="cell.x + 0.5"
-            :y="cell.y + 0.59"
-            text-anchor="middle"
-            :class="[
-              'board-number',
-              { 'board-number--target': cell.date === targetDate },
-            ]"
-          >
-            {{ cell.date }}
-          </text>
-          <circle
-            v-if="cell.date === targetDate"
-            :cx="cell.x + 0.5"
-            :cy="cell.y + 0.81"
-            r="0.025"
-            class="target-dot"
+            v-for="cell in placementCells(boardPiece)"
+            :key="`${boardPiece.piece.id}-${cell.x}-${cell.y}`"
+            :x="cell.x + 0.055"
+            :y="cell.y + 0.055"
+            width="0.89"
+            height="0.89"
+            rx="0.15"
+            :fill="boardPiece.color"
           />
         </g>
-      </g>
-      <g
-        v-for="boardPiece in placedPieces"
-        :key="boardPiece.piece.id"
-        class="placed-piece"
-        role="button"
-        tabindex="0"
-        :aria-label="`Placed ${boardPiece.piece.id} piece. Use arrow keys to move.`"
-        @pointerdown="emit('drag-start', boardPiece.piece.id, $event)"
-        @keydown="handlePieceKeydown($event, boardPiece.piece.id)"
-      >
-        <rect
-          v-for="cell in placementCells(boardPiece)"
-          :key="`${boardPiece.piece.id}-${cell.x}-${cell.y}`"
-          :x="cell.x + 0.055"
-          :y="cell.y + 0.055"
-          width="0.89"
-          height="0.89"
-          rx="0.15"
-          :fill="boardPiece.color"
-        />
-      </g>
-      <g
-        v-if="preview"
-        class="preview-piece"
-        :class="{ 'preview-piece--invalid': !previewValid }"
-        aria-hidden="true"
-      >
-        <rect
-          v-for="cell in placementCells(preview)"
-          :key="`preview-${cell.x}-${cell.y}`"
-          :x="cell.x + 0.055"
-          :y="cell.y + 0.055"
-          width="0.89"
-          height="0.89"
-          rx="0.15"
-          :fill="preview.color"
-        />
-      </g>
-    </svg>
+        <g
+          v-if="preview"
+          class="preview-piece"
+          :class="{ 'preview-piece--invalid': !previewValid }"
+          aria-hidden="true"
+        >
+          <rect
+            v-for="cell in placementCells(preview)"
+            :key="`preview-${cell.x}-${cell.y}`"
+            :x="cell.x + 0.055"
+            :y="cell.y + 0.055"
+            width="0.89"
+            height="0.89"
+            rx="0.15"
+            :fill="preview.color"
+          />
+        </g>
+      </svg>
+    </div>
   </div>
 </template>
