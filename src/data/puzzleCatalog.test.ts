@@ -13,7 +13,9 @@ import type {
 import {
   calendar31Board,
   calendar31PuzzleRules,
+  calendarBoardVariants,
   difficultyDefinitions,
+  weekdayNames,
 } from "./puzzleCatalog";
 import { pieceDefinitions } from "./pieces";
 
@@ -135,6 +137,23 @@ function hasSolution(targetDate: number, pieces: PieceDefinition[]): boolean {
 }
 
 describe("calendar puzzle difficulties", () => {
+  it("uses a zero-based weekday index for the current board catalog", () => {
+    const currentBoard = calendarBoardVariants["31-0"];
+
+    expect(weekdayNames).toEqual([
+      "sunday",
+      "monday",
+      "tuesday",
+      "wednesday",
+      "thursday",
+      "friday",
+      "saturday",
+    ]);
+    expect(currentBoard.daysInMonth).toBe(31);
+    expect(currentBoard.startsOnWeekday).toBe(0);
+    expect(currentBoard.cells).toHaveLength(31);
+  });
+
   it("keeps the hard seven-piece pool solvable for every date", () => {
     const hardPieces = pieceDefinitions.filter((piece) =>
       difficultyDefinitions.hard.pieceIds.includes(piece.id),

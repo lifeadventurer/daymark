@@ -1,6 +1,6 @@
 import { createBoardDefinition } from "../engine/board";
 import type { BoardDefinition } from "../engine/types";
-import calendar31Catalog from "./puzzles/calendar-31.json";
+import calendarPuzzleCatalog from "./puzzles/calendar-puzzles.json";
 
 export type PuzzleDifficulty = "easy" | "medium" | "hard";
 
@@ -11,8 +11,12 @@ export interface PuzzleDifficultyDefinition {
   pieceIds: string[];
 }
 
+export const weekdayNames = calendarPuzzleCatalog.weekdayIndex;
+export const calendarBoardVariants = calendarPuzzleCatalog.boards;
+const calendar31Catalog = calendarBoardVariants["31-0"];
+
 export const calendar31Board: BoardDefinition = createBoardDefinition(
-  calendar31Catalog.id,
+  "calendar-31-start-sunday",
   calendar31Catalog.cells,
 );
 

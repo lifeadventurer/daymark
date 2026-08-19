@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "weekdayIndex": [
+    "sunday",
+    "monday",
+    "tuesday",
+    "wednesday",
+    "thursday",
+    "friday",
+    "saturday"
+  ],
+  "boards": {
+    "31-0": {
+      "daysInMonth": 31,
+      "startsOnWeekday": 0,
+      "requiredPieceCount": 6,
+      "cells": [
+        { "x": 0, "y": 0, "date": 1 },
+        { "x": 1, "y": 0, "date": 2 },
+        { "x": 2, "y": 0, "date": 3 },
+        { "x": 3, "y": 0, "date": 4 },
+        { "x": 4, "y": 0, "date": 5 },
+        { "x": 5, "y": 0, "date": 6 },
+        { "x": 6, "y": 0, "date": 7 },
+        { "x": 0, "y": 1, "date": 8 },
+        { "x": 1, "y": 1, "date": 9 },
+        { "x": 2, "y": 1, "date": 10 },
+        { "x": 3, "y": 1, "date": 11 },
+        { "x": 4, "y": 1, "date": 12 },
+        { "x": 5, "y": 1, "date": 13 },
+        { "x": 6, "y": 1, "date": 14 },
+        { "x": 0, "y": 2, "date": 15 },
+        { "x": 1, "y": 2, "date": 16 },
+        { "x": 2, "y": 2, "date": 17 },
+        { "x": 3, "y": 2, "date": 18 },
+        { "x": 4, "y": 2, "date": 19 },
+        { "x": 5, "y": 2, "date": 20 },
+        { "x": 6, "y": 2, "date": 21 },
+        { "x": 0, "y": 3, "date": 22 },
+        { "x": 1, "y": 3, "date": 23 },
+        { "x": 2, "y": 3, "date": 24 },
+        { "x": 3, "y": 3, "date": 25 },
+        { "x": 4, "y": 3, "date": 26 },
+        { "x": 5, "y": 3, "date": 27 },
+        { "x": 6, "y": 3, "date": 28 },
+        { "x": 0, "y": 4, "date": 29 },
+        { "x": 1, "y": 4, "date": 30 },
+        { "x": 2, "y": 4, "date": 31 }
+      ],
+      "difficulties": {
+        "easy": {
+          "label": "Easy",
+          "description": "All pieces are available.",
+          "pieceIds": [
+            "p",
+            "l",
+            "y",
+            "n",
+            "u",
+            "v",
+            "z",
+            "f",
+            "i",
+            "t",
+            "w",
+            "x"
+          ]
+        },
+        "medium": {
+          "label": "Medium",
+          "description": "A wider selection of pieces is available.",
+          "pieceIds": ["p", "l", "y", "n", "u", "v", "z", "f", "i"]
+        },
+        "hard": {
+          "label": "Hard",
+          "description": "Choose six pieces from the seven-piece challenge set.",
+          "pieceIds": ["p", "l", "y", "n", "u", "v", "z"]
+        }
+      }
+    }
+  }
+}
