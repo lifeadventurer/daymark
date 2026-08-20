@@ -63,6 +63,7 @@ const completionCelebration = ref(false);
 const completedAt = ref<string | null>(null);
 const records = ref(loadRecordStore());
 const pieceOrientations = ref<Record<string, number>>({});
+const handledOrientationShortcuts = new Set<string>();
 const DevelopmentScenarioPicker = import.meta.env.DEV
   ? defineAsyncComponent(() => import("./dev/DevelopmentScenarioPicker.vue"))
   : null;
@@ -519,7 +520,26 @@ function isTextEntryTarget(target: EventTarget | null): boolean {
   );
 }
 
-function handleGlobalKeydown(event: KeyboardEvent) {
+function getOrientationAction(
+  event: KeyboardEvent,
+): OrientationAction | undefined {
+  const key = event.key.toLowerCase();
+  return key === "r"
+    ? event.shiftKey
+      ? "rotate-left"
+      : "rotate-right"
+    : key === "h"
+      ? "flip-horizontal"
+      : key === "v"
+        ? "flip-vertical"
+        : undefined;
+}
+
+function getOrientationShortcutKey(event: KeyboardEvent): string {
+  return `${event.key.toLowerCase()}:${event.shiftKey ? "shift" : "plain"}`;
+}
+
+function shouldIgnoreOrientationShortcut(event: KeyboardEvent): boolean {
   if (
     event.defaultPrevented ||
     event.ctrlKey ||
@@ -527,24 +547,36 @@ function handleGlobalKeydown(event: KeyboardEvent) {
     event.altKey ||
     isTextEntryTarget(event.target)
   ) {
-    return;
+    return true;
   }
+  return false;
+}
 
-  const key = event.key.toLowerCase();
-  const action: OrientationAction | undefined =
-    key === "r"
-      ? event.shiftKey
-        ? "rotate-left"
-        : "rotate-right"
-      : key === "h"
-        ? "flip-horizontal"
-        : key === "v"
-          ? "flip-vertical"
-          : undefined;
+function handleGlobalKeydown(event: KeyboardEvent) {
+  if (shouldIgnoreOrientationShortcut(event)) return;
+
+  const action = getOrientationAction(event);
+  if (!action || !selectedPieceId.value) return;
+
+  event.preventDefault();
+  handledOrientationShortcuts.add(getOrientationShortcutKey(event));
+  changeSelectedOrientation(action);
+}
+
+function handleGlobalKeyup(event: KeyboardEvent) {
+  const shortcutKey = getOrientationShortcutKey(event);
+  if (handledOrientationShortcuts.delete(shortcutKey)) return;
+  if (shouldIgnoreOrientationShortcut(event)) return;
+
+  const action = getOrientationAction(event);
   if (!action || !selectedPieceId.value) return;
 
   event.preventDefault();
   changeSelectedOrientation(action);
+}
+
+function clearHandledOrientationShortcuts() {
+  handledOrientationShortcuts.clear();
 }
 
 function handlePointerMove(event: PointerEvent) {
@@ -784,10 +816,14 @@ loadPuzzleForDate(dateContext.value.isoDate);
 
 onMounted(() => {
   window.addEventListener("keydown", handleGlobalKeydown, true);
+  window.addEventListener("keyup", handleGlobalKeyup, true);
+  window.addEventListener("blur", clearHandledOrientationShortcuts);
 });
 
 onBeforeUnmount(() => {
   window.removeEventListener("keydown", handleGlobalKeydown, true);
+  window.removeEventListener("keyup", handleGlobalKeyup, true);
+  window.removeEventListener("blur", clearHandledOrientationShortcuts);
   cancelDrag();
   stopCompletionCelebration();
 });
