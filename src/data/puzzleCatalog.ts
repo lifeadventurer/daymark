@@ -1,6 +1,7 @@
 import { createBoardDefinition } from "../engine/board";
 import type { BoardDefinition } from "../engine/types";
 import calendarPuzzleCatalog from "./puzzles/calendar-puzzles.json";
+import { calendar29BoardVariants } from "./puzzles/calendar-29-puzzles";
 import { calendar30BoardVariants } from "./puzzles/calendar-30-puzzles";
 
 export type PuzzleDifficulty = "easy" | "medium" | "hard";
@@ -32,6 +33,7 @@ export const weekdayNames = calendarPuzzleCatalog.weekdayIndex;
 export const calendarBoardVariants = {
   ...calendarPuzzleCatalog.boards,
   ...calendar30BoardVariants,
+  ...calendar29BoardVariants,
 };
 
 export type CalendarBoardKey = keyof typeof calendarBoardVariants;

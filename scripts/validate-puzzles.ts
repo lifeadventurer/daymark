@@ -86,6 +86,24 @@ for (const [boardKey, boardConfig] of Object.entries(calendarBoardVariants)) {
         failures.push(`${replacementLabel}: source piece does not exist`);
         continue;
       }
+      const sourceMissingFromPool = Object.values(
+        boardConfig.difficulties,
+      ).some((difficultyConfig) => {
+        const piecePools =
+          "piecePools" in difficultyConfig
+            ? difficultyConfig.piecePools
+            : "pieceIds" in difficultyConfig
+              ? [difficultyConfig.pieceIds]
+              : [];
+        return piecePools.some(
+          (piecePool) => !piecePool.includes(sourcePieceId),
+        );
+      });
+      if (sourceMissingFromPool) {
+        failures.push(
+          `${replacementLabel}: source piece must be present in every configured pool`,
+        );
+      }
       if (replacementIds.length === 0) {
         failures.push(`${replacementLabel}: replacement list is empty`);
         continue;

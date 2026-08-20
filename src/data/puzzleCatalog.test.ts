@@ -18,7 +18,7 @@ describe("calendar puzzle catalog", () => {
     expect(getCalendarBoardKeyForDate(new Date(2026, 7, 20))).toBe("31-6");
     expect(getCalendarBoardKeyForDate(new Date(2026, 0, 15))).toBe("31-4");
     expect(getCalendarBoardKeyForDate(new Date(2026, 3, 15))).toBe("30-3");
-    expect(getCalendarBoardKeyForDate(new Date(2028, 1, 15))).toBeUndefined();
+    expect(getCalendarBoardKeyForDate(new Date(2028, 1, 15))).toBe("29-2");
   });
 
   it("uses a zero-based weekday index for the current board catalog", () => {
@@ -61,8 +61,15 @@ describe("calendar puzzle catalog", () => {
       "30-4",
       "30-5",
       "30-6",
+      "29-0",
+      "29-1",
+      "29-2",
+      "29-3",
+      "29-4",
+      "29-5",
+      "29-6",
     ]);
-    expect(calendarBoardOptions.at(-1)?.label).toBe("30 days · Saturday start");
+    expect(calendarBoardOptions.at(-1)?.label).toBe("29 days · Saturday start");
     expect(getCalendarPuzzleConfiguration("31-0").board.id).toBe(
       "calendar-31-0",
     );
@@ -77,6 +84,26 @@ describe("calendar puzzle catalog", () => {
     expect(saturday30.dateRules[23]?.requiredPieceCount).toBe(7);
     expect(saturday30.dateRules[3]).toBeUndefined();
     expect(saturday30.dateRules[28]).toBeUndefined();
+    const saturday29 = getCalendarPuzzleConfiguration("29-6");
+    expect(saturday29.daysInMonth).toBe(29);
+    expect(saturday29.startsOnWeekday).toBe(6);
+    expect(
+      saturday29.board.cells.filter((cell) => cell.date !== undefined),
+    ).toHaveLength(29);
+    expect(saturday29.dateRules[8]?.requiredPieceCount).toBe(7);
+    expect(
+      getCalendarPuzzleConfiguration("29-0").dateRules[22]?.requiredPieceCount,
+    ).toBe(7);
+    expect(
+      saturday29.difficultyDefinitions.hard.piecePools.every(
+        (pool) =>
+          pool.filter(
+            (pieceId) =>
+              pieceDefinitions.find((piece) => piece.id === pieceId)?.cells
+                .length === 4,
+          ).length === 2,
+      ),
+    ).toBe(true);
     expect(
       getCalendarPuzzleConfiguration("31-0").difficultyDefinitions.hard
         .piecePools,
