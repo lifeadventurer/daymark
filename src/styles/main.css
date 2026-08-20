@@ -200,6 +200,11 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   stroke: #d9674a;
   stroke-width: 0.04;
 }
+.board-cell--blank {
+  fill: transparent;
+  stroke: transparent;
+  pointer-events: none;
+}
 .board-number {
   fill: #5c665d;
   font-family:
@@ -309,6 +314,29 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .side-panel {
   min-height: 0;
   padding-top: 0;
+}
+.board-picker {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 0 14px;
+  color: #4f5b52;
+  font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  font-size: 15px;
+}
+.board-picker select {
+  min-width: 178px;
+  padding: 6px 28px 6px 9px;
+  border: 1px solid #d7dad1;
+  border-radius: 8px;
+  background: #fffdf8;
+  color: #4f5b52;
+  font-size: 14px;
+}
+.board-picker select:focus-visible {
+  outline: 2px solid rgba(214, 109, 77, 0.72);
+  outline-offset: 2px;
 }
 .difficulty-picker {
   margin: 0 0 14px;

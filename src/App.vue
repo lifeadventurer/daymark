@@ -4,11 +4,11 @@ import DaymarkMark from "./components/DaymarkMark.vue";
 import PuzzleBoard from "./components/PuzzleBoard.vue";
 import PieceTray from "./components/PieceTray.vue";
 import {
-  difficultyDefinitions,
-  difficultyOptions,
+  activeCalendarBoardKey,
+  calendarBoardOptions,
+  getCalendarPuzzleConfiguration,
+  type CalendarBoardKey,
   type PuzzleDifficulty,
-  calendar31Board,
-  calendar31PuzzleRules,
 } from "./data/puzzleCatalog";
 import {
   legacyPieceIdAliases,
@@ -33,6 +33,7 @@ import {
 } from "./utils/storage";
 
 const selectedDate = ref(new Date());
+const selectedBoardKey = ref<CalendarBoardKey>(activeCalendarBoardKey);
 const selectedDifficulty = ref<PuzzleDifficulty>("hard");
 const selectedPieceId = ref<string | null>(null);
 const placedPieces = ref<RenderedPiece[]>([]);
@@ -49,7 +50,17 @@ const completionCelebration = ref(false);
 const completedAt = ref<string | null>(null);
 const records = ref(loadRecordStore());
 const pieceOrientations = ref<Record<string, number>>({});
-const pieceLimit = calendar31PuzzleRules.requiredPieceCount;
+const currentPuzzle = computed(() =>
+  getCalendarPuzzleConfiguration(selectedBoardKey.value),
+);
+const calendarBoard = computed(() => currentPuzzle.value.board);
+const difficultyDefinitions = computed(
+  () => currentPuzzle.value.difficultyDefinitions,
+);
+const difficultyOptions = computed(() =>
+  Object.values(difficultyDefinitions.value),
+);
+const pieceLimit = computed(() => currentPuzzle.value.requiredPieceCount);
 let completionCelebrationTimer: ReturnType<typeof setTimeout> | undefined;
 const boardRef = ref<{
   getGridPointFromClient: (
@@ -59,7 +70,7 @@ const boardRef = ref<{
 } | null>(null);
 const dateContext = computed(() => getDateContext(selectedDate.value));
 const currentDifficulty = computed(
-  () => difficultyDefinitions[selectedDifficulty.value],
+  () => difficultyDefinitions.value[selectedDifficulty.value],
 );
 const availablePieces = computed(() => {
   const availableIds = new Set(currentDifficulty.value.pieceIds);
@@ -114,7 +125,7 @@ const boardStatus = computed(() => {
       : "That spot is blocked";
   if (draggingPieceId.value) return "Drag onto the canvas";
   return placedPieces.value.length
-    ? `${placedPieces.value.length} of ${pieceLimit} selected`
+    ? `${placedPieces.value.length} of ${pieceLimit.value} selected`
     : "Ready to arrange";
 });
 
@@ -144,6 +155,35 @@ function changeDifficulty(nextDifficulty: PuzzleDifficulty) {
   selectedDifficulty.value = nextDifficulty;
   selectedPieceId.value = null;
   loadPuzzleForDate(dateContext.value.isoDate, nextDifficulty);
+}
+
+function changeBoard(nextBoardKey: CalendarBoardKey) {
+  if (selectedBoardKey.value === nextBoardKey) return;
+
+  endDrag();
+  saveCurrentPuzzle();
+  const nextPuzzle = getCalendarPuzzleConfiguration(nextBoardKey);
+  selectedBoardKey.value = nextBoardKey;
+  selectedPieceId.value = null;
+  if (dateContext.value.dateNumber > nextPuzzle.daysInMonth) {
+    selectedDate.value = new Date(
+      selectedDate.value.getFullYear(),
+      selectedDate.value.getMonth(),
+      nextPuzzle.daysInMonth,
+    );
+  }
+  loadPuzzleForDate(dateContext.value.isoDate);
+}
+
+function updateBoard(event: Event) {
+  const input = event.target;
+  if (!(input instanceof HTMLSelectElement)) return;
+
+  const nextBoardKey = input.value as CalendarBoardKey;
+  if (!calendarBoardOptions.some((option) => option.key === nextBoardKey)) {
+    return;
+  }
+  changeBoard(nextBoardKey);
 }
 
 function resetPuzzle() {
@@ -187,7 +227,7 @@ function startDrag(pieceId: string, event: PointerEvent) {
     !piece ||
     piece.enabled === false ||
     placedPieceIds.value.includes(pieceId) ||
-    placedPieces.value.length >= pieceLimit
+    placedPieces.value.length >= pieceLimit.value
   )
     return;
 
@@ -231,7 +271,7 @@ function nudgePlacedPiece(pieceId: string, delta: GridPoint) {
     .map(({ placement }) => placement);
   if (
     !isPlacementLegal(
-      calendar31Board,
+      calendarBoard.value,
       renderedPiece.piece,
       candidatePlacement,
       otherPlacements,
@@ -325,7 +365,7 @@ function changeSelectedOrientation(
       .filter((_, index) => index !== placedIndex)
       .map(({ placement }) => placement);
     const isLegal = isPlacementLegal(
-      calendar31Board,
+      calendarBoard.value,
       piece,
       candidatePlacement,
       otherPlacements,
@@ -384,7 +424,7 @@ function handlePointerMove(event: PointerEvent) {
 
   previewPlacement.value = placement;
   previewValid.value = isPlacementLegal(
-    calendar31Board,
+    calendarBoard.value,
     draggedPiece.value,
     placement,
     placedPieces.value.map(({ placement: existing }) => existing),
@@ -445,9 +485,9 @@ function cancelDrag() {
 function evaluateCompletion(shouldCelebrate = true) {
   const wasComplete = completed.value;
   const isComplete =
-    placedPieces.value.length === pieceLimit &&
+    placedPieces.value.length === pieceLimit.value &&
     isBoardStateLegal(
-      calendar31Board,
+      calendarBoard.value,
       availablePiecesById.value,
       placedPieces.value.map(({ placement }) => placement),
       dateContext.value.dateNumber,
@@ -461,6 +501,14 @@ function evaluateCompletion(shouldCelebrate = true) {
 }
 
 function getPuzzleStorageKey(
+  boardKey: CalendarBoardKey,
+  dateKey: string,
+  difficulty: PuzzleDifficulty,
+): string {
+  return `${boardKey}:${dateKey}:${difficulty}`;
+}
+
+function getLegacyPuzzleStorageKey(
   dateKey: string,
   difficulty: PuzzleDifficulty,
 ): string {
@@ -485,7 +533,8 @@ function saveCurrentPuzzle(
     ...records.value,
     puzzles: {
       ...records.value.puzzles,
-      [getPuzzleStorageKey(dateKey, difficulty)]: puzzle,
+      [getPuzzleStorageKey(selectedBoardKey.value, dateKey, difficulty)]:
+        puzzle,
     },
   };
   saveRecordStore(records.value);
@@ -495,15 +544,26 @@ function loadPuzzleForDate(
   dateKey: string,
   difficulty = selectedDifficulty.value,
 ) {
+  const boardSpecificSaved =
+    records.value.puzzles[
+      getPuzzleStorageKey(selectedBoardKey.value, dateKey, difficulty)
+    ];
   const saved =
-    records.value.puzzles[getPuzzleStorageKey(dateKey, difficulty)] ??
-    (difficulty === "hard" ? records.value.puzzles[dateKey] : undefined);
+    boardSpecificSaved ??
+    // Older records were created before board variants were namespaced and
+    // belong to the original Sunday-start layout.
+    (selectedBoardKey.value === "31-0"
+      ? (records.value.puzzles[
+          getLegacyPuzzleStorageKey(dateKey, difficulty)
+        ] ??
+        (difficulty === "hard" ? records.value.puzzles[dateKey] : undefined))
+      : undefined);
   const piecesById = availablePiecesById.value;
   const nextPlacements: RenderedPiece[] = [];
   const nextOrientations: Record<string, number> = {};
-  let savedStateValid = !saved || saved.placements.length <= pieceLimit;
+  let savedStateValid = !saved || saved.placements.length <= pieceLimit.value;
 
-  if (saved && saved.placements.length <= pieceLimit) {
+  if (saved && saved.placements.length <= pieceLimit.value) {
     for (const savedPlacement of saved.placements) {
       const pieceId =
         legacyPieceIdAliases[savedPlacement.pieceId] ?? savedPlacement.pieceId;
@@ -529,7 +589,7 @@ function loadPuzzleForDate(
       };
       if (
         !isPlacementLegal(
-          calendar31Board,
+          calendarBoard.value,
           piece,
           placement,
           nextPlacements.map(({ placement: existing }) => existing),
@@ -610,7 +670,7 @@ onBeforeUnmount(() => {
         </span>
         <PuzzleBoard
           ref="boardRef"
-          :board="calendar31Board"
+          :board="calendarBoard"
           :target-date="dateContext.dateNumber"
           :month-name="dateContext.monthName"
           :date-value="dateContext.isoDate"
@@ -642,6 +702,22 @@ onBeforeUnmount(() => {
       </div>
 
       <aside class="side-panel">
+        <label class="board-picker">
+          <span>Board</span>
+          <select
+            :value="selectedBoardKey"
+            aria-label="Choose board layout"
+            @change="updateBoard"
+          >
+            <option
+              v-for="boardOption in calendarBoardOptions"
+              :key="boardOption.key"
+              :value="boardOption.key"
+            >
+              {{ boardOption.label }}
+            </option>
+          </select>
+        </label>
         <fieldset class="difficulty-picker">
           <legend>Difficulty</legend>
           <div class="difficulty-picker__options">
