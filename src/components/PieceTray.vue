@@ -16,7 +16,9 @@ const props = defineProps<{
 }>();
 
 const canTransform = computed(
-  () => Boolean(props.selectedPieceId) && !props.dragging,
+  () =>
+    !props.dragging &&
+    props.pieces.some((piece) => piece.id === props.selectedPieceId),
 );
 
 const emit = defineEmits<{

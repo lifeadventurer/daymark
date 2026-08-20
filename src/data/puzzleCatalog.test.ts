@@ -6,6 +6,7 @@ import {
   calendarBoardOptions,
   calendarBoardVariants,
   getCalendarPuzzleConfiguration,
+  getPiecePoolForDate,
   weekdayNames,
 } from "./puzzleCatalog";
 import { pieceDefinitions } from "./pieces";
@@ -50,31 +51,70 @@ describe("calendar puzzle catalog", () => {
       "calendar-31-0",
     );
     expect(getCalendarPuzzleConfiguration("31-1").startsOnWeekday).toBe(1);
+    expect(
+      getCalendarPuzzleConfiguration("31-0").difficultyDefinitions.hard
+        .piecePools,
+    ).toEqual([
+      ["p", "l", "y", "n", "u", "v", "z"],
+      ["p", "l", "y", "n", "u", "v", "f"],
+      ["p", "l", "y", "n", "u", "v", "i"],
+      ["p", "l", "y", "n", "u", "z", "f"],
+      ["p", "l", "y", "n", "u", "z", "i"],
+    ]);
+    expect(
+      getCalendarPuzzleConfiguration("31-1").difficultyDefinitions.hard
+        .piecePools,
+    ).toHaveLength(5);
+    expect(
+      new Set(
+        getCalendarPuzzleConfiguration(
+          "31-1",
+        ).difficultyDefinitions.hard.piecePools.map((pool) => pool.join(",")),
+      ).size,
+    ).toBeGreaterThan(1);
   });
 
-  it("keeps the hard seven-piece pool solvable for every date", () => {
-    const difficultyDefinitions = activeCalendarPuzzle.difficultyDefinitions;
-    const hardPieces = pieceDefinitions.filter((piece) =>
-      difficultyDefinitions.hard.pieceIds.includes(piece.id),
+  it("selects a deterministic hard pool that stays solvable for every date", () => {
+    const dateKeys = Array.from(
+      { length: 31 },
+      (_, index) => `2026-08-${String(index + 1).padStart(2, "0")}`,
+    );
+    const selectedPools = dateKeys.map((dateKey) =>
+      getPiecePoolForDate(activeCalendarPuzzle, "hard", dateKey),
     );
 
-    expect(hardPieces).toHaveLength(7);
+    expect(selectedPools.every((pool) => pool.length === 7)).toBe(true);
     expect(
-      Array.from({ length: 31 }, (_, index) => index + 1).every((date) =>
-        findPuzzleSolution(
-          activeCalendarPuzzle.board,
-          hardPieces,
-          date,
-          activeCalendarPuzzle.requiredPieceCount,
-        ),
-      ),
+      getPiecePoolForDate(activeCalendarPuzzle, "hard", dateKeys[0]),
+    ).toEqual(selectedPools[0]);
+    expect(
+      new Set(selectedPools.map((pool) => pool.join(","))).size,
+    ).toBeGreaterThan(1);
+    expect(
+      dateKeys.every((_dateKey, index) => {
+        const hardPieces = pieceDefinitions.filter((piece) =>
+          selectedPools[index].includes(piece.id),
+        );
+        return Boolean(
+          findPuzzleSolution(
+            activeCalendarPuzzle.board,
+            hardPieces,
+            index + 1,
+            activeCalendarPuzzle.requiredPieceCount,
+          ),
+        );
+      }),
     ).toBe(true);
   }, 30_000);
 
   it("rejects a target date that is not on the board", () => {
-    const difficultyDefinitions = activeCalendarPuzzle.difficultyDefinitions;
+    const hardPool = getPiecePoolForDate(
+      activeCalendarPuzzle,
+      "hard",
+      "2026-08-01",
+    );
     const hardPieces = pieceDefinitions.filter((piece) =>
-      difficultyDefinitions.hard.pieceIds.includes(piece.id),
+      hardPool.includes(piece.id),
     );
 
     expect(
@@ -90,23 +130,27 @@ describe("calendar puzzle catalog", () => {
   it("keeps easier difficulties as supersets of the hard pool", () => {
     const difficultyDefinitions = activeCalendarPuzzle.difficultyDefinitions;
     expect(
-      difficultyDefinitions.medium.pieceIds.every((pieceId) =>
+      difficultyDefinitions.medium.piecePools[0].every((pieceId) =>
         pieceDefinitions.some((piece) => piece.id === pieceId),
       ),
     ).toBe(true);
     expect(
-      difficultyDefinitions.easy.pieceIds.every((pieceId) =>
+      difficultyDefinitions.easy.piecePools[0].every((pieceId) =>
         pieceDefinitions.some((piece) => piece.id === pieceId),
       ),
     ).toBe(true);
     expect(
-      difficultyDefinitions.medium.pieceIds.every((pieceId) =>
-        difficultyDefinitions.easy.pieceIds.includes(pieceId),
+      difficultyDefinitions.medium.piecePools.every((pool) =>
+        pool.every((pieceId) =>
+          difficultyDefinitions.easy.piecePools[0].includes(pieceId),
+        ),
       ),
     ).toBe(true);
     expect(
-      difficultyDefinitions.hard.pieceIds.every((pieceId) =>
-        difficultyDefinitions.medium.pieceIds.includes(pieceId),
+      difficultyDefinitions.hard.piecePools.every((pool) =>
+        pool.every((pieceId) =>
+          difficultyDefinitions.medium.piecePools[0].includes(pieceId),
+        ),
       ),
     ).toBe(true);
   });

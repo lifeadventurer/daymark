@@ -73,8 +73,14 @@
         },
         "hard": {
           "label": "Hard",
-          "description": "Choose six pieces from the seven-piece challenge set.",
-          "pieceIds": ["p", "l", "y", "n", "u", "v", "z"]
+          "description": "Choose six pieces from the selected seven-piece pool.",
+          "piecePools": [
+            ["p", "l", "y", "n", "u", "v", "z"],
+            ["p", "l", "y", "n", "u", "v", "f"],
+            ["p", "l", "y", "n", "u", "v", "i"],
+            ["p", "l", "y", "n", "u", "z", "f"],
+            ["p", "l", "y", "n", "u", "z", "i"]
+          ]
         }
       }
     },
@@ -145,8 +151,14 @@
         },
         "hard": {
           "label": "Hard",
-          "description": "Choose six pieces from the seven-piece challenge set.",
-          "pieceIds": ["p", "l", "y", "n", "u", "v", "z"]
+          "description": "Choose six pieces from the selected seven-piece pool.",
+          "piecePools": [
+            ["p", "l", "y", "n", "u", "v", "z"],
+            ["p", "l", "y", "n", "u", "v", "f"],
+            ["p", "l", "y", "n", "u", "v", "i"],
+            ["p", "l", "y", "n", "u", "z", "f"],
+            ["p", "l", "y", "n", "u", "z", "i"]
+          ]
         }
       }
     },
@@ -357,8 +369,14 @@
         },
         "hard": {
           "label": "Hard",
-          "description": "Choose six pieces from the seven-piece challenge set.",
-          "pieceIds": ["p", "l", "y", "n", "u", "v", "z"]
+          "description": "Choose six pieces from the selected seven-piece pool.",
+          "piecePools": [
+            ["p", "l", "y", "n", "u", "v", "z"],
+            ["p", "l", "y", "n", "u", "v", "f"],
+            ["p", "l", "y", "n", "u", "v", "i"],
+            ["p", "l", "y", "n", "u", "z", "f"],
+            ["p", "l", "y", "n", "u", "z", "i"]
+          ]
         }
       }
     },
@@ -569,8 +587,14 @@
         },
         "hard": {
           "label": "Hard",
-          "description": "Choose six pieces from the seven-piece challenge set.",
-          "pieceIds": ["p", "l", "y", "n", "u", "v", "z"]
+          "description": "Choose six pieces from the selected seven-piece pool.",
+          "piecePools": [
+            ["p", "l", "y", "n", "u", "v", "z"],
+            ["p", "l", "y", "n", "u", "v", "f"],
+            ["p", "l", "y", "n", "u", "v", "i"],
+            ["p", "l", "y", "n", "u", "z", "f"],
+            ["p", "l", "y", "n", "u", "z", "i"]
+          ]
         }
       }
     },
@@ -781,8 +805,14 @@
         },
         "hard": {
           "label": "Hard",
-          "description": "Choose six pieces from the seven-piece challenge set.",
-          "pieceIds": ["p", "l", "y", "n", "u", "v", "z"]
+          "description": "Choose six pieces from the selected seven-piece pool.",
+          "piecePools": [
+            ["p", "l", "y", "n", "u", "v", "z"],
+            ["p", "l", "y", "n", "u", "v", "f"],
+            ["p", "l", "y", "n", "u", "v", "i"],
+            ["p", "l", "y", "n", "u", "z", "f"],
+            ["p", "l", "y", "n", "u", "z", "i"]
+          ]
         }
       }
     },
@@ -1028,8 +1058,14 @@
         },
         "hard": {
           "label": "Hard",
-          "description": "Choose six pieces from the seven-piece challenge set.",
-          "pieceIds": ["p", "l", "y", "n", "u", "v", "z"]
+          "description": "Choose six pieces from the selected seven-piece pool.",
+          "piecePools": [
+            ["p", "l", "y", "n", "u", "v", "f"],
+            ["p", "l", "y", "n", "u", "v", "i"],
+            ["p", "l", "y", "n", "u", "z", "f"],
+            ["p", "l", "y", "n", "u", "z", "i"],
+            ["p", "l", "y", "n", "u", "f", "i"]
+          ]
         }
       }
     },
@@ -1275,8 +1311,14 @@
         },
         "hard": {
           "label": "Hard",
-          "description": "Choose six pieces from the seven-piece challenge set.",
-          "pieceIds": ["p", "l", "y", "n", "u", "v", "z"]
+          "description": "Choose six pieces from the selected seven-piece pool.",
+          "piecePools": [
+            ["p", "l", "y", "n", "u", "v", "f"],
+            ["p", "l", "y", "n", "u", "v", "i"],
+            ["p", "l", "y", "n", "u", "z", "f"],
+            ["p", "l", "y", "n", "u", "z", "i"],
+            ["p", "l", "y", "n", "u", "f", "i"]
+          ]
         }
       }
     }

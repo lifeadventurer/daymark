@@ -8,7 +8,14 @@ export interface PuzzleDifficultyDefinition {
   id: PuzzleDifficulty;
   label: string;
   description: string;
-  pieceIds: string[];
+  piecePools: string[][];
+}
+
+interface CatalogDifficultyDefinition {
+  label: string;
+  description: string;
+  pieceIds?: string[];
+  piecePools?: string[][];
 }
 
 export const weekdayNames = calendarPuzzleCatalog.weekdayIndex;
@@ -36,19 +43,56 @@ function createDifficultyDefinitions(
   const catalog = calendarBoardVariants[boardKey];
 
   return {
-    easy: {
-      id: "easy",
-      ...catalog.difficulties.easy,
-    },
-    medium: {
-      id: "medium",
-      ...catalog.difficulties.medium,
-    },
-    hard: {
-      id: "hard",
-      ...catalog.difficulties.hard,
-    },
+    easy: createDifficultyDefinition("easy", catalog.difficulties.easy),
+    medium: createDifficultyDefinition("medium", catalog.difficulties.medium),
+    hard: createDifficultyDefinition("hard", catalog.difficulties.hard),
   };
+}
+
+function createDifficultyDefinition(
+  id: PuzzleDifficulty,
+  catalogDifficulty: CatalogDifficultyDefinition,
+): PuzzleDifficultyDefinition {
+  const piecePools =
+    catalogDifficulty.piecePools ??
+    (catalogDifficulty.pieceIds ? [catalogDifficulty.pieceIds] : []);
+
+  if (piecePools.length === 0) {
+    throw new Error(`No piece pools configured for ${id} difficulty`);
+  }
+
+  return {
+    id,
+    label: catalogDifficulty.label,
+    description: catalogDifficulty.description,
+    piecePools: piecePools.map((pool) => [...pool]),
+  };
+}
+
+function stableHash(value: string): number {
+  let hash = 2166136261;
+  for (const character of value) {
+    hash ^= character.charCodeAt(0);
+    hash = Math.imul(hash, 16777619);
+  }
+  return hash >>> 0;
+}
+
+/**
+ * Select one catalog-defined pool consistently for a board, difficulty, and
+ * calendar date. The date is the seed for now; visitor-specific inputs can be
+ * added later without changing the catalog format.
+ */
+export function getPiecePoolForDate(
+  puzzle: CalendarPuzzleConfiguration,
+  difficulty: PuzzleDifficulty,
+  dateKey: string,
+): string[] {
+  const definition = puzzle.difficultyDefinitions[difficulty];
+  const poolIndex =
+    stableHash(`${puzzle.boardKey}:${difficulty}:${dateKey}`) %
+    definition.piecePools.length;
+  return [...definition.piecePools[poolIndex]];
 }
 
 function capitalize(value: string): string {

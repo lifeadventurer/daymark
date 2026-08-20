@@ -68,49 +68,64 @@ for (const [boardKey, boardConfig] of Object.entries(calendarBoardVariants)) {
   for (const [difficulty, difficultyConfig] of Object.entries(
     boardConfig.difficulties,
   )) {
-    const unknownPieceIds = difficultyConfig.pieceIds.filter(
-      (pieceId) => !piecesById.has(pieceId),
-    );
-    if (unknownPieceIds.length > 0) {
-      failures.push(
-        `${boardKey}/${difficulty}: unknown pieces ${unknownPieceIds.join(", ")}`,
-      );
-      continue;
-    }
-    if (
-      new Set(difficultyConfig.pieceIds).size !==
-      difficultyConfig.pieceIds.length
-    ) {
-      failures.push(`${boardKey}/${difficulty}: duplicate piece IDs`);
-      continue;
-    }
-    if (difficultyConfig.pieceIds.length < boardConfig.requiredPieceCount) {
-      failures.push(
-        `${boardKey}/${difficulty}: fewer available pieces than required placements`,
-      );
+    const piecePools =
+      "piecePools" in difficultyConfig
+        ? difficultyConfig.piecePools
+        : "pieceIds" in difficultyConfig
+          ? [difficultyConfig.pieceIds]
+          : [];
+    if (piecePools.length === 0) {
+      failures.push(`${boardKey}/${difficulty}: no piece pools configured`);
       continue;
     }
 
-    const availablePieces = difficultyConfig.pieceIds.map((pieceId) =>
-      piecesById.get(pieceId)!,
-    );
     let solvedDates = 0;
-    for (const targetDate of targetDates) {
-      checkedCombinations += 1;
-      const solution = findPuzzleSolution(
-        board,
-        availablePieces,
-        targetDate,
-        boardConfig.requiredPieceCount,
+    for (const [poolIndex, pieceIds] of piecePools.entries()) {
+      const poolLabel = `${boardKey}/${difficulty}/pool-${poolIndex + 1}`;
+      const unknownPieceIds = pieceIds.filter(
+        (pieceId) => !piecesById.has(pieceId),
       );
-      if (solution) {
-        solvedDates += 1;
-      } else {
-        failures.push(`${boardKey}/${difficulty}/date-${targetDate}`);
+      if (unknownPieceIds.length > 0) {
+        failures.push(
+          `${poolLabel}: unknown pieces ${unknownPieceIds.join(", ")}`,
+        );
+        continue;
+      }
+      if (new Set(pieceIds).size !== pieceIds.length) {
+        failures.push(`${poolLabel}: duplicate piece IDs`);
+        continue;
+      }
+      if (pieceIds.length < boardConfig.requiredPieceCount) {
+        failures.push(
+          `${poolLabel}: fewer available pieces than required placements`,
+        );
+        continue;
+      }
+      if (difficulty === "hard" && pieceIds.length !== 7) {
+        failures.push(`${poolLabel}: Hard pools must contain seven pieces`);
+        continue;
+      }
+
+      const availablePieces = pieceIds.map((pieceId) =>
+        piecesById.get(pieceId)!,
+      );
+      for (const targetDate of targetDates) {
+        checkedCombinations += 1;
+        const solution = findPuzzleSolution(
+          board,
+          availablePieces,
+          targetDate,
+          boardConfig.requiredPieceCount,
+        );
+        if (solution) {
+          solvedDates += 1;
+        } else {
+          failures.push(`${poolLabel}/date-${targetDate}`);
+        }
       }
     }
     console.log(
-      `  ${difficulty}: ${solvedDates}/${targetDates.length} dates solvable`,
+      `  ${difficulty}: ${solvedDates}/${piecePools.length * targetDates.length} date/pool combinations solvable across ${piecePools.length} pools`,
     );
   }
 }

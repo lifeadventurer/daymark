@@ -7,6 +7,7 @@ import {
   activeCalendarBoardKey,
   calendarBoardOptions,
   getCalendarPuzzleConfiguration,
+  getPiecePoolForDate,
   type CalendarBoardKey,
   type PuzzleDifficulty,
 } from "./data/puzzleCatalog";
@@ -69,9 +70,17 @@ const boardRef = ref<{
   ) => { x: number; y: number } | undefined;
 } | null>(null);
 const dateContext = computed(() => getDateContext(selectedDate.value));
-const currentDifficulty = computed(
-  () => difficultyDefinitions.value[selectedDifficulty.value],
-);
+const currentDifficulty = computed(() => {
+  const definition = difficultyDefinitions.value[selectedDifficulty.value];
+  return {
+    ...definition,
+    pieceIds: getPiecePoolForDate(
+      currentPuzzle.value,
+      selectedDifficulty.value,
+      dateContext.value.isoDate,
+    ),
+  };
+});
 const availablePieces = computed(() => {
   const availableIds = new Set(currentDifficulty.value.pieceIds);
   return pieceDefinitions.filter((piece) => availableIds.has(piece.id));
@@ -144,6 +153,7 @@ function updateDate(event: Event) {
   endDrag();
   saveCurrentPuzzle();
   selectedDate.value = nextDate;
+  selectedPieceId.value = null;
   loadPuzzleForDate(input.value);
 }
 
