@@ -37,6 +37,11 @@ function startDrag(event: PointerEvent) {
   event.preventDefault();
   emit("drag-start", event);
 }
+
+function preventTouchMove(event: TouchEvent) {
+  if (isDisabled.value || props.placed || !props.canPlace) return;
+  event.preventDefault();
+}
 </script>
 
 <template>
@@ -60,6 +65,7 @@ function startDrag(event: PointerEvent) {
       viewBox="-0.05 -0.05 5.1 5.1"
       aria-hidden="true"
       @pointerdown="startDrag"
+      @touchmove="preventTouchMove"
       @click.stop
     >
       <rect

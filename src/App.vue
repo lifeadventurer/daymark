@@ -418,9 +418,12 @@ function beginDrag(
   previewValid.value = Boolean(initialPlacement);
   dragMoved.value = false;
   dragOutsideBoard.value = startsOutsideBoard;
-  window.addEventListener("pointermove", handlePointerMove);
+  window.addEventListener("pointermove", handlePointerMove, {
+    passive: false,
+  });
   window.addEventListener("pointerup", endDrag);
   window.addEventListener("pointercancel", cancelDrag);
+  window.addEventListener("touchmove", preventTouchMove, { passive: false });
 }
 
 function getOrientationIndex(piece: (typeof pieceDefinitions)[number]) {
@@ -502,6 +505,7 @@ function changeSelectedOrientation(
 
 function handlePointerMove(event: PointerEvent) {
   if (!draggedPiece.value || !boardRef.value) return;
+  event.preventDefault();
 
   dragPointer.value = { x: event.clientX, y: event.clientY };
   dragMoved.value = true;
@@ -534,6 +538,10 @@ function handlePointerMove(event: PointerEvent) {
     availablePiecesById.value,
     dateContext.value.dateNumber,
   );
+}
+
+function preventTouchMove(event: TouchEvent) {
+  if (draggingPieceId.value) event.preventDefault();
 }
 
 function endDrag(_event?: PointerEvent, restorePlacedPiece = false) {
@@ -572,6 +580,7 @@ function endDrag(_event?: PointerEvent, restorePlacedPiece = false) {
   window.removeEventListener("pointermove", handlePointerMove);
   window.removeEventListener("pointerup", endDrag);
   window.removeEventListener("pointercancel", cancelDrag);
+  window.removeEventListener("touchmove", preventTouchMove);
   draggingPieceId.value = null;
   previewPlacement.value = null;
   previewValid.value = false;
