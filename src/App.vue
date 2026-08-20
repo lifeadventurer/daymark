@@ -118,6 +118,9 @@ const draggedPiece = computed(() =>
 const selectedPiece = computed(() =>
   availablePieces.value.find((piece) => piece.id === selectedPieceId.value),
 );
+const placementActive = computed(
+  () => Boolean(selectedPieceId.value) || Boolean(draggingPieceId.value),
+);
 const dragGhostOrientation = computed(() => {
   if (!draggedPiece.value) return [];
   return (
@@ -775,7 +778,7 @@ onBeforeUnmount(() => {
         :class="{
           'board-column--complete': completed && !draggingPieceId,
           'board-column--celebrate': completionCelebration,
-          'board-column--placement-ready': Boolean(selectedPieceId),
+          'board-column--placement-ready': placementActive,
         }"
       >
         <span class="sr-only" aria-live="polite">
@@ -844,7 +847,7 @@ onBeforeUnmount(() => {
 
       <aside
         class="side-panel"
-        :class="{ 'side-panel--placement-ready': Boolean(selectedPieceId) }"
+        :class="{ 'side-panel--placement-ready': placementActive }"
       >
         <DevelopmentScenarioPicker
           v-if="DevelopmentScenarioPicker && applyDevelopmentScenario"
