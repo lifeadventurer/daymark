@@ -34,7 +34,7 @@ const emit = defineEmits<{
         type="button"
         :disabled="!canTransform"
         aria-label="Rotate selected piece left"
-        title="Rotate left"
+        title="Rotate left (Shift+R)"
         @click.stop="emit('rotate-left')"
       >
         <svg class="piece-control-icon" viewBox="0 0 20 20" aria-hidden="true">
@@ -46,7 +46,7 @@ const emit = defineEmits<{
         type="button"
         :disabled="!canTransform"
         aria-label="Rotate selected piece right"
-        title="Rotate right"
+        title="Rotate right (R)"
         @click.stop="emit('rotate-right')"
       >
         <svg class="piece-control-icon" viewBox="0 0 20 20" aria-hidden="true">
@@ -58,7 +58,7 @@ const emit = defineEmits<{
         type="button"
         :disabled="!canTransform"
         aria-label="Flip selected piece horizontally"
-        title="Flip horizontally"
+        title="Flip horizontally (H)"
         @click.stop="emit('flip-horizontal')"
       >
         <svg class="piece-control-icon" viewBox="0 0 20 20" aria-hidden="true">
@@ -71,7 +71,7 @@ const emit = defineEmits<{
         type="button"
         :disabled="!canTransform"
         aria-label="Flip selected piece vertically"
-        title="Flip vertically"
+        title="Flip vertically (V)"
         @click.stop="emit('flip-vertical')"
       >
         <svg class="piece-control-icon" viewBox="0 0 20 20" aria-hidden="true">

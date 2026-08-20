@@ -1,5 +1,11 @@
 <script setup lang="ts">
-import { computed, defineAsyncComponent, onBeforeUnmount, ref } from "vue";
+import {
+  computed,
+  defineAsyncComponent,
+  onBeforeUnmount,
+  onMounted,
+  ref,
+} from "vue";
 import DaymarkMark from "./components/DaymarkMark.vue";
 import PieceControls from "./components/PieceControls.vue";
 import PuzzleBoard from "./components/PuzzleBoard.vue";
@@ -19,13 +25,11 @@ import {
   pieceDefinitions,
   pieceLabels,
 } from "./data/pieces";
+import { generateOrientations } from "./engine/geometry";
 import {
-  generateOrientations,
-  orientationKey,
-  reflectCells,
-  reflectCellsVertically,
-  rotateCells,
-} from "./engine/geometry";
+  getTransformedOrientationIndex,
+  type OrientationAction,
+} from "./engine/orientation";
 import {
   getCenteredPlacement,
   isBoardStateLegal,
@@ -437,41 +441,43 @@ function getOrientationIndex(piece: (typeof pieceDefinitions)[number]) {
   );
 }
 
-function changeSelectedOrientation(
-  action: "rotate-left" | "rotate-right" | "flip-horizontal" | "flip-vertical",
-) {
+function changeSelectedOrientation(action: OrientationAction) {
   const pieceId = selectedPieceId.value;
   const piece = availablePieces.value.find(
     (candidate) => candidate.id === pieceId,
   );
-  if (!piece || draggingPieceId.value) return;
-
-  const orientations = generateOrientations(piece);
+  if (!piece) return;
   const currentIndex = getOrientationIndex(piece);
-  const current = orientations[currentIndex] ?? orientations[0];
-  if (!current) return;
 
-  const transformed = (() => {
-    switch (action) {
-      case "rotate-left":
-        return rotateCells(rotateCells(rotateCells(current)));
-      case "rotate-right":
-        return rotateCells(current);
-      case "flip-horizontal":
-        return reflectCells(current);
-      case "flip-vertical":
-        return reflectCellsVertically(current);
-    }
-  })();
-  const nextIndex = orientations.findIndex(
-    (candidate) => orientationKey(candidate) === orientationKey(transformed),
-  );
-  if (nextIndex < 0) return;
+  const nextIndex = getTransformedOrientationIndex(piece, currentIndex, action);
+  if (nextIndex === undefined || nextIndex === currentIndex) return;
 
   const placedIndex = placedPieces.value.findIndex(
     ({ piece: placedPiece }) => placedPiece.id === piece.id,
   );
-  if (placedIndex >= 0) {
+  if (draggingPieceId.value) {
+    if (previewPlacement.value) {
+      const candidatePlacement = {
+        ...previewPlacement.value,
+        orientation: nextIndex,
+      };
+      previewPlacement.value = candidatePlacement;
+      previewValid.value = isPlacementLegal(
+        calendarBoard.value,
+        piece,
+        candidatePlacement,
+        placedPieces.value.map(({ placement: existing }) => existing),
+        availablePiecesById.value,
+        dateContext.value.dateNumber,
+      );
+    }
+    pieceOrientations.value = {
+      ...pieceOrientations.value,
+      [piece.id]: nextIndex,
+    };
+    dragMoved.value = true;
+    return;
+  } else if (placedIndex >= 0) {
     const currentPlacement = placedPieces.value[placedIndex].placement;
     const candidatePlacement = { ...currentPlacement, orientation: nextIndex };
     const otherPlacements = placedPieces.value
@@ -502,6 +508,43 @@ function changeSelectedOrientation(
   moveCount.value += 1;
   evaluateCompletion();
   saveCurrentPuzzle();
+}
+
+function isTextEntryTarget(target: EventTarget | null): boolean {
+  return (
+    target instanceof HTMLInputElement ||
+    target instanceof HTMLTextAreaElement ||
+    target instanceof HTMLSelectElement ||
+    (target instanceof HTMLElement && target.isContentEditable)
+  );
+}
+
+function handleGlobalKeydown(event: KeyboardEvent) {
+  if (
+    event.defaultPrevented ||
+    event.ctrlKey ||
+    event.metaKey ||
+    event.altKey ||
+    isTextEntryTarget(event.target)
+  ) {
+    return;
+  }
+
+  const key = event.key.toLowerCase();
+  const action: OrientationAction | undefined =
+    key === "r"
+      ? event.shiftKey
+        ? "rotate-left"
+        : "rotate-right"
+      : key === "h"
+        ? "flip-horizontal"
+        : key === "v"
+          ? "flip-vertical"
+          : undefined;
+  if (!action || !selectedPieceId.value) return;
+
+  event.preventDefault();
+  changeSelectedOrientation(action);
 }
 
 function handlePointerMove(event: PointerEvent) {
@@ -573,6 +616,11 @@ function endDrag(_event?: PointerEvent, restorePlacedPiece = false) {
     const restored = [...placedPieces.value];
     restored.splice(dragReturn.value.index, 0, dragReturn.value.piece);
     placedPieces.value = restored;
+    pieceOrientations.value = {
+      ...pieceOrientations.value,
+      [dragReturn.value.piece.piece.id]:
+        dragReturn.value.piece.placement.orientation,
+    };
   }
 
   evaluateCompletion();
@@ -734,7 +782,12 @@ function loadPuzzleForDate(
 
 loadPuzzleForDate(dateContext.value.isoDate);
 
+onMounted(() => {
+  window.addEventListener("keydown", handleGlobalKeydown, true);
+});
+
 onBeforeUnmount(() => {
+  window.removeEventListener("keydown", handleGlobalKeydown, true);
   cancelDrag();
   stopCompletionCelebration();
 });
