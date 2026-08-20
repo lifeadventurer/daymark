@@ -139,17 +139,6 @@ defineExpose({ getGridPointFromClient });
         role="img"
         :aria-label="`Calendar puzzle board. Leave date ${targetDate} open.`"
       >
-        <defs>
-          <filter id="cell-shadow" x="-30%" y="-30%" width="160%" height="170%">
-            <feDropShadow
-              dx="0"
-              dy="0.07"
-              stdDeviation="0.06"
-              flood-color="#17211c"
-              flood-opacity="0.14"
-            />
-          </filter>
-        </defs>
         <g class="board-weekdays" aria-hidden="true">
           <text
             v-for="(weekday, index) in weekdayLabels"
@@ -162,8 +151,17 @@ defineExpose({ getGridPointFromClient });
             {{ weekday }}
           </text>
         </g>
-        <g filter="url(#cell-shadow)">
+        <g>
           <g v-for="cell in board.cells" :key="`${cell.x}-${cell.y}`">
+            <rect
+              v-if="cell.playable !== false"
+              :x="cell.x + 0.045"
+              :y="cell.y + 0.095"
+              width="0.91"
+              height="0.91"
+              rx="0.16"
+              class="board-cell-shadow"
+            />
             <rect
               :x="cell.x + 0.045"
               :y="cell.y + 0.045"

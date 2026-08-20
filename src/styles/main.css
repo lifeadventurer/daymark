@@ -227,6 +227,10 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     fill 0.2s ease,
     transform 0.2s ease;
 }
+.board-cell-shadow {
+  fill: rgba(23, 33, 28, 0.12);
+  pointer-events: none;
+}
 .board-cell--target {
   fill: #e97352;
   stroke: #d9674a;
