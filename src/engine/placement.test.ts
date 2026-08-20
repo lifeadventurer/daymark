@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createBoardDefinition } from "./board";
 import {
+  getCenteredPlacement,
   isBoardStateLegal,
   isPlacementWithinBoard,
   placementCoversTarget,
@@ -43,6 +44,18 @@ const placement = (
 ): PiecePlacement => ({ pieceId, origin, orientation });
 
 describe("placement validation", () => {
+  it("centers an oriented piece on a board point", () => {
+    expect(getCenteredPlacement(domino, 0, { x: 1.5, y: 1.5 })).toEqual(
+      placement("domino", { x: 1, y: 1 }),
+    );
+    expect(getCenteredPlacement(domino, 1, { x: 1.5, y: 1.5 })).toEqual(
+      placement("domino", { x: 1, y: 1 }, 1),
+    );
+    expect(getCenteredPlacement(domino, 99, { x: 1.5, y: 1.5 })).toBe(
+      undefined,
+    );
+  });
+
   it("accepts a placement entirely inside the board", () => {
     expect(
       isPlacementWithinBoard(

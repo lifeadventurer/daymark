@@ -16,6 +16,27 @@ export function getPlacementCells(
   return translateCells(orientation, placement.origin);
 }
 
+export function getCenteredPlacement(
+  piece: PieceDefinition,
+  orientationIndex: number,
+  point: GridPoint,
+): PiecePlacement | undefined {
+  const orientation = generateOrientations(piece)[orientationIndex];
+  if (!orientation) return undefined;
+
+  const width = Math.max(...orientation.map((cell) => cell.x), 0) + 1;
+  const height = Math.max(...orientation.map((cell) => cell.y), 0) + 1;
+
+  return {
+    pieceId: piece.id,
+    orientation: orientationIndex,
+    origin: {
+      x: Math.round(point.x - width / 2),
+      y: Math.round(point.y - height / 2),
+    },
+  };
+}
+
 export function isPlacementWithinBoard(
   board: BoardDefinition,
   piece: PieceDefinition,

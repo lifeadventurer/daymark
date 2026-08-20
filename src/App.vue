@@ -25,7 +25,11 @@ import {
   reflectCellsVertically,
   rotateCells,
 } from "./engine/geometry";
-import { isBoardStateLegal, isPlacementLegal } from "./engine/placement";
+import {
+  getCenteredPlacement,
+  isBoardStateLegal,
+  isPlacementLegal,
+} from "./engine/placement";
 import type { GridPoint, PiecePlacement } from "./engine/types";
 import { dateFromInputValue, getDateContext } from "./utils/date";
 import {
@@ -111,6 +115,9 @@ const canReset = computed(
 const draggedPiece = computed(() =>
   availablePieces.value.find((piece) => piece.id === draggingPieceId.value),
 );
+const selectedPiece = computed(() =>
+  availablePieces.value.find((piece) => piece.id === selectedPieceId.value),
+);
 const dragGhostOrientation = computed(() => {
   if (!draggedPiece.value) return [];
   return (
@@ -147,6 +154,12 @@ const boardStatus = computed(() => {
       ? "Good fit — release to place"
       : "That spot is blocked";
   if (draggingPieceId.value) return "Drag onto the canvas";
+  if (selectedPiece.value) {
+    const action = placedPieceIds.value.includes(selectedPiece.value.id)
+      ? "move"
+      : "place";
+    return `${pieceLabels[selectedPiece.value.id] ?? selectedPiece.value.id} selected — tap a board cell to ${action}`;
+  }
   return placedPieces.value.length
     ? `${placedPieces.value.length} of ${pieceLimit.value} selected`
     : "Ready to arrange";
@@ -338,6 +351,54 @@ function nudgePlacedPiece(pieceId: string, delta: GridPoint) {
   saveCurrentPuzzle();
 }
 
+function placeSelectedPiece(point: GridPoint) {
+  const piece = selectedPiece.value;
+  if (!piece || draggingPieceId.value || piece.enabled === false) return;
+
+  const orientationIndex = getOrientationIndex(piece);
+  const placement = getCenteredPlacement(piece, orientationIndex, point);
+  if (!placement) return;
+
+  const placedIndex = placedPieces.value.findIndex(
+    ({ piece: placedPiece }) => placedPiece.id === piece.id,
+  );
+  if (placedIndex < 0 && placedPieces.value.length >= pieceLimit.value) return;
+
+  const otherPlacements = placedPieces.value
+    .filter((_, index) => index !== placedIndex)
+    .map(({ placement: existing }) => existing);
+  if (
+    !isPlacementLegal(
+      calendarBoard.value,
+      piece,
+      placement,
+      otherPlacements,
+      availablePiecesById.value,
+      dateContext.value.dateNumber,
+    )
+  ) {
+    return;
+  }
+
+  const renderedPiece = {
+    piece,
+    placement,
+    color: pieceColors[piece.id] ?? "#718277",
+  };
+  if (placedIndex >= 0) {
+    const updated = [...placedPieces.value];
+    updated[placedIndex] = renderedPiece;
+    placedPieces.value = updated;
+  } else {
+    placedPieces.value = [...placedPieces.value, renderedPiece];
+  }
+
+  moveCount.value += 1;
+  selectedPieceId.value = null;
+  evaluateCompletion();
+  saveCurrentPuzzle();
+}
+
 function beginDrag(
   pieceId: string,
   event: PointerEvent,
@@ -457,18 +518,12 @@ function handlePointerMove(event: PointerEvent) {
 
   dragOutsideBoard.value = false;
   const orientationIndex = getOrientationIndex(draggedPiece.value);
-  const orientation =
-    generateOrientations(draggedPiece.value)[orientationIndex] ?? [];
-  const width = Math.max(...orientation.map((cell) => cell.x), 0) + 1;
-  const height = Math.max(...orientation.map((cell) => cell.y), 0) + 1;
-  const placement: PiecePlacement = {
-    pieceId: draggedPiece.value.id,
-    orientation: orientationIndex,
-    origin: {
-      x: Math.round(point.x - width / 2),
-      y: Math.round(point.y - height / 2),
-    },
-  };
+  const placement = getCenteredPlacement(
+    draggedPiece.value,
+    orientationIndex,
+    point,
+  );
+  if (!placement) return;
 
   previewPlacement.value = placement;
   previewValid.value = isPlacementLegal(
@@ -711,6 +766,7 @@ onBeforeUnmount(() => {
         :class="{
           'board-column--complete': completed && !draggingPieceId,
           'board-column--celebrate': completionCelebration,
+          'board-column--placement-ready': Boolean(selectedPieceId),
         }"
       >
         <span class="sr-only" aria-live="polite">
@@ -734,6 +790,8 @@ onBeforeUnmount(() => {
               : null
           "
           :preview-valid="previewValid"
+          :placement-enabled="Boolean(selectedPieceId)"
+          @cell-select="placeSelectedPiece"
           @date-change="updateDate"
           @drag-start="startPlacedDrag"
           @select-piece="selectPlacedPiece"
@@ -775,7 +833,10 @@ onBeforeUnmount(() => {
         </div>
       </div>
 
-      <aside class="side-panel">
+      <aside
+        class="side-panel"
+        :class="{ 'side-panel--placement-ready': Boolean(selectedPieceId) }"
+      >
         <DevelopmentScenarioPicker
           v-if="DevelopmentScenarioPicker && applyDevelopmentScenario"
           :board-key="selectedBoardKey"

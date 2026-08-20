@@ -3,7 +3,9 @@ import { computed, ref } from "vue";
 import { getBoardBounds, getBoardCell } from "../engine/board";
 import { getPlacementCells } from "../engine/placement";
 import type {
+  BoardCell,
   BoardDefinition,
+  GridPoint,
   PieceDefinition,
   PiecePlacement,
 } from "../engine/types";
@@ -22,12 +24,14 @@ const props = defineProps<{
   placedPieces: BoardPiece[];
   preview: BoardPiece | null;
   previewValid: boolean;
+  placementEnabled: boolean;
 }>();
 
 const emit = defineEmits<{
   "drag-start": [pieceId: string, event: PointerEvent];
   "select-piece": [pieceId: string];
   nudge: [pieceId: string, delta: { x: number; y: number }];
+  "cell-select": [point: GridPoint];
   "date-change": [event: Event];
 }>();
 
@@ -115,6 +119,34 @@ function handlePieceKeydown(event: KeyboardEvent, pieceId: string) {
   emit("nudge", pieceId, delta);
 }
 
+function handleBoardClick(event: MouseEvent) {
+  if (!props.placementEnabled) return;
+  const target = event.target;
+  if (target instanceof Element && target.closest(".placed-piece")) return;
+
+  const point = getGridPointFromClient(event.clientX, event.clientY);
+  if (!point) return;
+  emit("cell-select", {
+    x: Math.floor(point.x) + 0.5,
+    y: Math.floor(point.y) + 0.5,
+  });
+}
+
+function handleCellKeydown(event: KeyboardEvent, cell: BoardCell) {
+  if (!props.placementEnabled || cell.playable === false) return;
+  if (event.key !== "Enter" && event.key !== " ") return;
+
+  event.preventDefault();
+  emit("cell-select", { x: cell.x + 0.5, y: cell.y + 0.5 });
+}
+
+function handlePlacedPointerDown(event: PointerEvent, pieceId: string) {
+  const target = event.currentTarget;
+  if (target instanceof Element) target.setPointerCapture(event.pointerId);
+  event.preventDefault();
+  emit("drag-start", pieceId, event);
+}
+
 defineExpose({ getGridPointFromClient });
 </script>
 
@@ -135,9 +167,11 @@ defineExpose({ getGridPointFromClient });
       <svg
         ref="svgRef"
         class="board-svg"
+        :class="{ 'board-svg--placement-ready': placementEnabled }"
         :viewBox="viewBox"
-        role="img"
-        :aria-label="`Calendar puzzle board. Leave date ${targetDate} open.`"
+        :role="placementEnabled ? 'group' : 'img'"
+        :aria-label="`Calendar puzzle board. Leave date ${targetDate} open.${placementEnabled ? ' Tap a cell to place the selected piece.' : ''}`"
+        @click="handleBoardClick"
       >
         <g class="board-weekdays" aria-hidden="true">
           <text
@@ -152,7 +186,25 @@ defineExpose({ getGridPointFromClient });
           </text>
         </g>
         <g>
-          <g v-for="cell in board.cells" :key="`${cell.x}-${cell.y}`">
+          <g
+            v-for="cell in board.cells"
+            :key="`${cell.x}-${cell.y}`"
+            class="board-cell-group"
+            :role="
+              placementEnabled && cell.playable !== false ? 'button' : undefined
+            "
+            :tabindex="
+              placementEnabled && cell.playable !== false ? 0 : undefined
+            "
+            :aria-label="
+              placementEnabled && cell.playable !== false
+                ? cell.date !== undefined
+                  ? `Place selected piece on ${cell.date}`
+                  : 'Place selected piece on open cell'
+                : undefined
+            "
+            @keydown="handleCellKeydown($event, cell)"
+          >
             <rect
               v-if="cell.playable !== false"
               :x="cell.x + 0.045"
@@ -204,7 +256,7 @@ defineExpose({ getGridPointFromClient });
           role="button"
           tabindex="0"
           :aria-label="`Placed ${boardPiece.piece.id} piece. Use arrow keys to move.`"
-          @pointerdown="emit('drag-start', boardPiece.piece.id, $event)"
+          @pointerdown="handlePlacedPointerDown($event, boardPiece.piece.id)"
           @keydown="handlePieceKeydown($event, boardPiece.piece.id)"
         >
           <rect

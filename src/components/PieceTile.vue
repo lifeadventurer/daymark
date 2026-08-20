@@ -33,7 +33,7 @@ const centeredOrientation = computed(() => {
 function startDrag(event: PointerEvent) {
   if (isDisabled.value || props.placed || !props.canPlace) return;
   const target = event.currentTarget;
-  if (target instanceof HTMLElement) target.setPointerCapture(event.pointerId);
+  if (target instanceof Element) target.setPointerCapture(event.pointerId);
   event.preventDefault();
   emit("drag-start", event);
 }
@@ -51,11 +51,17 @@ function startDrag(event: PointerEvent) {
     :disabled="isDisabled || placed || !canPlace"
     :aria-pressed="selected"
     :aria-label="`${label} piece${isDisabled ? ', unavailable' : selected ? ', selected' : ''}`"
-    @pointerdown="startDrag"
+    @click="emit('select')"
     @keydown.enter.prevent="emit('select')"
     @keydown.space.prevent="emit('select')"
   >
-    <svg class="piece-svg" viewBox="-0.05 -0.05 5.1 5.1" aria-hidden="true">
+    <svg
+      class="piece-svg"
+      viewBox="-0.05 -0.05 5.1 5.1"
+      aria-hidden="true"
+      @pointerdown="startDrag"
+      @click.stop
+    >
       <rect
         v-for="cell in centeredOrientation"
         :key="`${cell.x}-${cell.y}`"

@@ -219,6 +219,18 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   max-height: 100%;
   overflow: visible;
 }
+.board-svg--placement-ready .board-cell:not(.board-cell--blank),
+.board-svg--placement-ready .board-number,
+.board-svg--placement-ready .target-dot {
+  cursor: pointer;
+}
+.board-svg--placement-ready .board-cell-group:focus {
+  outline: none;
+}
+.board-svg--placement-ready .board-cell-group:focus-visible .board-cell {
+  stroke: #d66d4d;
+  stroke-width: 0.06;
+}
 .board-cell {
   fill: #fbfaf6;
   stroke: #deddd5;
@@ -275,6 +287,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .placed-piece {
   cursor: grab;
   pointer-events: all;
+  touch-action: none;
 }
 .placed-piece:active {
   cursor: grabbing;
@@ -500,6 +513,9 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   color: #4e5b52;
   cursor: grab;
   text-align: left;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
   transition:
     border-color 0.2s ease,
     background 0.2s ease,
@@ -574,6 +590,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   width: 100%;
   height: clamp(84px, 12vh, 116px);
   overflow: visible;
+  touch-action: none;
 }
 .piece-svg rect {
   stroke: rgba(42, 49, 43, 0.18);
@@ -650,6 +667,25 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     display: block;
     flex: none;
     padding: 0;
+  }
+  .board-column--placement-ready {
+    position: sticky;
+    z-index: 5;
+    top: max(64px, calc(env(safe-area-inset-top) + 54px));
+  }
+  .side-panel--placement-ready .piece-controls {
+    position: fixed;
+    z-index: 7;
+    top: max(10px, env(safe-area-inset-top));
+    left: max(14px, env(safe-area-inset-left));
+    right: max(14px, env(safe-area-inset-right));
+    min-height: 44px;
+    margin: 0;
+    padding: 6px 8px;
+    border: 1px solid #d7dad1;
+    border-radius: 12px;
+    background: #f6f4ef;
+    box-shadow: 0 8px 20px rgba(50, 53, 44, 0.12);
   }
   .side-panel {
     padding-top: 45px;
