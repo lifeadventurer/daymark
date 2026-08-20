@@ -5,6 +5,7 @@ import {
   activeCalendarPuzzle,
   calendarBoardOptions,
   calendarBoardVariants,
+  getCalendarBoardKeyForDate,
   getCalendarPuzzleConfiguration,
   getPiecePoolForDate,
   getPuzzleSetupForDate,
@@ -13,6 +14,13 @@ import {
 import { pieceDefinitions } from "./pieces";
 
 describe("calendar puzzle catalog", () => {
+  it("resolves a date to its month-length and starting-weekday board", () => {
+    expect(getCalendarBoardKeyForDate(new Date(2026, 7, 20))).toBe("31-6");
+    expect(getCalendarBoardKeyForDate(new Date(2026, 0, 15))).toBe("31-4");
+    expect(getCalendarBoardKeyForDate(new Date(2026, 3, 15))).toBeUndefined();
+    expect(getCalendarBoardKeyForDate(new Date(2028, 1, 15))).toBeUndefined();
+  });
+
   it("uses a zero-based weekday index for the current board catalog", () => {
     const currentBoard = calendarBoardVariants["31-0"];
 

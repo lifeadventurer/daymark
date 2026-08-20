@@ -6,6 +6,7 @@ import PieceTray from "./components/PieceTray.vue";
 import {
   activeCalendarBoardKey,
   calendarBoardOptions,
+  getCalendarBoardKeyForDate,
   getCalendarPuzzleConfiguration,
   getPuzzleSetupForDate,
   type CalendarBoardKey,
@@ -34,7 +35,9 @@ import {
 } from "./utils/storage";
 
 const selectedDate = ref(new Date());
-const selectedBoardKey = ref<CalendarBoardKey>(activeCalendarBoardKey);
+const selectedBoardKey = ref<CalendarBoardKey>(
+  getCalendarBoardKeyForDate(selectedDate.value) ?? activeCalendarBoardKey,
+);
 const selectedDifficulty = ref<PuzzleDifficulty>("hard");
 const selectedPieceId = ref<string | null>(null);
 const placedPieces = ref<RenderedPiece[]>([]);
@@ -65,6 +68,10 @@ const difficultyOptions = computed(() =>
   Object.values(difficultyDefinitions.value),
 );
 const dateContext = computed(() => getDateContext(selectedDate.value));
+const dateBoardKey = computed(() =>
+  getCalendarBoardKeyForDate(selectedDate.value),
+);
+const dateBoardAvailable = computed(() => dateBoardKey.value !== undefined);
 const currentPuzzleSetup = computed(() =>
   getPuzzleSetupForDate(
     currentPuzzle.value,
@@ -151,6 +158,16 @@ interface RenderedPiece {
   color: string;
 }
 
+function clearPuzzleState() {
+  selectedPieceId.value = null;
+  placedPieces.value = [];
+  moveCount.value = 0;
+  completed.value = false;
+  stopCompletionCelebration();
+  completedAt.value = null;
+  pieceOrientations.value = {};
+}
+
 function updateDate(event: Event) {
   const input = event.target;
   if (!(input instanceof HTMLInputElement)) return;
@@ -161,7 +178,13 @@ function updateDate(event: Event) {
   saveCurrentPuzzle();
   selectedDate.value = nextDate;
   selectedPieceId.value = null;
-  loadPuzzleForDate(input.value);
+  const nextBoardKey = getCalendarBoardKeyForDate(nextDate);
+  if (nextBoardKey) {
+    selectedBoardKey.value = nextBoardKey;
+    loadPuzzleForDate(input.value);
+  } else {
+    clearPuzzleState();
+  }
 }
 
 function changeDifficulty(nextDifficulty: PuzzleDifficulty) {
@@ -219,13 +242,7 @@ const applyDevelopmentScenario = import.meta.env.DEV
 
 function resetPuzzle() {
   endDrag();
-  selectedPieceId.value = null;
-  placedPieces.value = [];
-  moveCount.value = 0;
-  completed.value = false;
-  stopCompletionCelebration();
-  completedAt.value = null;
-  pieceOrientations.value = {};
+  clearPuzzleState();
   saveCurrentPuzzle();
 }
 
@@ -700,6 +717,7 @@ onBeforeUnmount(() => {
           {{ boardStatus }}
         </span>
         <PuzzleBoard
+          v-if="dateBoardAvailable"
           ref="boardRef"
           :board="calendarBoard"
           :target-date="dateContext.dateNumber"
@@ -722,6 +740,31 @@ onBeforeUnmount(() => {
           @nudge="nudgePlacedPiece"
         />
         <div
+          v-else
+          class="board-shell board-unavailable"
+          role="status"
+          aria-live="polite"
+        >
+          <div class="board-heading">
+            <span class="board-heading__month">
+              {{ dateContext.monthName }}
+            </span>
+            <input
+              :value="dateContext.isoDate"
+              type="date"
+              aria-label="Choose puzzle date"
+              @change="updateDate"
+            />
+          </div>
+          <div class="board-unavailable__content">
+            <strong>Board coming soon</strong>
+            <p>
+              The {{ dateContext.monthName }} {{ dateContext.year }} calendar
+              will be available soon.
+            </p>
+          </div>
+        </div>
+        <div
           v-if="completed && !draggingPieceId"
           class="completion-mark"
           role="status"
@@ -739,59 +782,67 @@ onBeforeUnmount(() => {
           :date-key="dateContext.isoDate"
           @select="applyDevelopmentScenario"
         />
-        <label class="board-picker">
-          <span>Board</span>
-          <select
-            :value="selectedBoardKey"
-            aria-label="Choose board layout"
-            @change="updateBoard"
+        <template v-if="dateBoardAvailable">
+          <label
+            v-if="DevelopmentScenarioPicker && applyDevelopmentScenario"
+            class="board-picker"
           >
-            <option
-              v-for="boardOption in calendarBoardOptions"
-              :key="boardOption.key"
-              :value="boardOption.key"
+            <span>Board</span>
+            <select
+              :value="selectedBoardKey"
+              aria-label="Choose board layout"
+              @change="updateBoard"
             >
-              {{ boardOption.label }}
-            </option>
-          </select>
-        </label>
-        <fieldset class="difficulty-picker">
-          <legend>Difficulty</legend>
-          <div class="difficulty-picker__options">
-            <button
-              v-for="difficulty in difficultyOptions"
-              :key="difficulty.id"
-              type="button"
-              :class="{
-                'difficulty-picker__option--selected':
-                  selectedDifficulty === difficulty.id,
-              }"
-              :aria-pressed="selectedDifficulty === difficulty.id"
-              :title="difficulty.description"
-              @click="changeDifficulty(difficulty.id)"
-            >
-              {{ difficulty.label }}
-            </button>
-          </div>
-        </fieldset>
-        <PieceTray
-          :pieces="availablePieces"
-          :selected-piece-id="selectedPieceId"
-          :placed-piece-ids="placedPieceIds"
-          :labels="pieceLabels"
-          :colors="pieceColors"
-          :orientations="pieceOrientations"
-          :can-place-more="placedPieces.length < pieceLimit"
-          :can-reset="canReset"
-          :dragging="Boolean(draggingPieceId)"
-          @select="selectPiece"
-          @drag-start="startDrag"
-          @rotate-left="changeSelectedOrientation('rotate-left')"
-          @rotate-right="changeSelectedOrientation('rotate-right')"
-          @flip-horizontal="changeSelectedOrientation('flip-horizontal')"
-          @flip-vertical="changeSelectedOrientation('flip-vertical')"
-          @reset="resetPuzzle"
-        />
+              <option
+                v-for="boardOption in calendarBoardOptions"
+                :key="boardOption.key"
+                :value="boardOption.key"
+              >
+                {{ boardOption.label }}
+              </option>
+            </select>
+          </label>
+          <fieldset class="difficulty-picker">
+            <legend>Difficulty</legend>
+            <div class="difficulty-picker__options">
+              <button
+                v-for="difficulty in difficultyOptions"
+                :key="difficulty.id"
+                type="button"
+                :class="{
+                  'difficulty-picker__option--selected':
+                    selectedDifficulty === difficulty.id,
+                }"
+                :aria-pressed="selectedDifficulty === difficulty.id"
+                :title="difficulty.description"
+                @click="changeDifficulty(difficulty.id)"
+              >
+                {{ difficulty.label }}
+              </button>
+            </div>
+          </fieldset>
+          <PieceTray
+            :pieces="availablePieces"
+            :selected-piece-id="selectedPieceId"
+            :placed-piece-ids="placedPieceIds"
+            :labels="pieceLabels"
+            :colors="pieceColors"
+            :orientations="pieceOrientations"
+            :can-place-more="placedPieces.length < pieceLimit"
+            :can-reset="canReset"
+            :dragging="Boolean(draggingPieceId)"
+            @select="selectPiece"
+            @drag-start="startDrag"
+            @rotate-left="changeSelectedOrientation('rotate-left')"
+            @rotate-right="changeSelectedOrientation('rotate-right')"
+            @flip-horizontal="changeSelectedOrientation('flip-horizontal')"
+            @flip-vertical="changeSelectedOrientation('flip-vertical')"
+            @reset="resetPuzzle"
+          />
+        </template>
+        <div v-else class="board-unavailable__side-message" role="status">
+          Puzzle controls will appear when this month’s board is ready.
+        </div>
       </aside>
     </section>
   </main>

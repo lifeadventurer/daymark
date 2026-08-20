@@ -185,6 +185,31 @@ export const calendarBoardOptions: CalendarBoardOption[] = Object.entries(
   )} start`,
 }));
 
+/**
+ * Resolve a real calendar date to the catalog board for its month length and
+ * first weekday. A missing result means that month shape has not been added
+ * to the catalog yet.
+ */
+export function getCalendarBoardKeyForDate(
+  date: Date,
+): CalendarBoardKey | undefined {
+  const daysInMonth = new Date(
+    date.getFullYear(),
+    date.getMonth() + 1,
+    0,
+  ).getDate();
+  const startsOnWeekday = new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    1,
+  ).getDay();
+  const boardKey = `${daysInMonth}-${startsOnWeekday}`;
+
+  return Object.prototype.hasOwnProperty.call(calendarBoardVariants, boardKey)
+    ? (boardKey as CalendarBoardKey)
+    : undefined;
+}
+
 export function getCalendarPuzzleConfiguration(
   boardKey: CalendarBoardKey,
 ): CalendarPuzzleConfiguration {
