@@ -15,3 +15,10 @@ Select a piece, then use these shortcuts to change its orientation:
 The shortcuts also work while dragging a piece. A placed piece only changes
 orientation when the transformed position remains legal; invalid transforms are
 left unchanged.
+
+## Install and offline play
+
+Daymark is installable as a progressive web app. Open it once while online, then
+use the browser’s install action to add it to your home screen or desktop. The
+app shell and loaded puzzle assets are cached for offline play; progress
+continues to use the browser’s local storage.
