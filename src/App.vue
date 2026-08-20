@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, defineAsyncComponent, onBeforeUnmount, ref } from "vue";
 import DaymarkMark from "./components/DaymarkMark.vue";
+import PieceControls from "./components/PieceControls.vue";
 import PuzzleBoard from "./components/PuzzleBoard.vue";
 import PieceTray from "./components/PieceTray.vue";
 import {
@@ -117,9 +118,6 @@ const draggedPiece = computed(() =>
 );
 const selectedPiece = computed(() =>
   availablePieces.value.find((piece) => piece.id === selectedPieceId.value),
-);
-const placementActive = computed(
-  () => Boolean(selectedPieceId.value) || Boolean(draggingPieceId.value),
 );
 const dragGhostOrientation = computed(() => {
   if (!draggedPiece.value) return [];
@@ -778,7 +776,6 @@ onBeforeUnmount(() => {
         :class="{
           'board-column--complete': completed && !draggingPieceId,
           'board-column--celebrate': completionCelebration,
-          'board-column--placement-ready': placementActive,
         }"
       >
         <span class="sr-only" aria-live="polite">
@@ -834,6 +831,18 @@ onBeforeUnmount(() => {
             </p>
           </div>
         </div>
+        <PieceControls
+          v-if="dateBoardAvailable"
+          class="piece-controls--mobile"
+          :selected-piece="selectedPiece"
+          :can-reset="canReset"
+          :dragging="Boolean(draggingPieceId)"
+          @rotate-left="changeSelectedOrientation('rotate-left')"
+          @rotate-right="changeSelectedOrientation('rotate-right')"
+          @flip-horizontal="changeSelectedOrientation('flip-horizontal')"
+          @flip-vertical="changeSelectedOrientation('flip-vertical')"
+          @reset="resetPuzzle"
+        />
         <div
           v-if="completed && !draggingPieceId"
           class="completion-mark"
@@ -845,10 +854,7 @@ onBeforeUnmount(() => {
         </div>
       </div>
 
-      <aside
-        class="side-panel"
-        :class="{ 'side-panel--placement-ready': placementActive }"
-      >
+      <aside class="side-panel">
         <DevelopmentScenarioPicker
           v-if="DevelopmentScenarioPicker && applyDevelopmentScenario"
           :board-key="selectedBoardKey"

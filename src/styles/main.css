@@ -452,6 +452,9 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   justify-content: space-between;
   margin: 0 0 12px;
 }
+.piece-controls--mobile {
+  display: none;
+}
 .piece-controls__buttons {
   display: flex;
   gap: 6px;
@@ -668,27 +671,28 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     flex: none;
     padding: 0;
   }
-  .board-column--placement-ready {
+  .board-column {
     position: sticky;
     z-index: 5;
-    top: max(64px, calc(env(safe-area-inset-top) + 54px));
-  }
-  .side-panel--placement-ready .piece-controls {
-    position: fixed;
-    z-index: 7;
     top: max(10px, env(safe-area-inset-top));
-    left: max(14px, env(safe-area-inset-left));
-    right: max(14px, env(safe-area-inset-right));
+    max-height: max(
+      220px,
+      calc(100svh - max(10px, env(safe-area-inset-top)) - 140px)
+    );
+  }
+  .piece-controls--mobile {
+    display: flex;
+    flex: none;
     min-height: 44px;
-    margin: 0;
+    margin: 10px 0 0;
     padding: 6px 8px;
     border: 1px solid #d7dad1;
     border-radius: 12px;
     background: #f6f4ef;
     box-shadow: 0 8px 20px rgba(50, 53, 44, 0.12);
   }
-  .side-panel {
-    padding-top: 45px;
+  .piece-controls--tray {
+    display: none;
   }
 }
 
@@ -707,6 +711,64 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   }
 }
 
+@media (max-width: 880px) and (orientation: landscape) {
+  .app-shell {
+    padding-top: max(4px, env(safe-area-inset-top));
+  }
+  .topbar {
+    min-height: 40px;
+  }
+  .puzzle-layout {
+    margin-top: 4px;
+  }
+  .board-column {
+    height: max(
+      220px,
+      calc(100svh - max(10px, env(safe-area-inset-top)) - 140px)
+    );
+  }
+  .board-shell {
+    padding: 10px;
+  }
+  .board-heading {
+    min-height: 28px;
+    margin-bottom: 4px;
+  }
+  .board-heading__month {
+    font-size: 17px;
+  }
+  .board-graphic {
+    justify-content: center;
+  }
+  .board-svg {
+    width: auto;
+    height: 100%;
+    max-width: 100%;
+  }
+}
+
+@media (min-width: 480px) and (max-width: 880px) and (orientation: landscape) {
+  .app-shell {
+    width: min(calc(100% - 28px), 820px);
+  }
+  .puzzle-layout {
+    display: grid;
+    grid-template-columns: minmax(216px, 1.1fr) minmax(220px, 0.9fr);
+    gap: 16px;
+    align-items: start;
+  }
+  .board-column {
+    height: max(
+      220px,
+      calc(100svh - max(4px, env(safe-area-inset-top)) - 54px)
+    );
+    max-height: max(
+      220px,
+      calc(100svh - max(4px, env(safe-area-inset-top)) - 54px)
+    );
+  }
+}
+
 @media (max-width: 500px) {
   .app-shell {
     width: calc(100% - 28px);
@@ -714,9 +776,6 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   .board-shell {
     padding: 14px;
     border-radius: 20px;
-  }
-  .side-panel {
-    padding-top: 28px;
   }
   .piece-grid {
     gap: 7px;
