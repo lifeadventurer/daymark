@@ -51,9 +51,8 @@ Before submitting a pull request:
 4. Include screenshots or a short recording for visual or interaction changes.
 5. Call out any accessibility, mobile-layout, or data-compatibility concerns.
 
-Please do not commit secrets, generated build output, or changes to the bundled
-font license. The `Zeyada` font in `public/fonts/` is distributed under the SIL
-Open Font License 1.1; the project source is distributed under the MIT License.
+Please do not commit secrets, generated build output, or remove third-party
+license notices from bundled assets.
 
 ## Code style
 
@@ -64,4 +63,4 @@ linting by ESLint. Husky may run checks automatically during commits.
 ## License
 
 Contributions should be your own work or work that you have permission to
-submit, and should be compatible with the project’s MIT License.
+submit, and should be compatible with the project's MIT License.
