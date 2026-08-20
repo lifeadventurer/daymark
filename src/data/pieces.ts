@@ -257,14 +257,8 @@ export const pieceLabels: Record<string, string> = {
 };
 
 export const pieceColors: Record<string, string> = {
+  // Pentomino palette.
   p: "#d7625a",
-  p4: "#d7625a",
-  p1: "#d7625a",
-  o4: "#d7625a",
-  i4: "#2f7888",
-  t4: "#b3a041",
-  l4: "#4f7ebb",
-  s4: "#be7f90",
   l: "#4f7ebb",
   y: "#6ba879",
   n: "#d87932",
@@ -276,6 +270,16 @@ export const pieceColors: Record<string, string> = {
   t: "#b3a041",
   w: "#be7f90",
   x: "#635ca7",
+  // Tetromino palette. These colors intentionally differ from the
+  // pentomino colors, including for the visually identical p4 and o4 shapes.
+  p4: "#c04f85",
+  o4: "#7a61c9",
+  i4: "#2f9ca7",
+  t4: "#d49435",
+  l4: "#3f9b67",
+  s4: "#de6d9b",
+  // Single-cell split piece.
+  p1: "#efb43f",
 };
 
 export const legacyPieceIdAliases: Record<string, string> = {
