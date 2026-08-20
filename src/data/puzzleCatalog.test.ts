@@ -18,6 +18,7 @@ describe("calendar puzzle catalog", () => {
     expect(getCalendarBoardKeyForDate(new Date(2026, 7, 20))).toBe("31-6");
     expect(getCalendarBoardKeyForDate(new Date(2026, 0, 15))).toBe("31-4");
     expect(getCalendarBoardKeyForDate(new Date(2026, 3, 15))).toBe("30-3");
+    expect(getCalendarBoardKeyForDate(new Date(2026, 1, 15))).toBe("28-0");
     expect(getCalendarBoardKeyForDate(new Date(2028, 1, 15))).toBe("29-2");
   });
 
@@ -68,8 +69,15 @@ describe("calendar puzzle catalog", () => {
       "29-4",
       "29-5",
       "29-6",
+      "28-0",
+      "28-1",
+      "28-2",
+      "28-3",
+      "28-4",
+      "28-5",
+      "28-6",
     ]);
-    expect(calendarBoardOptions.at(-1)?.label).toBe("29 days · Saturday start");
+    expect(calendarBoardOptions.at(-1)?.label).toBe("28 days · Saturday start");
     expect(getCalendarPuzzleConfiguration("31-0").board.id).toBe(
       "calendar-31-0",
     );
@@ -102,6 +110,27 @@ describe("calendar puzzle catalog", () => {
               pieceDefinitions.find((piece) => piece.id === pieceId)?.cells
                 .length === 4,
           ).length === 2,
+      ),
+    ).toBe(true);
+    const monday28 = getCalendarPuzzleConfiguration("28-1");
+    expect(monday28.daysInMonth).toBe(28);
+    expect(monday28.startsOnWeekday).toBe(1);
+    expect(
+      monday28.board.cells.filter((cell) => cell.date !== undefined),
+    ).toHaveLength(28);
+    expect(monday28.dateRules[21]?.requiredPieceCount).toBe(7);
+    const saturday28 = getCalendarPuzzleConfiguration("28-6");
+    expect(saturday28.daysInMonth).toBe(28);
+    expect(saturday28.startsOnWeekday).toBe(6);
+    expect(saturday28.dateRules[8]?.requiredPieceCount).toBe(7);
+    expect(
+      saturday28.difficultyDefinitions.hard.piecePools.every(
+        (pool) =>
+          pool.filter(
+            (pieceId) =>
+              pieceDefinitions.find((piece) => piece.id === pieceId)?.cells
+                .length === 4,
+          ).length === 3,
       ),
     ).toBe(true);
     expect(
@@ -171,6 +200,26 @@ describe("calendar puzzle catalog", () => {
         boardKey: "31-6" as const,
         targetDate: 8,
         dateKey: "2026-08-08",
+      },
+      {
+        boardKey: "29-0" as const,
+        targetDate: 22,
+        dateKey: "2032-02-22",
+      },
+      {
+        boardKey: "29-6" as const,
+        targetDate: 8,
+        dateKey: "2031-02-08",
+      },
+      {
+        boardKey: "28-1" as const,
+        targetDate: 21,
+        dateKey: "2021-02-21",
+      },
+      {
+        boardKey: "28-6" as const,
+        targetDate: 8,
+        dateKey: "2025-02-08",
       },
     ];
 
