@@ -31,11 +31,34 @@ const emit = defineEmits<{
   "date-change": [event: Event];
 }>();
 
+const weekdayLabels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const boardPadding = {
+  top: 0.58,
+  right: 0.12,
+  bottom: 0.12,
+  left: 0.12,
+};
 const svgRef = ref<SVGSVGElement | null>(null);
 const bounds = computed(() => getBoardBounds(props.board));
+const viewport = computed(() => ({
+  x: bounds.value.minX - boardPadding.left,
+  y: bounds.value.minY - boardPadding.top,
+  width:
+    bounds.value.maxX -
+    bounds.value.minX +
+    1 +
+    boardPadding.left +
+    boardPadding.right,
+  height:
+    bounds.value.maxY -
+    bounds.value.minY +
+    1 +
+    boardPadding.top +
+    boardPadding.bottom,
+}));
 const viewBox = computed(
   () =>
-    `${bounds.value.minX - 0.12} ${bounds.value.minY - 0.12} ${bounds.value.maxX - bounds.value.minX + 1.24} ${bounds.value.maxY - bounds.value.minY + 1.24}`,
+    `${viewport.value.x} ${viewport.value.y} ${viewport.value.width} ${viewport.value.height}`,
 );
 
 function placementCells(boardPiece: BoardPiece) {
@@ -56,17 +79,13 @@ function getGridPointFromClient(clientX: number, clientY: number) {
     return undefined;
   }
 
-  const logicalWidth = bounds.value.maxX - bounds.value.minX + 1.24;
-  const logicalHeight = bounds.value.maxY - bounds.value.minY + 1.24;
   const point = {
     x:
-      ((clientX - rect.left) / rect.width) * logicalWidth +
-      bounds.value.minX -
-      0.12,
+      ((clientX - rect.left) / rect.width) * viewport.value.width +
+      viewport.value.x,
     y:
-      ((clientY - rect.top) / rect.height) * logicalHeight +
-      bounds.value.minY -
-      0.12,
+      ((clientY - rect.top) / rect.height) * viewport.value.height +
+      viewport.value.y,
   };
 
   return getBoardCell(props.board, {
@@ -131,6 +150,18 @@ defineExpose({ getGridPointFromClient });
             />
           </filter>
         </defs>
+        <g class="board-weekdays" aria-hidden="true">
+          <text
+            v-for="(weekday, index) in weekdayLabels"
+            :key="weekday"
+            :x="bounds.minX + index + 0.5"
+            :y="bounds.minY - 0.23"
+            text-anchor="middle"
+            class="board-weekday"
+          >
+            {{ weekday }}
+          </text>
+        </g>
         <g filter="url(#cell-shadow)">
           <g v-for="cell in board.cells" :key="`${cell.x}-${cell.y}`">
             <rect

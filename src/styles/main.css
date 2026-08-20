@@ -205,6 +205,13 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   stroke: transparent;
   pointer-events: none;
 }
+.board-weekday {
+  fill: #737b73;
+  font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  font-size: 0.21px;
+  font-weight: 600;
+  letter-spacing: 0.005em;
+}
 .board-number {
   fill: #5c665d;
   font-family:
