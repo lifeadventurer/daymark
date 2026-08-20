@@ -34,6 +34,66 @@ export const pieceDefinitions: PieceDefinition[] = [
     allowReflection: false,
   },
   {
+    id: "o4",
+    // O tetromino: XX / XX
+    cells: [
+      { x: 0, y: 0 },
+      { x: 1, y: 0 },
+      { x: 0, y: 1 },
+      { x: 1, y: 1 },
+    ],
+    allowRotation: false,
+    allowReflection: false,
+  },
+  {
+    id: "i4",
+    // I tetromino: XXXX
+    cells: [
+      { x: 0, y: 0 },
+      { x: 0, y: 1 },
+      { x: 0, y: 2 },
+      { x: 0, y: 3 },
+    ],
+    allowRotation: true,
+    allowReflection: true,
+  },
+  {
+    id: "t4",
+    // T tetromino: XXX / .X.
+    cells: [
+      { x: 0, y: 0 },
+      { x: 1, y: 0 },
+      { x: 2, y: 0 },
+      { x: 1, y: 1 },
+    ],
+    allowRotation: true,
+    allowReflection: true,
+  },
+  {
+    id: "l4",
+    // L tetromino: X. / X. / XX
+    cells: [
+      { x: 0, y: 0 },
+      { x: 0, y: 1 },
+      { x: 0, y: 2 },
+      { x: 1, y: 2 },
+    ],
+    allowRotation: true,
+    allowReflection: true,
+  },
+  {
+    id: "s4",
+    // S tetromino: .XX / XX.
+    cells: [
+      { x: 1, y: 0 },
+      { x: 2, y: 0 },
+      { x: 0, y: 1 },
+      { x: 1, y: 1 },
+    ],
+    allowRotation: true,
+    allowReflection: true,
+  },
+  {
     id: "l",
     cells: [
       { x: 0, y: 0 },
@@ -178,6 +238,11 @@ export const pieceLabels: Record<string, string> = {
   p: "P pentomino",
   p4: "Short P tetromino",
   p1: "Single block",
+  o4: "O tetromino",
+  i4: "I tetromino",
+  t4: "T tetromino",
+  l4: "L tetromino",
+  s4: "S tetromino",
   l: "L pentomino",
   y: "Y pentomino",
   n: "N pentomino",
@@ -195,6 +260,11 @@ export const pieceColors: Record<string, string> = {
   p: "#d7625a",
   p4: "#d7625a",
   p1: "#d7625a",
+  o4: "#d7625a",
+  i4: "#2f7888",
+  t4: "#b3a041",
+  l4: "#4f7ebb",
+  s4: "#be7f90",
   l: "#4f7ebb",
   y: "#6ba879",
   n: "#d87932",

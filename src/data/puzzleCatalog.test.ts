@@ -17,7 +17,7 @@ describe("calendar puzzle catalog", () => {
   it("resolves a date to its month-length and starting-weekday board", () => {
     expect(getCalendarBoardKeyForDate(new Date(2026, 7, 20))).toBe("31-6");
     expect(getCalendarBoardKeyForDate(new Date(2026, 0, 15))).toBe("31-4");
-    expect(getCalendarBoardKeyForDate(new Date(2026, 3, 15))).toBeUndefined();
+    expect(getCalendarBoardKeyForDate(new Date(2026, 3, 15))).toBe("30-3");
     expect(getCalendarBoardKeyForDate(new Date(2028, 1, 15))).toBeUndefined();
   });
 
@@ -54,12 +54,29 @@ describe("calendar puzzle catalog", () => {
       "31-4",
       "31-5",
       "31-6",
+      "30-0",
+      "30-1",
+      "30-2",
+      "30-3",
+      "30-4",
+      "30-5",
+      "30-6",
     ]);
-    expect(calendarBoardOptions.at(-1)?.label).toBe("31 days · Saturday start");
+    expect(calendarBoardOptions.at(-1)?.label).toBe("30 days · Saturday start");
     expect(getCalendarPuzzleConfiguration("31-0").board.id).toBe(
       "calendar-31-0",
     );
     expect(getCalendarPuzzleConfiguration("31-1").startsOnWeekday).toBe(1);
+    const saturday30 = getCalendarPuzzleConfiguration("30-6");
+    expect(saturday30.daysInMonth).toBe(30);
+    expect(saturday30.startsOnWeekday).toBe(6);
+    expect(
+      saturday30.board.cells.filter((cell) => cell.date !== undefined),
+    ).toHaveLength(30);
+    expect(saturday30.dateRules[8]?.requiredPieceCount).toBe(7);
+    expect(saturday30.dateRules[23]?.requiredPieceCount).toBe(7);
+    expect(saturday30.dateRules[3]).toBeUndefined();
+    expect(saturday30.dateRules[28]).toBeUndefined();
     expect(
       getCalendarPuzzleConfiguration("31-0").difficultyDefinitions.hard
         .piecePools,
