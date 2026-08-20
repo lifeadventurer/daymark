@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref } from "vue";
+import { computed, defineAsyncComponent, onBeforeUnmount, ref } from "vue";
 import DaymarkMark from "./components/DaymarkMark.vue";
 import PuzzleBoard from "./components/PuzzleBoard.vue";
 import PieceTray from "./components/PieceTray.vue";
@@ -51,6 +51,9 @@ const completionCelebration = ref(false);
 const completedAt = ref<string | null>(null);
 const records = ref(loadRecordStore());
 const pieceOrientations = ref<Record<string, number>>({});
+const DevelopmentScenarioPicker = import.meta.env.DEV
+  ? defineAsyncComponent(() => import("./dev/DevelopmentScenarioPicker.vue"))
+  : null;
 const currentPuzzle = computed(() =>
   getCalendarPuzzleConfiguration(selectedBoardKey.value),
 );
@@ -199,6 +202,20 @@ function updateBoard(event: Event) {
   }
   changeBoard(nextBoardKey);
 }
+
+const applyDevelopmentScenario = import.meta.env.DEV
+  ? (nextBoardKey: CalendarBoardKey, dateKey: string) => {
+      const nextDate = dateFromInputValue(dateKey);
+      if (!nextDate) return;
+
+      endDrag();
+      saveCurrentPuzzle();
+      selectedBoardKey.value = nextBoardKey;
+      selectedDate.value = nextDate;
+      selectedPieceId.value = null;
+      loadPuzzleForDate(dateKey);
+    }
+  : null;
 
 function resetPuzzle() {
   endDrag();
@@ -716,6 +733,12 @@ onBeforeUnmount(() => {
       </div>
 
       <aside class="side-panel">
+        <DevelopmentScenarioPicker
+          v-if="DevelopmentScenarioPicker && applyDevelopmentScenario"
+          :board-key="selectedBoardKey"
+          :date-key="dateContext.isoDate"
+          @select="applyDevelopmentScenario"
+        />
         <label class="board-picker">
           <span>Board</span>
           <select
