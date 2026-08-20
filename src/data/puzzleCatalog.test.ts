@@ -36,10 +36,16 @@ describe("calendar puzzle catalog", () => {
     ).toHaveLength(31);
     expect(activeCalendarBoardKey).toBe("31-1");
     expect(activeCalendarPuzzle.board.id).toBe("calendar-31-1");
-    expect(calendarBoardOptions).toEqual([
-      { key: "31-0", label: "31 days · Sunday start" },
-      { key: "31-1", label: "31 days · Monday start" },
+    expect(calendarBoardOptions.map((option) => option.key)).toEqual([
+      "31-0",
+      "31-1",
+      "31-2",
+      "31-3",
+      "31-4",
+      "31-5",
+      "31-6",
     ]);
+    expect(calendarBoardOptions.at(-1)?.label).toBe("31 days · Saturday start");
     expect(getCalendarPuzzleConfiguration("31-0").board.id).toBe(
       "calendar-31-0",
     );

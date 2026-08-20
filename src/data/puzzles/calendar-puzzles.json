@@ -149,6 +149,1136 @@
           "pieceIds": ["p", "l", "y", "n", "u", "v", "z"]
         }
       }
+    },
+    "31-2": {
+      "daysInMonth": 31,
+      "startsOnWeekday": 2,
+      "requiredPieceCount": 6,
+      "cells": [
+        {
+          "x": 0,
+          "y": 0,
+          "playable": false
+        },
+        {
+          "x": 1,
+          "y": 0,
+          "playable": false
+        },
+        {
+          "x": 2,
+          "y": 0,
+          "date": 1
+        },
+        {
+          "x": 3,
+          "y": 0,
+          "date": 2
+        },
+        {
+          "x": 4,
+          "y": 0,
+          "date": 3
+        },
+        {
+          "x": 5,
+          "y": 0,
+          "date": 4
+        },
+        {
+          "x": 6,
+          "y": 0,
+          "date": 5
+        },
+        {
+          "x": 0,
+          "y": 1,
+          "date": 6
+        },
+        {
+          "x": 1,
+          "y": 1,
+          "date": 7
+        },
+        {
+          "x": 2,
+          "y": 1,
+          "date": 8
+        },
+        {
+          "x": 3,
+          "y": 1,
+          "date": 9
+        },
+        {
+          "x": 4,
+          "y": 1,
+          "date": 10
+        },
+        {
+          "x": 5,
+          "y": 1,
+          "date": 11
+        },
+        {
+          "x": 6,
+          "y": 1,
+          "date": 12
+        },
+        {
+          "x": 0,
+          "y": 2,
+          "date": 13
+        },
+        {
+          "x": 1,
+          "y": 2,
+          "date": 14
+        },
+        {
+          "x": 2,
+          "y": 2,
+          "date": 15
+        },
+        {
+          "x": 3,
+          "y": 2,
+          "date": 16
+        },
+        {
+          "x": 4,
+          "y": 2,
+          "date": 17
+        },
+        {
+          "x": 5,
+          "y": 2,
+          "date": 18
+        },
+        {
+          "x": 6,
+          "y": 2,
+          "date": 19
+        },
+        {
+          "x": 0,
+          "y": 3,
+          "date": 20
+        },
+        {
+          "x": 1,
+          "y": 3,
+          "date": 21
+        },
+        {
+          "x": 2,
+          "y": 3,
+          "date": 22
+        },
+        {
+          "x": 3,
+          "y": 3,
+          "date": 23
+        },
+        {
+          "x": 4,
+          "y": 3,
+          "date": 24
+        },
+        {
+          "x": 5,
+          "y": 3,
+          "date": 25
+        },
+        {
+          "x": 6,
+          "y": 3,
+          "date": 26
+        },
+        {
+          "x": 0,
+          "y": 4,
+          "date": 27
+        },
+        {
+          "x": 1,
+          "y": 4,
+          "date": 28
+        },
+        {
+          "x": 2,
+          "y": 4,
+          "date": 29
+        },
+        {
+          "x": 3,
+          "y": 4,
+          "date": 30
+        },
+        {
+          "x": 4,
+          "y": 4,
+          "date": 31
+        },
+        {
+          "x": 5,
+          "y": 4,
+          "playable": false
+        },
+        {
+          "x": 6,
+          "y": 4,
+          "playable": false
+        }
+      ],
+      "difficulties": {
+        "easy": {
+          "label": "Easy",
+          "description": "All pieces are available.",
+          "pieceIds": [
+            "p",
+            "l",
+            "y",
+            "n",
+            "u",
+            "v",
+            "z",
+            "f",
+            "i",
+            "t",
+            "w",
+            "x"
+          ]
+        },
+        "medium": {
+          "label": "Medium",
+          "description": "A wider selection of pieces is available.",
+          "pieceIds": ["p", "l", "y", "n", "u", "v", "z", "f", "i"]
+        },
+        "hard": {
+          "label": "Hard",
+          "description": "Choose six pieces from the seven-piece challenge set.",
+          "pieceIds": ["p", "l", "y", "n", "u", "v", "z"]
+        }
+      }
+    },
+    "31-3": {
+      "daysInMonth": 31,
+      "startsOnWeekday": 3,
+      "requiredPieceCount": 6,
+      "cells": [
+        {
+          "x": 0,
+          "y": 0,
+          "playable": false
+        },
+        {
+          "x": 1,
+          "y": 0,
+          "playable": false
+        },
+        {
+          "x": 2,
+          "y": 0,
+          "playable": false
+        },
+        {
+          "x": 3,
+          "y": 0,
+          "date": 1
+        },
+        {
+          "x": 4,
+          "y": 0,
+          "date": 2
+        },
+        {
+          "x": 5,
+          "y": 0,
+          "date": 3
+        },
+        {
+          "x": 6,
+          "y": 0,
+          "date": 4
+        },
+        {
+          "x": 0,
+          "y": 1,
+          "date": 5
+        },
+        {
+          "x": 1,
+          "y": 1,
+          "date": 6
+        },
+        {
+          "x": 2,
+          "y": 1,
+          "date": 7
+        },
+        {
+          "x": 3,
+          "y": 1,
+          "date": 8
+        },
+        {
+          "x": 4,
+          "y": 1,
+          "date": 9
+        },
+        {
+          "x": 5,
+          "y": 1,
+          "date": 10
+        },
+        {
+          "x": 6,
+          "y": 1,
+          "date": 11
+        },
+        {
+          "x": 0,
+          "y": 2,
+          "date": 12
+        },
+        {
+          "x": 1,
+          "y": 2,
+          "date": 13
+        },
+        {
+          "x": 2,
+          "y": 2,
+          "date": 14
+        },
+        {
+          "x": 3,
+          "y": 2,
+          "date": 15
+        },
+        {
+          "x": 4,
+          "y": 2,
+          "date": 16
+        },
+        {
+          "x": 5,
+          "y": 2,
+          "date": 17
+        },
+        {
+          "x": 6,
+          "y": 2,
+          "date": 18
+        },
+        {
+          "x": 0,
+          "y": 3,
+          "date": 19
+        },
+        {
+          "x": 1,
+          "y": 3,
+          "date": 20
+        },
+        {
+          "x": 2,
+          "y": 3,
+          "date": 21
+        },
+        {
+          "x": 3,
+          "y": 3,
+          "date": 22
+        },
+        {
+          "x": 4,
+          "y": 3,
+          "date": 23
+        },
+        {
+          "x": 5,
+          "y": 3,
+          "date": 24
+        },
+        {
+          "x": 6,
+          "y": 3,
+          "date": 25
+        },
+        {
+          "x": 0,
+          "y": 4,
+          "date": 26
+        },
+        {
+          "x": 1,
+          "y": 4,
+          "date": 27
+        },
+        {
+          "x": 2,
+          "y": 4,
+          "date": 28
+        },
+        {
+          "x": 3,
+          "y": 4,
+          "date": 29
+        },
+        {
+          "x": 4,
+          "y": 4,
+          "date": 30
+        },
+        {
+          "x": 5,
+          "y": 4,
+          "date": 31
+        },
+        {
+          "x": 6,
+          "y": 4,
+          "playable": false
+        }
+      ],
+      "difficulties": {
+        "easy": {
+          "label": "Easy",
+          "description": "All pieces are available.",
+          "pieceIds": [
+            "p",
+            "l",
+            "y",
+            "n",
+            "u",
+            "v",
+            "z",
+            "f",
+            "i",
+            "t",
+            "w",
+            "x"
+          ]
+        },
+        "medium": {
+          "label": "Medium",
+          "description": "A wider selection of pieces is available.",
+          "pieceIds": ["p", "l", "y", "n", "u", "v", "z", "f", "i"]
+        },
+        "hard": {
+          "label": "Hard",
+          "description": "Choose six pieces from the seven-piece challenge set.",
+          "pieceIds": ["p", "l", "y", "n", "u", "v", "z"]
+        }
+      }
+    },
+    "31-4": {
+      "daysInMonth": 31,
+      "startsOnWeekday": 4,
+      "requiredPieceCount": 6,
+      "cells": [
+        {
+          "x": 0,
+          "y": 0,
+          "playable": false
+        },
+        {
+          "x": 1,
+          "y": 0,
+          "playable": false
+        },
+        {
+          "x": 2,
+          "y": 0,
+          "playable": false
+        },
+        {
+          "x": 3,
+          "y": 0,
+          "playable": false
+        },
+        {
+          "x": 4,
+          "y": 0,
+          "date": 1
+        },
+        {
+          "x": 5,
+          "y": 0,
+          "date": 2
+        },
+        {
+          "x": 6,
+          "y": 0,
+          "date": 3
+        },
+        {
+          "x": 0,
+          "y": 1,
+          "date": 4
+        },
+        {
+          "x": 1,
+          "y": 1,
+          "date": 5
+        },
+        {
+          "x": 2,
+          "y": 1,
+          "date": 6
+        },
+        {
+          "x": 3,
+          "y": 1,
+          "date": 7
+        },
+        {
+          "x": 4,
+          "y": 1,
+          "date": 8
+        },
+        {
+          "x": 5,
+          "y": 1,
+          "date": 9
+        },
+        {
+          "x": 6,
+          "y": 1,
+          "date": 10
+        },
+        {
+          "x": 0,
+          "y": 2,
+          "date": 11
+        },
+        {
+          "x": 1,
+          "y": 2,
+          "date": 12
+        },
+        {
+          "x": 2,
+          "y": 2,
+          "date": 13
+        },
+        {
+          "x": 3,
+          "y": 2,
+          "date": 14
+        },
+        {
+          "x": 4,
+          "y": 2,
+          "date": 15
+        },
+        {
+          "x": 5,
+          "y": 2,
+          "date": 16
+        },
+        {
+          "x": 6,
+          "y": 2,
+          "date": 17
+        },
+        {
+          "x": 0,
+          "y": 3,
+          "date": 18
+        },
+        {
+          "x": 1,
+          "y": 3,
+          "date": 19
+        },
+        {
+          "x": 2,
+          "y": 3,
+          "date": 20
+        },
+        {
+          "x": 3,
+          "y": 3,
+          "date": 21
+        },
+        {
+          "x": 4,
+          "y": 3,
+          "date": 22
+        },
+        {
+          "x": 5,
+          "y": 3,
+          "date": 23
+        },
+        {
+          "x": 6,
+          "y": 3,
+          "date": 24
+        },
+        {
+          "x": 0,
+          "y": 4,
+          "date": 25
+        },
+        {
+          "x": 1,
+          "y": 4,
+          "date": 26
+        },
+        {
+          "x": 2,
+          "y": 4,
+          "date": 27
+        },
+        {
+          "x": 3,
+          "y": 4,
+          "date": 28
+        },
+        {
+          "x": 4,
+          "y": 4,
+          "date": 29
+        },
+        {
+          "x": 5,
+          "y": 4,
+          "date": 30
+        },
+        {
+          "x": 6,
+          "y": 4,
+          "date": 31
+        }
+      ],
+      "difficulties": {
+        "easy": {
+          "label": "Easy",
+          "description": "All pieces are available.",
+          "pieceIds": [
+            "p",
+            "l",
+            "y",
+            "n",
+            "u",
+            "v",
+            "z",
+            "f",
+            "i",
+            "t",
+            "w",
+            "x"
+          ]
+        },
+        "medium": {
+          "label": "Medium",
+          "description": "A wider selection of pieces is available.",
+          "pieceIds": ["p", "l", "y", "n", "u", "v", "z", "f", "i"]
+        },
+        "hard": {
+          "label": "Hard",
+          "description": "Choose six pieces from the seven-piece challenge set.",
+          "pieceIds": ["p", "l", "y", "n", "u", "v", "z"]
+        }
+      }
+    },
+    "31-5": {
+      "daysInMonth": 31,
+      "startsOnWeekday": 5,
+      "requiredPieceCount": 6,
+      "cells": [
+        {
+          "x": 0,
+          "y": 0,
+          "playable": false
+        },
+        {
+          "x": 1,
+          "y": 0,
+          "playable": false
+        },
+        {
+          "x": 2,
+          "y": 0,
+          "playable": false
+        },
+        {
+          "x": 3,
+          "y": 0,
+          "playable": false
+        },
+        {
+          "x": 4,
+          "y": 0,
+          "playable": false
+        },
+        {
+          "x": 5,
+          "y": 0,
+          "date": 1
+        },
+        {
+          "x": 6,
+          "y": 0,
+          "date": 2
+        },
+        {
+          "x": 0,
+          "y": 1,
+          "date": 3
+        },
+        {
+          "x": 1,
+          "y": 1,
+          "date": 4
+        },
+        {
+          "x": 2,
+          "y": 1,
+          "date": 5
+        },
+        {
+          "x": 3,
+          "y": 1,
+          "date": 6
+        },
+        {
+          "x": 4,
+          "y": 1,
+          "date": 7
+        },
+        {
+          "x": 5,
+          "y": 1,
+          "date": 8
+        },
+        {
+          "x": 6,
+          "y": 1,
+          "date": 9
+        },
+        {
+          "x": 0,
+          "y": 2,
+          "date": 10
+        },
+        {
+          "x": 1,
+          "y": 2,
+          "date": 11
+        },
+        {
+          "x": 2,
+          "y": 2,
+          "date": 12
+        },
+        {
+          "x": 3,
+          "y": 2,
+          "date": 13
+        },
+        {
+          "x": 4,
+          "y": 2,
+          "date": 14
+        },
+        {
+          "x": 5,
+          "y": 2,
+          "date": 15
+        },
+        {
+          "x": 6,
+          "y": 2,
+          "date": 16
+        },
+        {
+          "x": 0,
+          "y": 3,
+          "date": 17
+        },
+        {
+          "x": 1,
+          "y": 3,
+          "date": 18
+        },
+        {
+          "x": 2,
+          "y": 3,
+          "date": 19
+        },
+        {
+          "x": 3,
+          "y": 3,
+          "date": 20
+        },
+        {
+          "x": 4,
+          "y": 3,
+          "date": 21
+        },
+        {
+          "x": 5,
+          "y": 3,
+          "date": 22
+        },
+        {
+          "x": 6,
+          "y": 3,
+          "date": 23
+        },
+        {
+          "x": 0,
+          "y": 4,
+          "date": 24
+        },
+        {
+          "x": 1,
+          "y": 4,
+          "date": 25
+        },
+        {
+          "x": 2,
+          "y": 4,
+          "date": 26
+        },
+        {
+          "x": 3,
+          "y": 4,
+          "date": 27
+        },
+        {
+          "x": 4,
+          "y": 4,
+          "date": 28
+        },
+        {
+          "x": 5,
+          "y": 4,
+          "date": 29
+        },
+        {
+          "x": 6,
+          "y": 4,
+          "date": 30
+        },
+        {
+          "x": 0,
+          "y": 5,
+          "date": 31
+        },
+        {
+          "x": 1,
+          "y": 5,
+          "playable": false
+        },
+        {
+          "x": 2,
+          "y": 5,
+          "playable": false
+        },
+        {
+          "x": 3,
+          "y": 5,
+          "playable": false
+        },
+        {
+          "x": 4,
+          "y": 5,
+          "playable": false
+        },
+        {
+          "x": 5,
+          "y": 5,
+          "playable": false
+        },
+        {
+          "x": 6,
+          "y": 5,
+          "playable": false
+        }
+      ],
+      "difficulties": {
+        "easy": {
+          "label": "Easy",
+          "description": "All pieces are available.",
+          "pieceIds": [
+            "p",
+            "l",
+            "y",
+            "n",
+            "u",
+            "v",
+            "z",
+            "f",
+            "i",
+            "t",
+            "w",
+            "x"
+          ]
+        },
+        "medium": {
+          "label": "Medium",
+          "description": "A wider selection of pieces is available.",
+          "pieceIds": ["p", "l", "y", "n", "u", "v", "z", "f", "i"]
+        },
+        "hard": {
+          "label": "Hard",
+          "description": "Choose six pieces from the seven-piece challenge set.",
+          "pieceIds": ["p", "l", "y", "n", "u", "v", "z"]
+        }
+      }
+    },
+    "31-6": {
+      "daysInMonth": 31,
+      "startsOnWeekday": 6,
+      "requiredPieceCount": 6,
+      "cells": [
+        {
+          "x": 0,
+          "y": 0,
+          "playable": false
+        },
+        {
+          "x": 1,
+          "y": 0,
+          "playable": false
+        },
+        {
+          "x": 2,
+          "y": 0,
+          "playable": false
+        },
+        {
+          "x": 3,
+          "y": 0,
+          "playable": false
+        },
+        {
+          "x": 4,
+          "y": 0,
+          "playable": false
+        },
+        {
+          "x": 5,
+          "y": 0,
+          "playable": false
+        },
+        {
+          "x": 6,
+          "y": 0,
+          "date": 1
+        },
+        {
+          "x": 0,
+          "y": 1,
+          "date": 2
+        },
+        {
+          "x": 1,
+          "y": 1,
+          "date": 3
+        },
+        {
+          "x": 2,
+          "y": 1,
+          "date": 4
+        },
+        {
+          "x": 3,
+          "y": 1,
+          "date": 5
+        },
+        {
+          "x": 4,
+          "y": 1,
+          "date": 6
+        },
+        {
+          "x": 5,
+          "y": 1,
+          "date": 7
+        },
+        {
+          "x": 6,
+          "y": 1,
+          "date": 8
+        },
+        {
+          "x": 0,
+          "y": 2,
+          "date": 9
+        },
+        {
+          "x": 1,
+          "y": 2,
+          "date": 10
+        },
+        {
+          "x": 2,
+          "y": 2,
+          "date": 11
+        },
+        {
+          "x": 3,
+          "y": 2,
+          "date": 12
+        },
+        {
+          "x": 4,
+          "y": 2,
+          "date": 13
+        },
+        {
+          "x": 5,
+          "y": 2,
+          "date": 14
+        },
+        {
+          "x": 6,
+          "y": 2,
+          "date": 15
+        },
+        {
+          "x": 0,
+          "y": 3,
+          "date": 16
+        },
+        {
+          "x": 1,
+          "y": 3,
+          "date": 17
+        },
+        {
+          "x": 2,
+          "y": 3,
+          "date": 18
+        },
+        {
+          "x": 3,
+          "y": 3,
+          "date": 19
+        },
+        {
+          "x": 4,
+          "y": 3,
+          "date": 20
+        },
+        {
+          "x": 5,
+          "y": 3,
+          "date": 21
+        },
+        {
+          "x": 6,
+          "y": 3,
+          "date": 22
+        },
+        {
+          "x": 0,
+          "y": 4,
+          "date": 23
+        },
+        {
+          "x": 1,
+          "y": 4,
+          "date": 24
+        },
+        {
+          "x": 2,
+          "y": 4,
+          "date": 25
+        },
+        {
+          "x": 3,
+          "y": 4,
+          "date": 26
+        },
+        {
+          "x": 4,
+          "y": 4,
+          "date": 27
+        },
+        {
+          "x": 5,
+          "y": 4,
+          "date": 28
+        },
+        {
+          "x": 6,
+          "y": 4,
+          "date": 29
+        },
+        {
+          "x": 0,
+          "y": 5,
+          "date": 30
+        },
+        {
+          "x": 1,
+          "y": 5,
+          "date": 31
+        },
+        {
+          "x": 2,
+          "y": 5,
+          "playable": false
+        },
+        {
+          "x": 3,
+          "y": 5,
+          "playable": false
+        },
+        {
+          "x": 4,
+          "y": 5,
+          "playable": false
+        },
+        {
+          "x": 5,
+          "y": 5,
+          "playable": false
+        },
+        {
+          "x": 6,
+          "y": 5,
+          "playable": false
+        }
+      ],
+      "difficulties": {
+        "easy": {
+          "label": "Easy",
+          "description": "All pieces are available.",
+          "pieceIds": [
+            "p",
+            "l",
+            "y",
+            "n",
+            "u",
+            "v",
+            "z",
+            "f",
+            "i",
+            "t",
+            "w",
+            "x"
+          ]
+        },
+        "medium": {
+          "label": "Medium",
+          "description": "A wider selection of pieces is available.",
+          "pieceIds": ["p", "l", "y", "n", "u", "v", "z", "f", "i"]
+        },
+        "hard": {
+          "label": "Hard",
+          "description": "Choose six pieces from the seven-piece challenge set.",
+          "pieceIds": ["p", "l", "y", "n", "u", "v", "z"]
+        }
+      }
     }
   }
 }
