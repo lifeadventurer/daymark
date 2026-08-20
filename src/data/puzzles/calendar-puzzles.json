@@ -73,7 +73,7 @@
         },
         "hard": {
           "label": "Hard",
-          "description": "Choose six pieces from the selected seven-piece pool.",
+          "description": "Fewer pieces are available for a tighter challenge.",
           "piecePools": [
             ["p", "l", "y", "n", "u", "v", "z"],
             ["p", "l", "y", "n", "u", "v", "f"],
@@ -151,7 +151,7 @@
         },
         "hard": {
           "label": "Hard",
-          "description": "Choose six pieces from the selected seven-piece pool.",
+          "description": "Fewer pieces are available for a tighter challenge.",
           "piecePools": [
             ["p", "l", "y", "n", "u", "v", "z"],
             ["p", "l", "y", "n", "u", "v", "f"],
@@ -369,7 +369,7 @@
         },
         "hard": {
           "label": "Hard",
-          "description": "Choose six pieces from the selected seven-piece pool.",
+          "description": "Fewer pieces are available for a tighter challenge.",
           "piecePools": [
             ["p", "l", "y", "n", "u", "v", "z"],
             ["p", "l", "y", "n", "u", "v", "f"],
@@ -587,7 +587,7 @@
         },
         "hard": {
           "label": "Hard",
-          "description": "Choose six pieces from the selected seven-piece pool.",
+          "description": "Fewer pieces are available for a tighter challenge.",
           "piecePools": [
             ["p", "l", "y", "n", "u", "v", "z"],
             ["p", "l", "y", "n", "u", "v", "f"],
@@ -805,7 +805,7 @@
         },
         "hard": {
           "label": "Hard",
-          "description": "Choose six pieces from the selected seven-piece pool.",
+          "description": "Fewer pieces are available for a tighter challenge.",
           "piecePools": [
             ["p", "l", "y", "n", "u", "v", "z"],
             ["p", "l", "y", "n", "u", "v", "f"],
@@ -820,6 +820,12 @@
       "daysInMonth": 31,
       "startsOnWeekday": 5,
       "requiredPieceCount": 6,
+      "dateRules": {
+        "24": {
+          "requiredPieceCount": 7,
+          "pieceReplacements": { "p": ["p4", "p1"] }
+        }
+      },
       "cells": [
         {
           "x": 0,
@@ -1058,7 +1064,7 @@
         },
         "hard": {
           "label": "Hard",
-          "description": "Choose six pieces from the selected seven-piece pool.",
+          "description": "Fewer pieces are available for a tighter challenge.",
           "piecePools": [
             ["p", "l", "y", "n", "u", "v", "f"],
             ["p", "l", "y", "n", "u", "v", "i"],
@@ -1073,6 +1079,12 @@
       "daysInMonth": 31,
       "startsOnWeekday": 6,
       "requiredPieceCount": 6,
+      "dateRules": {
+        "8": {
+          "requiredPieceCount": 7,
+          "pieceReplacements": { "p": ["p4", "p1"] }
+        }
+      },
       "cells": [
         {
           "x": 0,
@@ -1311,7 +1323,7 @@
         },
         "hard": {
           "label": "Hard",
-          "description": "Choose six pieces from the selected seven-piece pool.",
+          "description": "Fewer pieces are available for a tighter challenge.",
           "piecePools": [
             ["p", "l", "y", "n", "u", "v", "f"],
             ["p", "l", "y", "n", "u", "v", "i"],

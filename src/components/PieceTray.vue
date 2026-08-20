@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import PieceTile from "./PieceTile.vue";
+import { generateOrientations } from "../engine/geometry";
 import type { PieceDefinition } from "../engine/types";
 
 const props = defineProps<{
@@ -15,10 +16,16 @@ const props = defineProps<{
   dragging: boolean;
 }>();
 
+const selectedPiece = computed(() =>
+  props.pieces.find((piece) => piece.id === props.selectedPieceId),
+);
 const canTransform = computed(
   () =>
     !props.dragging &&
-    props.pieces.some((piece) => piece.id === props.selectedPieceId),
+    Boolean(
+      selectedPiece.value &&
+      generateOrientations(selectedPiece.value).length > 1,
+    ),
 );
 
 const emit = defineEmits<{
@@ -117,7 +124,10 @@ const emit = defineEmits<{
         </svg>
       </button>
     </div>
-    <div class="piece-grid">
+    <div
+      class="piece-grid"
+      :class="{ 'piece-grid--dense': pieces.length > 12 }"
+    >
       <PieceTile
         v-for="piece in pieces"
         :key="piece.id"

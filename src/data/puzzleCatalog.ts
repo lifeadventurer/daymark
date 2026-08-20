@@ -18,6 +18,15 @@ interface CatalogDifficultyDefinition {
   piecePools?: string[][];
 }
 
+interface CatalogDateRule {
+  requiredPieceCount: number;
+  pieceReplacements: Record<string, string[]>;
+}
+
+interface CatalogBoardWithDateRules {
+  dateRules?: Record<string, CatalogDateRule>;
+}
+
 export const weekdayNames = calendarPuzzleCatalog.weekdayIndex;
 export const calendarBoardVariants = calendarPuzzleCatalog.boards;
 
@@ -34,7 +43,18 @@ export interface CalendarPuzzleConfiguration {
   startsOnWeekday: number;
   board: BoardDefinition;
   requiredPieceCount: number;
+  dateRules: Record<number, PuzzleDateRule>;
   difficultyDefinitions: Record<PuzzleDifficulty, PuzzleDifficultyDefinition>;
+}
+
+export interface PuzzleDateRule {
+  requiredPieceCount: number;
+  pieceReplacements: Record<string, string[]>;
+}
+
+export interface PuzzleSetup {
+  requiredPieceCount: number;
+  pieceIds: string[];
 }
 
 function createDifficultyDefinitions(
@@ -95,6 +115,63 @@ export function getPiecePoolForDate(
   return [...definition.piecePools[poolIndex]];
 }
 
+export function getPuzzleSetupForPiecePool(
+  puzzle: CalendarPuzzleConfiguration,
+  pieceIds: string[],
+  targetDate: number,
+): PuzzleSetup {
+  const dateRule = puzzle.dateRules[targetDate];
+  if (!dateRule) {
+    return {
+      requiredPieceCount: puzzle.requiredPieceCount,
+      pieceIds: [...pieceIds],
+    };
+  }
+
+  return {
+    requiredPieceCount: dateRule.requiredPieceCount,
+    pieceIds: pieceIds.flatMap(
+      (pieceId) => dateRule.pieceReplacements[pieceId] ?? [pieceId],
+    ),
+  };
+}
+
+export function getPuzzleSetupForDate(
+  puzzle: CalendarPuzzleConfiguration,
+  difficulty: PuzzleDifficulty,
+  dateKey: string,
+  targetDate: number,
+): PuzzleSetup {
+  return getPuzzleSetupForPiecePool(
+    puzzle,
+    getPiecePoolForDate(puzzle, difficulty, dateKey),
+    targetDate,
+  );
+}
+
+function createDateRules(
+  boardKey: CalendarBoardKey,
+): CalendarPuzzleConfiguration["dateRules"] {
+  const catalog = calendarBoardVariants[
+    boardKey
+  ] as (typeof calendarBoardVariants)[CalendarBoardKey] &
+    CatalogBoardWithDateRules;
+
+  return Object.fromEntries(
+    Object.entries(catalog.dateRules ?? {}).map(([date, rule]) => [
+      Number(date),
+      {
+        requiredPieceCount: rule.requiredPieceCount,
+        pieceReplacements: Object.fromEntries(
+          Object.entries(rule.pieceReplacements).map(
+            ([pieceId, replacements]) => [pieceId, [...replacements]],
+          ),
+        ),
+      },
+    ]),
+  );
+}
+
 function capitalize(value: string): string {
   return value.charAt(0).toUpperCase() + value.slice(1);
 }
@@ -119,6 +196,7 @@ export function getCalendarPuzzleConfiguration(
     startsOnWeekday: catalog.startsOnWeekday,
     board: createBoardDefinition(`calendar-${boardKey}`, catalog.cells),
     requiredPieceCount: catalog.requiredPieceCount,
+    dateRules: createDateRules(boardKey),
     difficultyDefinitions: createDifficultyDefinitions(boardKey),
   };
 }

@@ -1,6 +1,6 @@
 import type { PieceDefinition } from "../engine/types";
 
-/** Canonical pentomino definitions. Visual colors are kept separate from IDs. */
+/** Canonical puzzle pieces. Visual colors are kept separate from IDs. */
 export const pieceDefinitions: PieceDefinition[] = [
   {
     id: "p",
@@ -13,6 +13,25 @@ export const pieceDefinitions: PieceDefinition[] = [
     ],
     allowRotation: true,
     allowReflection: true,
+  },
+  {
+    id: "p4",
+    // The P piece without its tail, used by isolated-corner date rules.
+    cells: [
+      { x: 0, y: 0 },
+      { x: 1, y: 0 },
+      { x: 0, y: 1 },
+      { x: 1, y: 1 },
+    ],
+    allowRotation: false,
+    allowReflection: false,
+  },
+  {
+    id: "p1",
+    // The removed P tail becomes an independently placeable single block.
+    cells: [{ x: 0, y: 0 }],
+    allowRotation: false,
+    allowReflection: false,
   },
   {
     id: "l",
@@ -157,6 +176,8 @@ export const pieceDefinitions: PieceDefinition[] = [
 
 export const pieceLabels: Record<string, string> = {
   p: "P pentomino",
+  p4: "Short P tetromino",
+  p1: "Single block",
   l: "L pentomino",
   y: "Y pentomino",
   n: "N pentomino",
@@ -172,6 +193,8 @@ export const pieceLabels: Record<string, string> = {
 
 export const pieceColors: Record<string, string> = {
   p: "#d7625a",
+  p4: "#d7625a",
+  p1: "#d7625a",
   l: "#4f7ebb",
   y: "#6ba879",
   n: "#d87932",

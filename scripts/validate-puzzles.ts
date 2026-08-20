@@ -1,6 +1,11 @@
-import { createBoardDefinition } from "../src/engine/board";
 import { findPuzzleSolution } from "../src/engine/solver";
-import { calendarBoardVariants, weekdayNames } from "../src/data/puzzleCatalog";
+import {
+  calendarBoardVariants,
+  getCalendarPuzzleConfiguration,
+  getPuzzleSetupForPiecePool,
+  weekdayNames,
+  type CalendarBoardKey,
+} from "../src/data/puzzleCatalog";
 import { pieceDefinitions } from "../src/data/pieces";
 
 const piecesById = new Map(pieceDefinitions.map((piece) => [piece.id, piece]));
@@ -11,10 +16,8 @@ for (const [boardKey, boardConfig] of Object.entries(calendarBoardVariants)) {
   const keyParts = boardKey.split("-");
   const daysInMonth = Number(keyParts[0]);
   const startsOnWeekday = Number(keyParts[1]);
-  const board = createBoardDefinition(
-    `calendar-${boardKey}`,
-    boardConfig.cells,
-  );
+  const puzzle = getCalendarPuzzleConfiguration(boardKey as CalendarBoardKey);
+  const board = puzzle.board;
   const dateCells = boardConfig.cells.filter((cell) => cell.date !== undefined);
   const targetDates = dateCells
     .filter((cell) => cell.date !== undefined)
@@ -59,6 +62,59 @@ for (const [boardKey, boardConfig] of Object.entries(calendarBoardVariants)) {
       `${boardKey}: date cells must contain every number from 1 to ${boardConfig.daysInMonth}`,
     );
     continue;
+  }
+
+  for (const [ruleDateKey, dateRule] of Object.entries(puzzle.dateRules)) {
+    const ruleDate = Number(ruleDateKey);
+    const ruleLabel = `${boardKey}/date-rule-${ruleDateKey}`;
+    if (!Number.isInteger(ruleDate) || !targetDates.includes(ruleDate)) {
+      failures.push(`${ruleLabel}: target date is not on the board`);
+    }
+    if (
+      !Number.isInteger(dateRule.requiredPieceCount) ||
+      dateRule.requiredPieceCount < 1
+    ) {
+      failures.push(`${ruleLabel}: required piece count must be positive`);
+    }
+
+    for (const [sourcePieceId, replacementIds] of Object.entries(
+      dateRule.pieceReplacements,
+    )) {
+      const replacementLabel = `${ruleLabel}/replace-${sourcePieceId}`;
+      const sourcePiece = piecesById.get(sourcePieceId);
+      if (!sourcePiece) {
+        failures.push(`${replacementLabel}: source piece does not exist`);
+        continue;
+      }
+      if (replacementIds.length === 0) {
+        failures.push(`${replacementLabel}: replacement list is empty`);
+        continue;
+      }
+      if (new Set(replacementIds).size !== replacementIds.length) {
+        failures.push(`${replacementLabel}: duplicate replacement piece IDs`);
+        continue;
+      }
+      const unknownReplacementIds = replacementIds.filter(
+        (pieceId) => !piecesById.has(pieceId),
+      );
+      if (unknownReplacementIds.length > 0) {
+        failures.push(
+          `${replacementLabel}: unknown pieces ${unknownReplacementIds.join(", ")}`,
+        );
+        continue;
+      }
+
+      const replacementCellCount = replacementIds.reduce(
+        (cellCount, pieceId) =>
+          cellCount + (piecesById.get(pieceId)?.cells.length ?? 0),
+        0,
+      );
+      if (replacementCellCount !== sourcePiece.cells.length) {
+        failures.push(
+          `${replacementLabel}: replacements must preserve ${sourcePiece.cells.length} cells`,
+        );
+      }
+    }
   }
 
   console.log(
@@ -106,21 +162,43 @@ for (const [boardKey, boardConfig] of Object.entries(calendarBoardVariants)) {
         continue;
       }
 
-      const availablePieces = pieceIds.map((pieceId) =>
-        piecesById.get(pieceId)!,
-      );
       for (const targetDate of targetDates) {
         checkedCombinations += 1;
+        const setup = getPuzzleSetupForPiecePool(puzzle, pieceIds, targetDate);
+        const setupLabel = `${poolLabel}/date-${targetDate}`;
+        const unknownSetupPieceIds = setup.pieceIds.filter(
+          (pieceId) => !piecesById.has(pieceId),
+        );
+        if (unknownSetupPieceIds.length > 0) {
+          failures.push(
+            `${setupLabel}: unknown pieces ${unknownSetupPieceIds.join(", ")}`,
+          );
+          continue;
+        }
+        if (new Set(setup.pieceIds).size !== setup.pieceIds.length) {
+          failures.push(`${setupLabel}: duplicate piece IDs`);
+          continue;
+        }
+        if (setup.pieceIds.length < setup.requiredPieceCount) {
+          failures.push(
+            `${setupLabel}: fewer available pieces than required placements`,
+          );
+          continue;
+        }
+
+        const availablePieces = setup.pieceIds.map((pieceId) =>
+          piecesById.get(pieceId)!,
+        );
         const solution = findPuzzleSolution(
           board,
           availablePieces,
           targetDate,
-          boardConfig.requiredPieceCount,
+          setup.requiredPieceCount,
         );
         if (solution) {
           solvedDates += 1;
         } else {
-          failures.push(`${poolLabel}/date-${targetDate}`);
+          failures.push(setupLabel);
         }
       }
     }

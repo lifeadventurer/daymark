@@ -576,6 +576,18 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   }
 }
 
+@media (min-width: 881px) {
+  .piece-grid--dense {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .piece-grid--dense .piece-tile {
+    min-height: clamp(88px, 12vh, 112px);
+  }
+  .piece-grid--dense .piece-svg {
+    height: clamp(58px, 8vh, 76px);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .board-column--celebrate .board-shell,
   .board-column--celebrate .completion-mark {

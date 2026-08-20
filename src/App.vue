@@ -7,7 +7,7 @@ import {
   activeCalendarBoardKey,
   calendarBoardOptions,
   getCalendarPuzzleConfiguration,
-  getPiecePoolForDate,
+  getPuzzleSetupForDate,
   type CalendarBoardKey,
   type PuzzleDifficulty,
 } from "./data/puzzleCatalog";
@@ -61,7 +61,16 @@ const difficultyDefinitions = computed(
 const difficultyOptions = computed(() =>
   Object.values(difficultyDefinitions.value),
 );
-const pieceLimit = computed(() => currentPuzzle.value.requiredPieceCount);
+const dateContext = computed(() => getDateContext(selectedDate.value));
+const currentPuzzleSetup = computed(() =>
+  getPuzzleSetupForDate(
+    currentPuzzle.value,
+    selectedDifficulty.value,
+    dateContext.value.isoDate,
+    dateContext.value.dateNumber,
+  ),
+);
+const pieceLimit = computed(() => currentPuzzleSetup.value.requiredPieceCount);
 let completionCelebrationTimer: ReturnType<typeof setTimeout> | undefined;
 const boardRef = ref<{
   getGridPointFromClient: (
@@ -69,16 +78,11 @@ const boardRef = ref<{
     clientY: number,
   ) => { x: number; y: number } | undefined;
 } | null>(null);
-const dateContext = computed(() => getDateContext(selectedDate.value));
 const currentDifficulty = computed(() => {
   const definition = difficultyDefinitions.value[selectedDifficulty.value];
   return {
     ...definition,
-    pieceIds: getPiecePoolForDate(
-      currentPuzzle.value,
-      selectedDifficulty.value,
-      dateContext.value.isoDate,
-    ),
+    pieceIds: currentPuzzleSetup.value.pieceIds,
   };
 });
 const availablePieces = computed(() => {

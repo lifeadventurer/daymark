@@ -7,6 +7,7 @@ import {
   calendarBoardVariants,
   getCalendarPuzzleConfiguration,
   getPiecePoolForDate,
+  getPuzzleSetupForDate,
   weekdayNames,
 } from "./puzzleCatalog";
 import { pieceDefinitions } from "./pieces";
@@ -105,6 +106,58 @@ describe("calendar puzzle catalog", () => {
         );
       }),
     ).toBe(true);
+  }, 30_000);
+
+  it("splits the P piece to solve isolated corner dates", () => {
+    const isolatedCornerCases = [
+      {
+        boardKey: "31-5" as const,
+        targetDate: 24,
+        dateKey: "2026-07-24",
+      },
+      {
+        boardKey: "31-6" as const,
+        targetDate: 8,
+        dateKey: "2026-08-08",
+      },
+    ];
+
+    for (const { boardKey, targetDate, dateKey } of isolatedCornerCases) {
+      const puzzle = getCalendarPuzzleConfiguration(boardKey);
+      for (const difficulty of ["easy", "medium", "hard"] as const) {
+        const setup = getPuzzleSetupForDate(
+          puzzle,
+          difficulty,
+          dateKey,
+          targetDate,
+        );
+        const availablePieces = pieceDefinitions.filter((piece) =>
+          setup.pieceIds.includes(piece.id),
+        );
+        const solution = findPuzzleSolution(
+          puzzle.board,
+          availablePieces,
+          targetDate,
+          setup.requiredPieceCount,
+        );
+
+        expect(setup.requiredPieceCount).toBe(7);
+        expect(setup.pieceIds).not.toContain("p");
+        expect(setup.pieceIds).toEqual(expect.arrayContaining(["p4", "p1"]));
+        expect(solution).toHaveLength(7);
+      }
+    }
+
+    const regularSetup = getPuzzleSetupForDate(
+      getCalendarPuzzleConfiguration("31-5"),
+      "hard",
+      "2026-07-23",
+      23,
+    );
+    expect(regularSetup.requiredPieceCount).toBe(6);
+    expect(regularSetup.pieceIds).toContain("p");
+    expect(regularSetup.pieceIds).not.toContain("p4");
+    expect(regularSetup.pieceIds).not.toContain("p1");
   }, 30_000);
 
   it("rejects a target date that is not on the board", () => {
