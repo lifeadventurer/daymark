@@ -446,6 +446,44 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .tray {
   padding: 0;
 }
+.share-result {
+  margin-top: 14px;
+}
+.share-result__button {
+  width: 100%;
+  min-height: 40px;
+  padding: 8px 14px;
+  border: 1px solid #6e987e;
+  border-radius: 9px;
+  background: #edf5ee;
+  color: #41694e;
+  font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  font-size: 16px;
+  font-weight: 500;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+.share-result__button:hover,
+.share-result__button:focus-visible {
+  border-color: #527c5f;
+  background: #e2f0e4;
+}
+.share-result__button:active {
+  transform: translateY(1px);
+}
+.share-result__button:focus-visible {
+  outline: 2px solid rgba(214, 109, 77, 0.72);
+  outline-offset: 2px;
+}
+.share-result__status {
+  margin: 7px 0 0;
+  color: #68746b;
+  font-size: 13px;
+  line-height: 1.4;
+  text-align: center;
+}
 .piece-controls {
   display: flex;
   align-items: center;

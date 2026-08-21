@@ -42,12 +42,26 @@ import {
   saveRecordStore,
   type SavedPuzzleRecord,
 } from "./utils/storage";
+import {
+  createPuzzleShareSummary,
+  createPuzzleShareUrl,
+  parsePuzzleShareParameters,
+} from "./utils/share";
 
-const selectedDate = ref(new Date());
+const initialSharedPuzzle =
+  typeof window === "undefined"
+    ? undefined
+    : parsePuzzleShareParameters(window.location.search);
+const initialSharedDate = initialSharedPuzzle
+  ? dateFromInputValue(initialSharedPuzzle.dateKey)
+  : undefined;
+const selectedDate = ref(initialSharedDate ?? new Date());
 const selectedBoardKey = ref<CalendarBoardKey>(
   getCalendarBoardKeyForDate(selectedDate.value) ?? activeCalendarBoardKey,
 );
-const selectedDifficulty = ref<PuzzleDifficulty>("hard");
+const selectedDifficulty = ref<PuzzleDifficulty>(
+  initialSharedPuzzle?.difficulty ?? "hard",
+);
 const selectedPieceId = ref<string | null>(null);
 const placedPieces = ref<RenderedPiece[]>([]);
 const draggingPieceId = ref<string | null>(null);
@@ -61,6 +75,7 @@ const moveCount = ref(0);
 const completed = ref(false);
 const completionCelebration = ref(false);
 const completedAt = ref<string | null>(null);
+const shareStatus = ref<"idle" | "shared" | "copied" | "error">("idle");
 const records = ref(loadRecordStore());
 const pieceOrientations = ref<Record<string, number>>({});
 const handledOrientationShortcuts = new Set<string>();
@@ -104,6 +119,40 @@ const currentDifficulty = computed(() => {
     ...definition,
     pieceIds: currentPuzzleSetup.value.pieceIds,
   };
+});
+const shareResultUrl = computed(() => {
+  if (typeof window === "undefined") return "";
+  return createPuzzleShareUrl(
+    dateContext.value.isoDate,
+    selectedDifficulty.value,
+    window.location.href,
+  );
+});
+const shareResultSummary = computed(() =>
+  createPuzzleShareSummary(
+    `${dateContext.value.monthName} ${dateContext.value.dateNumber}, ${dateContext.value.year}`,
+    currentDifficulty.value.label,
+    moveCount.value,
+  ),
+);
+const shareResultText = computed(() =>
+  [shareResultSummary.value, shareResultUrl.value].filter(Boolean).join("\n"),
+);
+const shareButtonLabel = computed(() => {
+  if (shareStatus.value === "shared") return "Shared!";
+  if (shareStatus.value === "copied") return "Copied!";
+  if (shareStatus.value === "error") return "Try sharing again";
+  return "Share result";
+});
+const shareStatusMessage = computed(() => {
+  if (shareStatus.value === "shared") return "Share sheet opened.";
+  if (shareStatus.value === "copied") {
+    return "Result copied to your clipboard.";
+  }
+  if (shareStatus.value === "error") {
+    return "The result could not be shared. Try again.";
+  }
+  return "";
 });
 const availablePieces = computed(() => {
   const availableIds = new Set(currentDifficulty.value.pieceIds);
@@ -184,6 +233,7 @@ function clearPuzzleState() {
   completed.value = false;
   stopCompletionCelebration();
   completedAt.value = null;
+  shareStatus.value = "idle";
   pieceOrientations.value = {};
 }
 
@@ -263,6 +313,47 @@ function resetPuzzle() {
   endDrag();
   clearPuzzleState();
   saveCurrentPuzzle();
+}
+
+async function copyTextToClipboard(text: string) {
+  if (navigator.clipboard?.writeText) {
+    await navigator.clipboard.writeText(text);
+    return;
+  }
+
+  const textArea = document.createElement("textarea");
+  textArea.value = text;
+  textArea.setAttribute("readonly", "");
+  textArea.style.position = "fixed";
+  textArea.style.opacity = "0";
+  document.body.append(textArea);
+  textArea.select();
+  const copied = document.execCommand("copy");
+  textArea.remove();
+
+  if (!copied) throw new Error("Clipboard copy failed");
+}
+
+async function shareResult() {
+  if (!completed.value) return;
+
+  try {
+    if (typeof navigator.share === "function") {
+      await navigator.share({
+        title: "Daymark result",
+        text: shareResultSummary.value,
+        url: shareResultUrl.value,
+      });
+      shareStatus.value = "shared";
+      return;
+    }
+
+    await copyTextToClipboard(shareResultText.value);
+    shareStatus.value = "copied";
+  } catch (error) {
+    if (error instanceof DOMException && error.name === "AbortError") return;
+    shareStatus.value = "error";
+  }
 }
 
 function stopCompletionCelebration() {
@@ -809,6 +900,7 @@ function loadPuzzleForDate(
   completed.value = false;
   stopCompletionCelebration();
   completedAt.value = savedStateValid ? (saved?.completedAt ?? null) : null;
+  shareStatus.value = "idle";
   evaluateCompletion(false);
 }
 
@@ -1007,6 +1099,26 @@ onBeforeUnmount(() => {
             @flip-vertical="changeSelectedOrientation('flip-vertical')"
             @reset="resetPuzzle"
           />
+          <div v-if="completed && !draggingPieceId" class="share-result">
+            <button
+              class="share-result__button"
+              type="button"
+              :aria-describedby="
+                shareStatusMessage ? 'share-result-status' : undefined
+              "
+              @click="shareResult"
+            >
+              {{ shareButtonLabel }}
+            </button>
+            <p
+              v-if="shareStatusMessage"
+              id="share-result-status"
+              class="share-result__status"
+              role="status"
+            >
+              {{ shareStatusMessage }}
+            </p>
+          </div>
         </template>
         <div v-else class="board-unavailable__side-message" role="status">
           Puzzle controls will appear when this month’s board is ready.
