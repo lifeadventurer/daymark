@@ -2,11 +2,13 @@
 import {
   computed,
   defineAsyncComponent,
+  nextTick,
   onBeforeUnmount,
   onMounted,
   ref,
 } from "vue";
 import DaymarkMark from "./components/DaymarkMark.vue";
+import KeyboardShortcutsModal from "./components/KeyboardShortcutsModal.vue";
 import PieceControls from "./components/PieceControls.vue";
 import PuzzleBoard from "./components/PuzzleBoard.vue";
 import PieceTray from "./components/PieceTray.vue";
@@ -105,6 +107,8 @@ const solutionRevealError = ref(false);
 const records = ref(loadRecordStore());
 const pieceOrientations = ref<Record<string, number>>({});
 const handledOrientationShortcuts = new Set<string>();
+const shortcutsOpen = ref(false);
+const shortcutsReturnFocus = ref<HTMLElement | null>(null);
 const DevelopmentScenarioPicker = import.meta.env.DEV
   ? defineAsyncComponent(() => import("./dev/DevelopmentScenarioPicker.vue"))
   : null;
@@ -138,6 +142,7 @@ const boardRef = ref<{
     clientX: number,
     clientY: number,
   ) => { x: number; y: number } | undefined;
+  focusPlacedPiece: (pieceId: string) => void;
 } | null>(null);
 const currentDifficulty = computed(() => {
   const definition = difficultyDefinitions.value[selectedDifficulty.value];
@@ -689,6 +694,7 @@ function placeSelectedPiece(point: GridPoint) {
 
   moveCount.value += 1;
   selectedPieceId.value = null;
+  void nextTick(() => boardRef.value?.focusPlacedPiece(piece.id));
   evaluateCompletion();
   saveCurrentPuzzle();
 }
@@ -840,7 +846,45 @@ function shouldIgnoreOrientationShortcut(event: KeyboardEvent): boolean {
   return false;
 }
 
+function isShortcutsShortcut(event: KeyboardEvent): boolean {
+  return event.code === "Slash" && (event.metaKey || event.ctrlKey);
+}
+
+function openShortcuts() {
+  if (shortcutsOpen.value) return;
+  shortcutsReturnFocus.value =
+    document.activeElement instanceof HTMLElement
+      ? document.activeElement
+      : null;
+  shortcutsOpen.value = true;
+}
+
+function closeShortcuts() {
+  shortcutsOpen.value = false;
+  const returnFocus = shortcutsReturnFocus.value;
+  shortcutsReturnFocus.value = null;
+  if (returnFocus?.isConnected) returnFocus.focus();
+}
+
 function handleGlobalKeydown(event: KeyboardEvent) {
+  if (isShortcutsShortcut(event)) {
+    event.preventDefault();
+    if (shortcutsOpen.value) {
+      closeShortcuts();
+    } else {
+      openShortcuts();
+    }
+    return;
+  }
+
+  if (shortcutsOpen.value) {
+    if (event.key === "Escape") {
+      event.preventDefault();
+      closeShortcuts();
+    }
+    return;
+  }
+
   if (shouldIgnoreOrientationShortcut(event)) return;
 
   const action = getOrientationAction(event);
@@ -854,6 +898,7 @@ function handleGlobalKeydown(event: KeyboardEvent) {
 function handleGlobalKeyup(event: KeyboardEvent) {
   const shortcutKey = getOrientationShortcutKey(event);
   if (handledOrientationShortcuts.delete(shortcutKey)) return;
+  if (shortcutsOpen.value) return;
   if (shouldIgnoreOrientationShortcut(event)) return;
 
   const action = getOrientationAction(event);
@@ -929,6 +974,7 @@ function endDrag(_event?: PointerEvent, restorePlacedPiece = false) {
       [piece.id]: previewPlacement.value.orientation,
     };
     selectedPieceId.value = null;
+    void nextTick(() => boardRef.value?.focusPlacedPiece(piece.id));
   } else if (
     dragReturn.value &&
     (restorePlacedPiece || !dragOutsideBoard.value)
@@ -1147,6 +1193,15 @@ onBeforeUnmount(() => {
         <DaymarkMark :size="40" />
         <span>Daymark</span>
       </a>
+      <button
+        class="shortcuts-button"
+        type="button"
+        aria-label="Show keyboard shortcuts"
+        aria-haspopup="dialog"
+        @click="openShortcuts"
+      >
+        ?
+      </button>
     </header>
 
     <section class="puzzle-layout" aria-label="Daymark puzzle">
@@ -1364,5 +1419,7 @@ onBeforeUnmount(() => {
         </div>
       </aside>
     </section>
+
+    <KeyboardShortcutsModal v-if="shortcutsOpen" @close="closeShortcuts" />
   </main>
 </template>

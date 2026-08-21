@@ -27,6 +27,8 @@ const props = defineProps<{
   placementEnabled: boolean;
 }>();
 
+const placedPieceElements = new Map<string, SVGGElement>();
+
 const emit = defineEmits<{
   "drag-start": [pieceId: string, event: PointerEvent];
   "select-piece": [pieceId: string];
@@ -147,7 +149,19 @@ function handlePlacedPointerDown(event: PointerEvent, pieceId: string) {
   emit("drag-start", pieceId, event);
 }
 
-defineExpose({ getGridPointFromClient });
+function setPlacedPieceElement(pieceId: string, element: unknown) {
+  if (element instanceof SVGGElement) {
+    placedPieceElements.set(pieceId, element);
+  } else {
+    placedPieceElements.delete(pieceId);
+  }
+}
+
+function focusPlacedPiece(pieceId: string) {
+  placedPieceElements.get(pieceId)?.focus();
+}
+
+defineExpose({ getGridPointFromClient, focusPlacedPiece });
 </script>
 
 <template>
@@ -252,6 +266,9 @@ defineExpose({ getGridPointFromClient });
         <g
           v-for="boardPiece in placedPieces"
           :key="boardPiece.piece.id"
+          :ref="
+            (element) => setPlacedPieceElement(boardPiece.piece.id, element)
+          "
           class="placed-piece"
           role="button"
           tabindex="0"
