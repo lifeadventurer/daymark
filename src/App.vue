@@ -1319,26 +1319,28 @@ onBeforeUnmount(() => {
             v-if="completed && !draggingPieceId && !solutionRevealed"
             class="share-result"
           >
-            <button
-              class="share-result__button"
-              type="button"
-              :aria-describedby="
-                shareStatusMessage ? 'share-result-status' : undefined
-              "
-              @click="shareResult"
-            >
-              {{ shareButtonLabel }}
-            </button>
-            <button
-              class="share-result__button share-result__button--secondary"
-              type="button"
-              :aria-describedby="
-                solutionStatusMessage ? 'solution-share-status' : undefined
-              "
-              @click="shareSolution"
-            >
-              {{ solutionButtonLabel }}
-            </button>
+            <div class="share-result__actions">
+              <button
+                class="share-result__button"
+                type="button"
+                :aria-describedby="
+                  shareStatusMessage ? 'share-result-status' : undefined
+                "
+                @click="shareResult"
+              >
+                {{ shareButtonLabel }}
+              </button>
+              <button
+                class="share-result__button share-result__button--secondary"
+                type="button"
+                :aria-describedby="
+                  solutionStatusMessage ? 'solution-share-status' : undefined
+                "
+                @click="shareSolution"
+              >
+                {{ solutionButtonLabel }}
+              </button>
+            </div>
             <p
               v-if="shareStatusMessage"
               id="share-result-status"
