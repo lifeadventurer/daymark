@@ -8,7 +8,7 @@ import {
   ref,
 } from "vue";
 import DaymarkMark from "./components/DaymarkMark.vue";
-import KeyboardShortcutsModal from "./components/KeyboardShortcutsModal.vue";
+import SettingsModal from "./components/SettingsModal.vue";
 import PieceControls from "./components/PieceControls.vue";
 import PuzzleBoard from "./components/PuzzleBoard.vue";
 import PieceTray from "./components/PieceTray.vue";
@@ -107,8 +107,10 @@ const solutionRevealError = ref(false);
 const records = ref(loadRecordStore());
 const pieceOrientations = ref<Record<string, number>>({});
 const handledOrientationShortcuts = new Set<string>();
-const shortcutsOpen = ref(false);
-const shortcutsReturnFocus = ref<HTMLElement | null>(null);
+type SettingsTab = "general" | "shortcuts";
+const settingsOpen = ref(false);
+const settingsTab = ref<SettingsTab>("general");
+const settingsReturnFocus = ref<HTMLElement | null>(null);
 const DevelopmentScenarioPicker = import.meta.env.DEV
   ? defineAsyncComponent(() => import("./dev/DevelopmentScenarioPicker.vue"))
   : null;
@@ -850,37 +852,38 @@ function isShortcutsShortcut(event: KeyboardEvent): boolean {
   return event.code === "Slash" && (event.metaKey || event.ctrlKey);
 }
 
-function openShortcuts() {
-  if (shortcutsOpen.value) return;
-  shortcutsReturnFocus.value =
+function openSettings(tab: SettingsTab = "general") {
+  if (settingsOpen.value) return;
+  settingsTab.value = tab;
+  settingsReturnFocus.value =
     document.activeElement instanceof HTMLElement
       ? document.activeElement
       : null;
-  shortcutsOpen.value = true;
+  settingsOpen.value = true;
 }
 
-function closeShortcuts() {
-  shortcutsOpen.value = false;
-  const returnFocus = shortcutsReturnFocus.value;
-  shortcutsReturnFocus.value = null;
+function closeSettings() {
+  settingsOpen.value = false;
+  const returnFocus = settingsReturnFocus.value;
+  settingsReturnFocus.value = null;
   if (returnFocus?.isConnected) returnFocus.focus();
 }
 
 function handleGlobalKeydown(event: KeyboardEvent) {
   if (isShortcutsShortcut(event)) {
     event.preventDefault();
-    if (shortcutsOpen.value) {
-      closeShortcuts();
+    if (settingsOpen.value) {
+      closeSettings();
     } else {
-      openShortcuts();
+      openSettings("shortcuts");
     }
     return;
   }
 
-  if (shortcutsOpen.value) {
+  if (settingsOpen.value) {
     if (event.key === "Escape") {
       event.preventDefault();
-      closeShortcuts();
+      closeSettings();
     }
     return;
   }
@@ -898,7 +901,7 @@ function handleGlobalKeydown(event: KeyboardEvent) {
 function handleGlobalKeyup(event: KeyboardEvent) {
   const shortcutKey = getOrientationShortcutKey(event);
   if (handledOrientationShortcuts.delete(shortcutKey)) return;
-  if (shortcutsOpen.value) return;
+  if (settingsOpen.value) return;
   if (shouldIgnoreOrientationShortcut(event)) return;
 
   const action = getOrientationAction(event);
@@ -1194,13 +1197,18 @@ onBeforeUnmount(() => {
         <span>Daymark</span>
       </a>
       <button
-        class="shortcuts-button"
+        class="settings-button"
         type="button"
-        aria-label="Show keyboard shortcuts"
+        aria-label="Open settings"
         aria-haspopup="dialog"
-        @click="openShortcuts"
+        @click="openSettings()"
       >
-        ?
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path
+            d="M9.7 3.5h4.6l.6 2.1a7.1 7.1 0 0 1 1.4.8l2.1-.6 2.3 4-1.6 1.5a7.3 7.3 0 0 1 0 1.6l1.6 1.5-2.3 4-2.1-.6a7.1 7.1 0 0 1-1.4.8l-.6 2.1H9.7l-.6-2.1a7.1 7.1 0 0 1-1.4-.8l-2.1.6-2.3-4 1.6-1.5a7.3 7.3 0 0 1 0-1.6L3.3 9.8l2.3-4 2.1.6a7.1 7.1 0 0 1 1.4-.8l.6-2.1Z"
+          />
+          <circle cx="12" cy="12" r="2.7" />
+        </svg>
       </button>
     </header>
 
@@ -1420,6 +1428,10 @@ onBeforeUnmount(() => {
       </aside>
     </section>
 
-    <KeyboardShortcutsModal v-if="shortcutsOpen" @close="closeShortcuts" />
+    <SettingsModal
+      v-if="settingsOpen"
+      :initial-tab="settingsTab"
+      @close="closeSettings"
+    />
   </main>
 </template>
