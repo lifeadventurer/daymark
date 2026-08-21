@@ -690,97 +690,83 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   outline: 2px solid rgba(214, 109, 77, 0.72);
   outline-offset: 2px;
 }
-.facts-modal__story {
-  display: grid;
-  grid-template-columns: 118px minmax(0, 1fr);
-  gap: clamp(16px, 4vw, 26px);
-  align-items: center;
-  margin-top: 26px;
+.facts-modal__intro {
+  margin: 5px 0 0;
+  color: #68746b;
+  font-size: 14px;
 }
-.facts-modal__shape-wrap {
+.facts-modal__grid {
   display: grid;
-  min-height: 132px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 24px;
+}
+.facts-modal__piece {
+  display: grid;
+  min-width: 0;
+  min-height: 92px;
   place-items: center;
-  padding: 14px;
+  align-content: center;
+  gap: 3px;
+  padding: 10px 6px 8px;
   border: 1px solid #e5e3da;
-  border-radius: 16px;
+  border-radius: 11px;
   background: #f6f4ef;
+  color: #68746b;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
 }
-.facts-modal__shape {
+.facts-modal__piece:hover,
+.facts-modal__piece:focus-visible {
+  border-color: #b7c5b9;
+  background: #fffaf2;
+  box-shadow: 0 7px 16px rgba(50, 53, 44, 0.08);
+  transform: translateY(-1px);
+}
+.facts-modal__piece:focus-visible {
+  outline: 2px solid rgba(214, 109, 77, 0.72);
+  outline-offset: 2px;
+}
+.facts-modal__piece--selected {
+  border-color: #d66d4d;
+  background: #fffaf2;
+  box-shadow: 0 0 0 2px rgba(214, 109, 77, 0.1);
+}
+.facts-modal__piece-shape {
   display: block;
-  width: 82px;
-  height: 82px;
+  width: 48px;
+  height: 48px;
   overflow: visible;
 }
-.facts-modal__piece-label {
-  margin-top: 4px;
-  color: #68746b;
+.facts-modal__piece-letter {
+  color: #4f5b52;
   font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
-  font-size: 12px;
-  text-align: center;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1;
 }
-.facts-modal__copy {
-  min-width: 0;
-}
-.facts-modal__kicker {
-  margin: 0 0 6px;
-  color: #d66d4d;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-.facts-modal__copy h3 {
-  margin: 0 0 8px;
-  color: #49463d;
-  font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
-  font-size: clamp(20px, 3vw, 25px);
-  font-weight: 500;
-  letter-spacing: -0.03em;
-  line-height: 1.08;
-}
-.facts-modal__copy > p:last-child {
-  margin: 0;
+.facts-modal__fact {
+  margin-top: 18px;
+  padding: 14px 16px;
+  border: 1px solid #e5e3da;
+  border-radius: 12px;
+  background: #fffaf2;
   color: #5c594e;
   font-size: 14px;
   line-height: 1.5;
 }
-.facts-modal__footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  margin-top: 24px;
-  padding-top: 15px;
-  border-top: 1px solid #ecebe4;
+.facts-modal__fact p {
+  margin: 0;
 }
-.facts-modal__count {
-  color: #8a9188;
-  font-size: 12px;
-  font-variant-numeric: tabular-nums;
-}
-.facts-modal__next {
-  display: inline-flex;
-  min-height: 34px;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 11px;
-  border: 1px solid #d7dad1;
-  border-radius: 8px;
-  background: #fffdf8;
-  color: #4f5b52;
+.facts-modal__fact-label {
+  margin-bottom: 4px !important;
+  color: #d66d4d;
   font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
-  font-size: 15px;
-}
-.facts-modal__next:hover,
-.facts-modal__next:focus-visible {
-  border-color: #b7c5b9;
-  background: #fffaf2;
-  color: #4e5b52;
-}
-.facts-modal__next:focus-visible {
-  outline: 2px solid rgba(214, 109, 77, 0.72);
-  outline-offset: 2px;
+  font-size: 17px;
+  font-weight: 500;
 }
 .settings-modal {
   position: fixed;
@@ -1288,6 +1274,18 @@ kbd {
   }
   .piece-svg {
     height: 48px;
+  }
+  .facts-modal__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 7px;
+  }
+  .facts-modal__piece {
+    min-height: 78px;
+    padding: 7px 4px 6px;
+  }
+  .facts-modal__piece-shape {
+    width: 42px;
+    height: 42px;
   }
   .settings-modal__row {
     grid-template-columns: 1fr;

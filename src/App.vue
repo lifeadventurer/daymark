@@ -1472,9 +1472,9 @@ onBeforeUnmount(() => {
     <button
       class="pentomino-facts-trigger"
       type="button"
-      aria-label="Explore pentomino facts"
+      aria-label="Explore pentominoes"
       aria-haspopup="dialog"
-      title="Pentomino lore"
+      title="Pentominoes"
       @click="openFacts"
     >
       <span class="pentomino-facts-trigger__letters" aria-hidden="true">
