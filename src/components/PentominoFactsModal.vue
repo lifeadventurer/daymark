@@ -3,6 +3,7 @@ import { computed, nextTick, onMounted, ref } from "vue";
 import { generateOrientations } from "../engine/geometry";
 import { pieceColors, pieceDefinitions, pieceLabels } from "../data/pieces";
 import type { GridPoint } from "../engine/types";
+import PentominoBuildModal from "./PentominoBuildModal.vue";
 import PentominoTilingsModal from "./PentominoTilingsModal.vue";
 
 type PentominoId =
@@ -42,6 +43,7 @@ const dialogRef = ref<HTMLElement | null>(null);
 const selectedPieceId = ref<PentominoId>("f");
 const tilingsOpen = ref(false);
 const tilingsReturnFocus = ref<HTMLElement | null>(null);
+const buildOpen = ref(false);
 const selectedLabel = computed(
   () => pieceLabels[selectedPieceId.value] ?? "Pentomino",
 );
@@ -81,6 +83,19 @@ function closeTilings() {
   tilingsReturnFocus.value = null;
   void nextTick(() => {
     if (returnFocus?.isConnected) returnFocus.focus();
+  });
+}
+
+function openBuild() {
+  tilingsOpen.value = false;
+  buildOpen.value = true;
+}
+
+function closeBuild() {
+  buildOpen.value = false;
+  tilingsOpen.value = true;
+  void nextTick(() => {
+    dialogRef.value?.focus();
   });
 }
 
@@ -189,6 +204,11 @@ function trapFocus(event: KeyboardEvent) {
       </button>
     </section>
 
-    <PentominoTilingsModal v-if="tilingsOpen" @close="closeTilings" />
+    <PentominoTilingsModal
+      v-if="tilingsOpen"
+      @build="openBuild"
+      @close="closeTilings"
+    />
+    <PentominoBuildModal v-if="buildOpen" @close="closeBuild" />
   </div>
 </template>

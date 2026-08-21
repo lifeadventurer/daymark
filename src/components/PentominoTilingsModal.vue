@@ -3,7 +3,7 @@ import { onMounted, ref } from "vue";
 import { pieceColors } from "../data/pieces";
 import { pentominoTilings } from "../data/pentominoTilings";
 
-const emit = defineEmits<{ close: [] }>();
+const emit = defineEmits<{ close: []; build: [] }>();
 const dialogRef = ref<HTMLElement | null>(null);
 const tilings = pentominoTilings;
 
@@ -115,6 +115,14 @@ function trapFocus(event: KeyboardEvent) {
           </svg>
         </figure>
       </div>
+
+      <button
+        class="tilings-modal__build-link"
+        type="button"
+        @click="emit('build')"
+      >
+        Build a shape <span aria-hidden="true">→</span>
+      </button>
     </section>
   </div>
 </template>
