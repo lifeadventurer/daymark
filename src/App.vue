@@ -906,6 +906,12 @@ function handleGlobalKeydown(event: KeyboardEvent) {
   if (factsOpen.value) {
     if (event.key === "Escape") {
       event.preventDefault();
+      if (
+        event.target instanceof Element &&
+        event.target.closest(".tilings-modal")
+      ) {
+        return;
+      }
       closeFacts();
     }
     return;

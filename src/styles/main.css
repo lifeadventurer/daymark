@@ -760,6 +760,129 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   font-size: 17px;
   font-weight: 500;
 }
+.facts-modal__tilings-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin: 14px 0 0 auto;
+  padding: 4px 0;
+  border: 0;
+  background: transparent;
+  color: #68746b;
+  font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  font-size: 14px;
+  line-height: 1.3;
+  transition: color 0.2s ease;
+}
+.facts-modal__tilings-link:hover,
+.facts-modal__tilings-link:focus-visible {
+  color: #d66d4d;
+}
+.facts-modal__tilings-link:focus-visible {
+  outline: 2px solid rgba(214, 109, 77, 0.72);
+  outline-offset: 3px;
+}
+.tilings-modal {
+  position: fixed;
+  z-index: 22;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(34, 41, 35, 0.38);
+}
+.tilings-modal__panel {
+  width: min(100%, 700px);
+  max-height: min(760px, calc(100svh - 40px));
+  overflow: auto;
+  padding: clamp(20px, 4vw, 30px);
+  border: 1px solid #d7dad1;
+  border-radius: 20px;
+  background: #fffdf8;
+  box-shadow: 0 24px 60px rgba(34, 41, 35, 0.2);
+  color: #4f5b52;
+  outline: none;
+}
+.tilings-modal__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+.tilings-modal__eyebrow {
+  margin: 0 0 6px;
+  color: #8a9188;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.tilings-modal h2 {
+  margin: 0;
+  color: #49463d;
+  font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  font-size: clamp(24px, 4vw, 30px);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+}
+.tilings-modal__intro {
+  max-width: 440px;
+  margin: 5px 0 0;
+  color: #68746b;
+  font-size: 14px;
+  line-height: 1.45;
+}
+.tilings-modal__close {
+  display: inline-flex;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0 3px;
+  border: 1px solid #d7dad1;
+  border-radius: 50%;
+  background: #fffdf8;
+  color: #68746b;
+  font-size: 25px;
+  line-height: 1;
+}
+.tilings-modal__close:hover,
+.tilings-modal__close:focus-visible {
+  border-color: #b7c5b9;
+  background: #fffaf2;
+  color: #4e5b52;
+}
+.tilings-modal__close:focus-visible {
+  outline: 2px solid rgba(214, 109, 77, 0.72);
+  outline-offset: 2px;
+}
+.tilings-modal__list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin-top: 24px;
+}
+.tilings-modal__figure {
+  margin: 0;
+}
+.tilings-modal__figure figcaption {
+  margin: 0 0 7px;
+  color: #5c594e;
+  font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  font-size: 15px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.tilings-modal__svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  padding: 7px;
+  border: 1px solid #e5e3da;
+  border-radius: 12px;
+  background: #f6f4ef;
+}
 .settings-modal {
   position: fixed;
   z-index: 20;
@@ -1253,6 +1376,10 @@ kbd {
   .app-shell {
     width: calc(100% - 28px);
   }
+  .tilings-modal__panel {
+    max-height: calc(100svh - 24px);
+    padding: 18px;
+  }
   .board-shell {
     padding: 14px;
     border-radius: 20px;
@@ -1278,6 +1405,11 @@ kbd {
   .facts-modal__piece-shape {
     width: 42px;
     height: 42px;
+  }
+  .tilings-modal__list {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    margin-top: 20px;
   }
   .settings-modal__row {
     grid-template-columns: 1fr;

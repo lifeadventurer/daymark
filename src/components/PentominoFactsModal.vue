@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
+import { computed, nextTick, onMounted, ref } from "vue";
 import { generateOrientations } from "../engine/geometry";
 import { pieceColors, pieceDefinitions, pieceLabels } from "../data/pieces";
 import type { GridPoint } from "../engine/types";
+import PentominoTilingsModal from "./PentominoTilingsModal.vue";
 
 type PentominoId =
   "f" | "l" | "i" | "p" | "n" | "t" | "u" | "v" | "w" | "x" | "y" | "z";
@@ -39,6 +40,8 @@ const facts: Record<PentominoId, string> = {
 const emit = defineEmits<{ close: [] }>();
 const dialogRef = ref<HTMLElement | null>(null);
 const selectedPieceId = ref<PentominoId>("f");
+const tilingsOpen = ref(false);
+const tilingsReturnFocus = ref<HTMLElement | null>(null);
 const selectedLabel = computed(
   () => pieceLabels[selectedPieceId.value] ?? "Pentomino",
 );
@@ -62,6 +65,23 @@ function getViewBox(pieceId: PentominoId): string {
 
 function selectPiece(pieceId: PentominoId) {
   selectedPieceId.value = pieceId;
+}
+
+function openTilings() {
+  tilingsReturnFocus.value =
+    document.activeElement instanceof HTMLElement
+      ? document.activeElement
+      : null;
+  tilingsOpen.value = true;
+}
+
+function closeTilings() {
+  tilingsOpen.value = false;
+  const returnFocus = tilingsReturnFocus.value;
+  tilingsReturnFocus.value = null;
+  void nextTick(() => {
+    if (returnFocus?.isConnected) returnFocus.focus();
+  });
 }
 
 function trapFocus(event: KeyboardEvent) {
@@ -159,6 +179,16 @@ function trapFocus(event: KeyboardEvent) {
         <p class="facts-modal__fact-label">{{ selectedLabel }}</p>
         <p>{{ facts[selectedPieceId] }}</p>
       </div>
+
+      <button
+        class="facts-modal__tilings-link"
+        type="button"
+        @click="openTilings"
+      >
+        See what they can build <span aria-hidden="true">→</span>
+      </button>
     </section>
+
+    <PentominoTilingsModal v-if="tilingsOpen" @close="closeTilings" />
   </div>
 </template>
