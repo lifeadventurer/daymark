@@ -4,6 +4,7 @@ import { generateOrientations } from "../engine/geometry";
 import { pieceColors, pieceDefinitions, pieceLabels } from "../data/pieces";
 import type { GridPoint } from "../engine/types";
 import PentominoBuildModal from "./PentominoBuildModal.vue";
+import PentominoBuildGalleryModal from "./PentominoBuildGalleryModal.vue";
 import PentominoTilingsModal from "./PentominoTilingsModal.vue";
 
 type PentominoId =
@@ -44,6 +45,7 @@ const selectedPieceId = ref<PentominoId>("f");
 const tilingsOpen = ref(false);
 const tilingsReturnFocus = ref<HTMLElement | null>(null);
 const buildOpen = ref(false);
+const galleryOpen = ref(false);
 const selectedLabel = computed(
   () => pieceLabels[selectedPieceId.value] ?? "Pentomino",
 );
@@ -93,6 +95,19 @@ function openBuild() {
 
 function closeBuild() {
   buildOpen.value = false;
+  tilingsOpen.value = true;
+  void nextTick(() => {
+    dialogRef.value?.focus();
+  });
+}
+
+function openGallery() {
+  tilingsOpen.value = false;
+  galleryOpen.value = true;
+}
+
+function closeGallery() {
+  galleryOpen.value = false;
   tilingsOpen.value = true;
   void nextTick(() => {
     dialogRef.value?.focus();
@@ -208,7 +223,9 @@ function trapFocus(event: KeyboardEvent) {
       v-if="tilingsOpen"
       @build="openBuild"
       @close="closeTilings"
+      @gallery="openGallery"
     />
     <PentominoBuildModal v-if="buildOpen" @close="closeBuild" />
+    <PentominoBuildGalleryModal v-if="galleryOpen" @close="closeGallery" />
   </div>
 </template>

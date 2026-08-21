@@ -908,7 +908,9 @@ function handleGlobalKeydown(event: KeyboardEvent) {
       event.preventDefault();
       if (
         event.target instanceof Element &&
-        event.target.closest(".tilings-modal, .build-modal")
+        event.target.closest(
+          ".tilings-modal, .build-modal, .build-gallery-modal",
+        )
       ) {
         return;
       }
