@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 
 type SettingsTab = "general" | "shortcuts";
 
@@ -15,9 +15,28 @@ const props = withDefaults(
 const emit = defineEmits<{ close: [] }>();
 const dialogRef = ref<HTMLElement | null>(null);
 const activeTab = ref<SettingsTab>(props.initialTab);
+const isPhone = ref(
+  typeof window !== "undefined" &&
+    window.matchMedia("(max-width: 600px) and (pointer: coarse)").matches,
+);
+let phoneMediaQuery: MediaQueryList | undefined;
+const showShortcutsTab = computed(
+  () => !isPhone.value || activeTab.value === "shortcuts",
+);
+function updatePhoneMode() {
+  isPhone.value = phoneMediaQuery?.matches ?? false;
+}
 
 onMounted(() => {
   dialogRef.value?.focus();
+  phoneMediaQuery = window.matchMedia(
+    "(max-width: 600px) and (pointer: coarse)",
+  );
+  phoneMediaQuery.addEventListener("change", updatePhoneMode);
+});
+
+onBeforeUnmount(() => {
+  phoneMediaQuery?.removeEventListener("change", updatePhoneMode);
 });
 
 function trapFocus(event: KeyboardEvent) {
@@ -73,7 +92,12 @@ function trapFocus(event: KeyboardEvent) {
         </button>
       </header>
 
-      <div class="settings-modal__tabs" role="tablist" aria-label="Settings">
+      <div
+        v-if="showShortcutsTab"
+        class="settings-modal__tabs"
+        role="tablist"
+        aria-label="Settings"
+      >
         <button
           id="settings-tab-general"
           class="settings-modal__tab"
