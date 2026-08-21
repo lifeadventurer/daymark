@@ -809,14 +809,6 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   justify-content: space-between;
   gap: 20px;
 }
-.tilings-modal__eyebrow {
-  margin: 0 0 6px;
-  color: #8a9188;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
 .tilings-modal h2 {
   margin: 0;
   color: #49463d;
