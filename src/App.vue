@@ -44,20 +44,40 @@ import {
 } from "./utils/storage";
 import {
   createPuzzleShareSummary,
+  createPuzzleSolutionShareSummary,
+  createPuzzleSolutionShareUrl,
   createPuzzleShareUrl,
   parsePuzzleShareParameters,
+  parsePuzzleSolutionShareParameters,
+  type SharedSolutionPlacement,
 } from "./utils/share";
 
-const initialSharedPuzzle =
+const initialSharedSolution =
   typeof window === "undefined"
     ? undefined
-    : parsePuzzleShareParameters(window.location.search);
+    : parsePuzzleSolutionShareParameters(
+        window.location.search,
+        window.location.hash,
+      );
+const initialSharedPuzzle =
+  initialSharedSolution ??
+  (typeof window === "undefined"
+    ? undefined
+    : parsePuzzleShareParameters(window.location.search));
 const initialSharedDate = initialSharedPuzzle
   ? dateFromInputValue(initialSharedPuzzle.dateKey)
   : undefined;
+const initialSharedBoardKey = initialSharedPuzzle?.boardKey;
+const initialBoardKey = calendarBoardOptions.some(
+  (option) => option.key === initialSharedBoardKey,
+)
+  ? (initialSharedBoardKey as CalendarBoardKey)
+  : undefined;
 const selectedDate = ref(initialSharedDate ?? new Date());
 const selectedBoardKey = ref<CalendarBoardKey>(
-  getCalendarBoardKeyForDate(selectedDate.value) ?? activeCalendarBoardKey,
+  initialBoardKey ??
+    getCalendarBoardKeyForDate(selectedDate.value) ??
+    activeCalendarBoardKey,
 );
 const selectedDifficulty = ref<PuzzleDifficulty>(
   initialSharedPuzzle?.difficulty ?? "hard",
@@ -76,6 +96,12 @@ const completed = ref(false);
 const completionCelebration = ref(false);
 const completedAt = ref<string | null>(null);
 const shareStatus = ref<"idle" | "shared" | "copied" | "error">("idle");
+const solutionShareStatus = ref<"idle" | "shared" | "copied" | "error">("idle");
+const sharedSolution = ref<SharedSolutionPlacement[] | null>(
+  initialSharedSolution?.placements ?? null,
+);
+const solutionRevealed = ref(false);
+const solutionRevealError = ref(false);
 const records = ref(loadRecordStore());
 const pieceOrientations = ref<Record<string, number>>({});
 const handledOrientationShortcuts = new Set<string>();
@@ -126,6 +152,7 @@ const shareResultUrl = computed(() => {
     dateContext.value.isoDate,
     selectedDifficulty.value,
     window.location.href,
+    selectedBoardKey.value,
   );
 });
 const shareResultSummary = computed(() =>
@@ -137,6 +164,58 @@ const shareResultSummary = computed(() =>
 );
 const shareResultText = computed(() =>
   [shareResultSummary.value, shareResultUrl.value].filter(Boolean).join("\n"),
+);
+const solutionSharePlacements = computed<SharedSolutionPlacement[]>(() =>
+  placedPieces.value.map(({ placement }) => ({
+    pieceId: placement.pieceId,
+    origin: { ...placement.origin },
+    orientationIndex: placement.orientation,
+  })),
+);
+const solutionShareUrl = computed(() => {
+  if (typeof window === "undefined") return "";
+  return createPuzzleSolutionShareUrl(
+    dateContext.value.isoDate,
+    selectedDifficulty.value,
+    selectedBoardKey.value,
+    solutionSharePlacements.value,
+    window.location.href,
+  );
+});
+const solutionShareSummary = computed(() =>
+  createPuzzleSolutionShareSummary(
+    `${dateContext.value.monthName} ${dateContext.value.dateNumber}, ${dateContext.value.year}`,
+    currentDifficulty.value.label,
+  ),
+);
+const solutionShareText = computed(() =>
+  [solutionShareSummary.value, solutionShareUrl.value]
+    .filter(Boolean)
+    .join("\n"),
+);
+const solutionButtonLabel = computed(() => {
+  if (solutionShareStatus.value === "shared") return "Shared!";
+  if (solutionShareStatus.value === "copied") return "Copied!";
+  if (solutionShareStatus.value === "error") return "Try sharing again";
+  return "Share solution";
+});
+const solutionStatusMessage = computed(() => {
+  if (solutionShareStatus.value === "shared") {
+    return "Solution share sheet opened.";
+  }
+  if (solutionShareStatus.value === "copied") {
+    return "Solution link copied to your clipboard.";
+  }
+  if (solutionShareStatus.value === "error") {
+    return "The solution could not be shared. Try again.";
+  }
+  return "";
+});
+const solutionPromptVisible = computed(
+  () =>
+    Boolean(sharedSolution.value) &&
+    !solutionRevealed.value &&
+    !completed.value,
 );
 const shareButtonLabel = computed(() => {
   if (shareStatus.value === "shared") return "Shared!";
@@ -234,7 +313,15 @@ function clearPuzzleState() {
   stopCompletionCelebration();
   completedAt.value = null;
   shareStatus.value = "idle";
+  clearSharedSolution();
   pieceOrientations.value = {};
+}
+
+function clearSharedSolution() {
+  sharedSolution.value = null;
+  solutionRevealed.value = false;
+  solutionRevealError.value = false;
+  solutionShareStatus.value = "idle";
 }
 
 function updateDate(event: Event) {
@@ -245,6 +332,7 @@ function updateDate(event: Event) {
 
   endDrag();
   saveCurrentPuzzle();
+  clearSharedSolution();
   selectedDate.value = nextDate;
   selectedPieceId.value = null;
   const nextBoardKey = getCalendarBoardKeyForDate(nextDate);
@@ -261,6 +349,7 @@ function changeDifficulty(nextDifficulty: PuzzleDifficulty) {
 
   endDrag();
   saveCurrentPuzzle();
+  clearSharedSolution();
   selectedDifficulty.value = nextDifficulty;
   selectedPieceId.value = null;
   loadPuzzleForDate(dateContext.value.isoDate, nextDifficulty);
@@ -271,6 +360,7 @@ function changeBoard(nextBoardKey: CalendarBoardKey) {
 
   endDrag();
   saveCurrentPuzzle();
+  clearSharedSolution();
   const nextPuzzle = getCalendarPuzzleConfiguration(nextBoardKey);
   selectedBoardKey.value = nextBoardKey;
   selectedPieceId.value = null;
@@ -302,6 +392,7 @@ const applyDevelopmentScenario = import.meta.env.DEV
 
       endDrag();
       saveCurrentPuzzle();
+      clearSharedSolution();
       selectedBoardKey.value = nextBoardKey;
       selectedDate.value = nextDate;
       selectedPieceId.value = null;
@@ -353,6 +444,112 @@ async function shareResult() {
   } catch (error) {
     if (error instanceof DOMException && error.name === "AbortError") return;
     shareStatus.value = "error";
+  }
+}
+
+function restoreSolutionPlacements(solution: SharedSolutionPlacement[]) {
+  if (solution.length !== pieceLimit.value) return undefined;
+
+  const nextPlacements: RenderedPiece[] = [];
+  const nextOrientations: Record<string, number> = {};
+  for (const solutionPlacement of solution) {
+    const pieceId =
+      legacyPieceIdAliases[solutionPlacement.pieceId] ??
+      solutionPlacement.pieceId;
+    const piece = availablePiecesById.value.get(pieceId);
+    if (
+      !piece ||
+      piece.enabled === false ||
+      nextPlacements.some(({ piece: placed }) => placed.id === piece.id)
+    ) {
+      return undefined;
+    }
+
+    const orientationCount = generateOrientations(piece).length;
+    const orientation =
+      orientationCount > 0
+        ? solutionPlacement.orientationIndex % orientationCount
+        : 0;
+    const placement: PiecePlacement = {
+      pieceId: piece.id,
+      origin: { ...solutionPlacement.origin },
+      orientation,
+    };
+    if (
+      !isPlacementLegal(
+        calendarBoard.value,
+        piece,
+        placement,
+        nextPlacements.map(({ placement: existing }) => existing),
+        availablePiecesById.value,
+        dateContext.value.dateNumber,
+      )
+    ) {
+      return undefined;
+    }
+
+    nextPlacements.push({
+      piece,
+      placement,
+      color: pieceColors[piece.id] ?? "#718277",
+    });
+    nextOrientations[piece.id] = orientation;
+  }
+
+  if (
+    !isBoardStateLegal(
+      calendarBoard.value,
+      availablePiecesById.value,
+      nextPlacements.map(({ placement }) => placement),
+      dateContext.value.dateNumber,
+    )
+  ) {
+    return undefined;
+  }
+
+  return { placements: nextPlacements, orientations: nextOrientations };
+}
+
+function revealSharedSolution() {
+  if (!sharedSolution.value) return;
+
+  const restored = restoreSolutionPlacements(sharedSolution.value);
+  if (!restored) {
+    solutionRevealError.value = true;
+    return;
+  }
+
+  endDrag();
+  selectedPieceId.value = null;
+  placedPieces.value = restored.placements;
+  pieceOrientations.value = restored.orientations;
+  moveCount.value = 0;
+  completed.value = true;
+  completedAt.value = null;
+  solutionRevealed.value = true;
+  solutionRevealError.value = false;
+  stopCompletionCelebration();
+}
+
+async function shareSolution() {
+  if (!completed.value || solutionSharePlacements.value.length === 0) return;
+
+  try {
+    if (typeof navigator.share === "function") {
+      await navigator.share({
+        title: "Daymark solution",
+        text: solutionShareSummary.value,
+        url: solutionShareUrl.value,
+      });
+      solutionShareStatus.value = "shared";
+      return;
+    }
+
+    await copyTextToClipboard(solutionShareText.value);
+    solutionShareStatus.value = "copied";
+  } catch (error) {
+    if (error instanceof DOMException && error.name === "AbortError") return;
+    solutionShareStatus.value = "error";
   }
 }
 
@@ -901,6 +1098,7 @@ function loadPuzzleForDate(
   stopCompletionCelebration();
   completedAt.value = savedStateValid ? (saved?.completedAt ?? null) : null;
   shareStatus.value = "idle";
+  solutionShareStatus.value = "idle";
   evaluateCompletion(false);
 }
 
@@ -1043,6 +1241,24 @@ onBeforeUnmount(() => {
           @select="applyDevelopmentScenario"
         />
         <template v-if="dateBoardAvailable">
+          <section
+            v-if="solutionPromptVisible"
+            class="solution-prompt"
+            aria-labelledby="solution-prompt-title"
+          >
+            <strong id="solution-prompt-title">A solution is available</strong>
+            <p>Reveal it when you're ready.</p>
+            <button type="button" @click="revealSharedSolution">
+              Reveal solution
+            </button>
+            <p
+              v-if="solutionRevealError"
+              class="solution-prompt__error"
+              role="alert"
+            >
+              This solution link does not match the current puzzle.
+            </p>
+          </section>
           <label
             v-if="DevelopmentScenarioPicker && applyDevelopmentScenario"
             class="board-picker"
@@ -1099,7 +1315,10 @@ onBeforeUnmount(() => {
             @flip-vertical="changeSelectedOrientation('flip-vertical')"
             @reset="resetPuzzle"
           />
-          <div v-if="completed && !draggingPieceId" class="share-result">
+          <div
+            v-if="completed && !draggingPieceId && !solutionRevealed"
+            class="share-result"
+          >
             <button
               class="share-result__button"
               type="button"
@@ -1110,6 +1329,16 @@ onBeforeUnmount(() => {
             >
               {{ shareButtonLabel }}
             </button>
+            <button
+              class="share-result__button share-result__button--secondary"
+              type="button"
+              :aria-describedby="
+                solutionStatusMessage ? 'solution-share-status' : undefined
+              "
+              @click="shareSolution"
+            >
+              {{ solutionButtonLabel }}
+            </button>
             <p
               v-if="shareStatusMessage"
               id="share-result-status"
@@ -1117,6 +1346,14 @@ onBeforeUnmount(() => {
               role="status"
             >
               {{ shareStatusMessage }}
+            </p>
+            <p
+              v-if="solutionStatusMessage"
+              id="solution-share-status"
+              class="share-result__status"
+              role="status"
+            >
+              {{ solutionStatusMessage }}
             </p>
           </div>
         </template>

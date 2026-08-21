@@ -446,6 +446,48 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .tray {
   padding: 0;
 }
+.solution-prompt {
+  margin: 0 0 14px;
+  padding: 14px;
+  border: 1px solid #ddcfae;
+  border-radius: 12px;
+  background: #fffaf0;
+  color: #5c594e;
+}
+.solution-prompt strong {
+  display: block;
+  color: #49463d;
+  font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  font-size: 17px;
+  font-weight: 500;
+}
+.solution-prompt p {
+  margin: 4px 0 11px;
+  font-size: 13px;
+  line-height: 1.4;
+}
+.solution-prompt button {
+  min-height: 34px;
+  padding: 6px 11px;
+  border: 1px solid #c9a65f;
+  border-radius: 8px;
+  background: #fffdf8;
+  color: #66532e;
+  font-size: 14px;
+}
+.solution-prompt button:hover,
+.solution-prompt button:focus-visible {
+  border-color: #a98545;
+  background: #fff6df;
+}
+.solution-prompt button:focus-visible {
+  outline: 2px solid rgba(214, 109, 77, 0.72);
+  outline-offset: 2px;
+}
+.solution-prompt__error {
+  margin-bottom: 0 !important;
+  color: #a64e3b;
+}
 .share-result {
   margin-top: 14px;
 }
@@ -476,6 +518,17 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .share-result__button:focus-visible {
   outline: 2px solid rgba(214, 109, 77, 0.72);
   outline-offset: 2px;
+}
+.share-result__button--secondary {
+  margin-top: 7px;
+  border-color: #d7dad1;
+  background: #fffdf8;
+  color: #5d695f;
+}
+.share-result__button--secondary:hover,
+.share-result__button--secondary:focus-visible {
+  border-color: #b7c5b9;
+  background: #fffaf2;
 }
 .share-result__status {
   margin: 7px 0 0;
