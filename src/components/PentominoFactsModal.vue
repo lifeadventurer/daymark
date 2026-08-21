@@ -107,8 +107,7 @@ function trapFocus(event: KeyboardEvent) {
     >
       <header class="facts-modal__header">
         <div>
-          <p class="facts-modal__eyebrow">FLIP · NTU · VWXYZ</p>
-          <h2 id="facts-modal-title">The twelve pentominoes</h2>
+          <h2 id="facts-modal-title">Pentominoes</h2>
           <p class="facts-modal__intro">Five squares. Twelve shapes.</p>
         </div>
         <button

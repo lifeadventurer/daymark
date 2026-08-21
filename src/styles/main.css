@@ -649,14 +649,6 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   justify-content: space-between;
   gap: 20px;
 }
-.facts-modal__eyebrow {
-  margin: 0 0 3px;
-  color: #8a9188;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
 .facts-modal h2 {
   margin: 0;
   color: #49463d;
