@@ -8,6 +8,7 @@ import {
   ref,
 } from "vue";
 import DaymarkMark from "./components/DaymarkMark.vue";
+import PentominoFactsModal from "./components/PentominoFactsModal.vue";
 import SettingsModal from "./components/SettingsModal.vue";
 import PieceControls from "./components/PieceControls.vue";
 import PuzzleBoard from "./components/PuzzleBoard.vue";
@@ -108,9 +109,25 @@ const records = ref(loadRecordStore());
 const pieceOrientations = ref<Record<string, number>>({});
 const handledOrientationShortcuts = new Set<string>();
 type SettingsTab = "general" | "shortcuts";
+const pentominoIds = [
+  "f",
+  "l",
+  "i",
+  "p",
+  "n",
+  "t",
+  "u",
+  "v",
+  "w",
+  "x",
+  "y",
+  "z",
+] as const;
 const settingsOpen = ref(false);
 const settingsTab = ref<SettingsTab>("general");
 const settingsReturnFocus = ref<HTMLElement | null>(null);
+const factsOpen = ref(false);
+const factsReturnFocus = ref<HTMLElement | null>(null);
 const DevelopmentScenarioPicker = import.meta.env.DEV
   ? defineAsyncComponent(() => import("./dev/DevelopmentScenarioPicker.vue"))
   : null;
@@ -869,7 +886,31 @@ function closeSettings() {
   if (returnFocus?.isConnected) returnFocus.focus();
 }
 
+function openFacts() {
+  if (factsOpen.value) return;
+  factsReturnFocus.value =
+    document.activeElement instanceof HTMLElement
+      ? document.activeElement
+      : null;
+  factsOpen.value = true;
+}
+
+function closeFacts() {
+  factsOpen.value = false;
+  const returnFocus = factsReturnFocus.value;
+  factsReturnFocus.value = null;
+  if (returnFocus?.isConnected) returnFocus.focus();
+}
+
 function handleGlobalKeydown(event: KeyboardEvent) {
+  if (factsOpen.value) {
+    if (event.key === "Escape") {
+      event.preventDefault();
+      closeFacts();
+    }
+    return;
+  }
+
   if (isShortcutsShortcut(event)) {
     event.preventDefault();
     if (settingsOpen.value) {
@@ -901,7 +942,7 @@ function handleGlobalKeydown(event: KeyboardEvent) {
 function handleGlobalKeyup(event: KeyboardEvent) {
   const shortcutKey = getOrientationShortcutKey(event);
   if (handledOrientationShortcuts.delete(shortcutKey)) return;
-  if (settingsOpen.value) return;
+  if (settingsOpen.value || factsOpen.value) return;
   if (shouldIgnoreOrientationShortcut(event)) return;
 
   const action = getOrientationAction(event);
@@ -1428,10 +1469,30 @@ onBeforeUnmount(() => {
       </aside>
     </section>
 
+    <button
+      class="pentomino-facts-trigger"
+      type="button"
+      aria-label="Explore pentomino facts"
+      aria-haspopup="dialog"
+      title="Pentomino lore"
+      @click="openFacts"
+    >
+      <span class="pentomino-facts-trigger__letters" aria-hidden="true">
+        <span
+          v-for="pieceId in pentominoIds"
+          :key="pieceId"
+          :style="{ color: pieceColors[pieceId] }"
+        >
+          {{ pieceId.toUpperCase() }}
+        </span>
+      </span>
+    </button>
+
     <SettingsModal
       v-if="settingsOpen"
       :initial-tab="settingsTab"
       @close="closeSettings"
     />
+    <PentominoFactsModal v-if="factsOpen" @close="closeFacts" />
   </main>
 </template>

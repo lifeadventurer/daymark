@@ -124,6 +124,51 @@ button {
   outline: 2px solid rgba(214, 109, 77, 0.72);
   outline-offset: 2px;
 }
+.pentomino-facts-trigger {
+  align-self: flex-end;
+  display: inline-flex;
+  min-height: 26px;
+  align-items: center;
+  margin: clamp(6px, 1vh, 11px) 0 0;
+  padding: 3px 6px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: #8b9189;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    color 0.2s ease;
+}
+.pentomino-facts-trigger:hover,
+.pentomino-facts-trigger:focus-visible {
+  border-color: #d7dad1;
+  background: #fffdf8;
+  color: #4e5b52;
+}
+.pentomino-facts-trigger:focus-visible {
+  outline: 2px solid rgba(214, 109, 77, 0.72);
+  outline-offset: 2px;
+}
+.pentomino-facts-trigger__letters {
+  display: inline-flex;
+  gap: 1px;
+  font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1;
+}
+.pentomino-facts-trigger__letters span {
+  display: inline-grid;
+  width: 10px;
+  height: 16px;
+  place-items: center;
+}
+.pentomino-facts-trigger__letters span:nth-child(4),
+.pentomino-facts-trigger__letters span:nth-child(7) {
+  margin-right: 4px;
+}
 .daymark-mark {
   display: block;
   flex: 0 0 auto;
@@ -576,6 +621,166 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   font-size: 13px;
   line-height: 1.4;
   text-align: center;
+}
+.facts-modal {
+  position: fixed;
+  z-index: 20;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(34, 41, 35, 0.38);
+}
+.facts-modal__panel {
+  width: min(100%, 520px);
+  max-height: min(680px, calc(100svh - 40px));
+  overflow: auto;
+  padding: clamp(20px, 4vw, 30px);
+  border: 1px solid #d7dad1;
+  border-radius: 20px;
+  background: #fffdf8;
+  box-shadow: 0 24px 60px rgba(34, 41, 35, 0.2);
+  color: #4f5b52;
+  outline: none;
+}
+.facts-modal__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+.facts-modal__eyebrow {
+  margin: 0 0 3px;
+  color: #8a9188;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.facts-modal h2 {
+  margin: 0;
+  color: #49463d;
+  font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  font-size: clamp(24px, 4vw, 30px);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+}
+.facts-modal__close {
+  display: inline-flex;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0 3px;
+  border: 1px solid #d7dad1;
+  border-radius: 50%;
+  background: #fffdf8;
+  color: #68746b;
+  font-size: 25px;
+  line-height: 1;
+}
+.facts-modal__close:hover,
+.facts-modal__close:focus-visible {
+  border-color: #b7c5b9;
+  background: #fffaf2;
+  color: #4e5b52;
+}
+.facts-modal__close:focus-visible {
+  outline: 2px solid rgba(214, 109, 77, 0.72);
+  outline-offset: 2px;
+}
+.facts-modal__story {
+  display: grid;
+  grid-template-columns: 118px minmax(0, 1fr);
+  gap: clamp(16px, 4vw, 26px);
+  align-items: center;
+  margin-top: 26px;
+}
+.facts-modal__shape-wrap {
+  display: grid;
+  min-height: 132px;
+  place-items: center;
+  padding: 14px;
+  border: 1px solid #e5e3da;
+  border-radius: 16px;
+  background: #f6f4ef;
+}
+.facts-modal__shape {
+  display: block;
+  width: 82px;
+  height: 82px;
+  overflow: visible;
+}
+.facts-modal__piece-label {
+  margin-top: 4px;
+  color: #68746b;
+  font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  font-size: 12px;
+  text-align: center;
+}
+.facts-modal__copy {
+  min-width: 0;
+}
+.facts-modal__kicker {
+  margin: 0 0 6px;
+  color: #d66d4d;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.facts-modal__copy h3 {
+  margin: 0 0 8px;
+  color: #49463d;
+  font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  font-size: clamp(20px, 3vw, 25px);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1.08;
+}
+.facts-modal__copy > p:last-child {
+  margin: 0;
+  color: #5c594e;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.facts-modal__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 24px;
+  padding-top: 15px;
+  border-top: 1px solid #ecebe4;
+}
+.facts-modal__count {
+  color: #8a9188;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+.facts-modal__next {
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 11px;
+  border: 1px solid #d7dad1;
+  border-radius: 8px;
+  background: #fffdf8;
+  color: #4f5b52;
+  font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  font-size: 15px;
+}
+.facts-modal__next:hover,
+.facts-modal__next:focus-visible {
+  border-color: #b7c5b9;
+  background: #fffaf2;
+  color: #4e5b52;
+}
+.facts-modal__next:focus-visible {
+  outline: 2px solid rgba(214, 109, 77, 0.72);
+  outline-offset: 2px;
 }
 .settings-modal {
   position: fixed;
