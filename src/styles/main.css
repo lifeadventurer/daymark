@@ -633,7 +633,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 }
 .shortcuts-modal__description {
   margin: 10px 0 20px;
-  color: #4f5b52;
+  color: #5c594e;
   font-size: 14px;
   line-height: 1.5;
 }
@@ -660,7 +660,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 }
 .shortcuts-modal__row dd {
   margin: 0;
-  color: #4f5b52;
+  color: #5c594e;
   font-size: 14px;
   line-height: 1.4;
 }
