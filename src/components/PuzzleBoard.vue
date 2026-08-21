@@ -143,8 +143,10 @@ function handleCellKeydown(event: KeyboardEvent, cell: BoardCell) {
 }
 
 function handlePlacedPointerDown(event: PointerEvent, pieceId: string) {
-  const target = event.currentTarget;
-  if (target instanceof Element) target.setPointerCapture(event.pointerId);
+  // The placed piece is removed from the SVG as soon as dragging starts. Keep
+  // pointer capture on the persistent board instead of the piece group so
+  // mobile browsers do not hand the gesture back to page scrolling.
+  svgRef.value?.setPointerCapture(event.pointerId);
   event.preventDefault();
   emit("drag-start", pieceId, event);
 }
