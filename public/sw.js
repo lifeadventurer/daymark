@@ -54,7 +54,7 @@ self.addEventListener("fetch", (event) => {
             const responseCopy = response.clone();
             void caches
               .open(PRECACHE_NAME)
-              .then((cache) => cache.put("/index.html", responseCopy));
+              .then((cache) => cache.put(appUrl("index.html"), responseCopy));
           }
           return response;
         })
