@@ -29,14 +29,16 @@ pnpm build               # Type-check and create a production build
 ```
 
 Run the relevant checks before opening a pull request. The CI workflow runs
-formatting checks, linting, tests, and a production build.
+formatting checks, linting, unit tests, exhaustive puzzle-data validation, and a
+production build.
 
 ## Working on puzzles
 
 Puzzle definitions live under `src/data/puzzles/`. Keep board metadata, calendar
 dates, piece pools, and replacement rules consistent with the existing data
-shape. Run `pnpm validate:puzzles` after changing puzzle data; this checks the
-catalog and verifies the configured puzzle combinations remain solvable.
+shape. Run `pnpm validate:puzzles` after changing puzzle data; this checks every
+configured board variant, difficulty, piece pool, and calendar date for valid
+metadata and solvability.
 
 Add or update tests when changing puzzle behavior or the engine. Prefer changes
 that preserve deterministic puzzle selection for a given date and difficulty.
