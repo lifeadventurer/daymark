@@ -43,11 +43,14 @@ const emit = defineEmits<{ close: [] }>();
 const dialogRef = ref<HTMLElement | null>(null);
 const selectedPieceId = ref<PentominoId>("f");
 const tilingsOpen = ref(false);
-const tilingsReturnFocus = ref<HTMLElement | null>(null);
 const buildOpen = ref(false);
 const galleryOpen = ref(false);
+const childReturnFocus = ref<HTMLElement | null>(null);
 const selectedLabel = computed(
   () => pieceLabels[selectedPieceId.value] ?? "Pentomino",
+);
+const childOpen = computed(
+  () => tilingsOpen.value || buildOpen.value || galleryOpen.value,
 );
 
 onMounted(() => {
@@ -71,47 +74,49 @@ function selectPiece(pieceId: PentominoId) {
   selectedPieceId.value = pieceId;
 }
 
-function openTilings() {
-  tilingsReturnFocus.value =
+function rememberChildReturnFocus() {
+  childReturnFocus.value =
     document.activeElement instanceof HTMLElement
       ? document.activeElement
       : null;
-  tilingsOpen.value = true;
 }
 
-function closeTilings() {
-  tilingsOpen.value = false;
-  const returnFocus = tilingsReturnFocus.value;
-  tilingsReturnFocus.value = null;
+function restoreChildReturnFocus() {
+  const returnFocus = childReturnFocus.value;
+  childReturnFocus.value = null;
   void nextTick(() => {
     if (returnFocus?.isConnected) returnFocus.focus();
   });
 }
 
-function openBuild() {
+function openTilings() {
+  rememberChildReturnFocus();
+  tilingsOpen.value = true;
+}
+
+function closeTilings() {
   tilingsOpen.value = false;
+  restoreChildReturnFocus();
+}
+
+function openBuild() {
+  rememberChildReturnFocus();
   buildOpen.value = true;
 }
 
 function closeBuild() {
   buildOpen.value = false;
-  tilingsOpen.value = true;
-  void nextTick(() => {
-    dialogRef.value?.focus();
-  });
+  restoreChildReturnFocus();
 }
 
 function openGallery() {
-  tilingsOpen.value = false;
+  rememberChildReturnFocus();
   galleryOpen.value = true;
 }
 
 function closeGallery() {
   galleryOpen.value = false;
-  tilingsOpen.value = true;
-  void nextTick(() => {
-    dialogRef.value?.focus();
-  });
+  restoreChildReturnFocus();
 }
 
 function trapFocus(event: KeyboardEvent) {
@@ -151,7 +156,9 @@ function trapFocus(event: KeyboardEvent) {
       class="facts-modal__panel"
       tabindex="-1"
       role="dialog"
-      aria-modal="true"
+      :aria-modal="childOpen ? undefined : 'true'"
+      :aria-hidden="childOpen ? 'true' : undefined"
+      :inert="childOpen"
       aria-labelledby="facts-modal-title"
       @keydown="trapFocus"
     >
@@ -210,21 +217,23 @@ function trapFocus(event: KeyboardEvent) {
         <p>{{ facts[selectedPieceId] }}</p>
       </div>
 
-      <button
-        class="facts-modal__tilings-link"
-        type="button"
-        @click="openTilings"
+      <nav
+        class="facts-modal__paths"
+        aria-label="Explore pentomino constructions"
       >
-        See what they can build <span aria-hidden="true">→</span>
-      </button>
+        <button type="button" @click="openTilings">
+          <span>Four rectangles</span><span aria-hidden="true">→</span>
+        </button>
+        <button type="button" @click="openGallery">
+          <span>Nine to one</span><span aria-hidden="true">→</span>
+        </button>
+        <button type="button" @click="openBuild">
+          <span>Build a shape</span><span aria-hidden="true">→</span>
+        </button>
+      </nav>
     </section>
 
-    <PentominoTilingsModal
-      v-if="tilingsOpen"
-      @build="openBuild"
-      @close="closeTilings"
-      @gallery="openGallery"
-    />
+    <PentominoTilingsModal v-if="tilingsOpen" @close="closeTilings" />
     <PentominoBuildModal v-if="buildOpen" @close="closeBuild" />
     <PentominoBuildGalleryModal v-if="galleryOpen" @close="closeGallery" />
   </div>
