@@ -3,6 +3,21 @@ import type { GridPoint } from "../engine/types";
 export const RECORDS_STORAGE_KEY = "daymark:records:v1";
 export const RECORDS_SCHEMA_VERSION = 1 as const;
 
+export function getPuzzleRecordKey(
+  boardKey: string,
+  dateKey: string,
+  difficulty: string,
+): string {
+  return `${boardKey}:${dateKey}:${difficulty}`;
+}
+
+export function getLegacyPuzzleRecordKey(
+  dateKey: string,
+  difficulty: string,
+): string {
+  return `${dateKey}:${difficulty}`;
+}
+
 export interface SavedPlacement {
   pieceId: string;
   origin: GridPoint;
@@ -22,6 +37,23 @@ export interface DaymarkRecordStore {
 }
 
 type StorageLike = Pick<Storage, "getItem" | "setItem">;
+
+export function getSavedPuzzleRecord(
+  records: DaymarkRecordStore,
+  boardKey: string,
+  dateKey: string,
+  difficulty: string,
+): SavedPuzzleRecord | undefined {
+  const boardSpecificRecord =
+    records.puzzles[getPuzzleRecordKey(boardKey, dateKey, difficulty)];
+  if (boardSpecificRecord) return boardSpecificRecord;
+  if (boardKey !== "31-0") return undefined;
+
+  return (
+    records.puzzles[getLegacyPuzzleRecordKey(dateKey, difficulty)] ??
+    (difficulty === "hard" ? records.puzzles[dateKey] : undefined)
+  );
+}
 
 export function createEmptyRecordStore(): DaymarkRecordStore {
   return {

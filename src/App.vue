@@ -41,6 +41,8 @@ import {
 import type { GridPoint, PiecePlacement } from "./engine/types";
 import { dateFromInputValue, getDateContext } from "./utils/date";
 import {
+  getPuzzleRecordKey,
+  getSavedPuzzleRecord,
   loadRecordStore,
   saveRecordStore,
   type SavedPuzzleRecord,
@@ -1079,21 +1081,6 @@ function evaluateCompletion(shouldCelebrate = true) {
     : null;
 }
 
-function getPuzzleStorageKey(
-  boardKey: CalendarBoardKey,
-  dateKey: string,
-  difficulty: PuzzleDifficulty,
-): string {
-  return `${boardKey}:${dateKey}:${difficulty}`;
-}
-
-function getLegacyPuzzleStorageKey(
-  dateKey: string,
-  difficulty: PuzzleDifficulty,
-): string {
-  return `${dateKey}:${difficulty}`;
-}
-
 function saveCurrentPuzzle(
   dateKey = dateContext.value.isoDate,
   difficulty = selectedDifficulty.value,
@@ -1112,8 +1099,7 @@ function saveCurrentPuzzle(
     ...records.value,
     puzzles: {
       ...records.value.puzzles,
-      [getPuzzleStorageKey(selectedBoardKey.value, dateKey, difficulty)]:
-        puzzle,
+      [getPuzzleRecordKey(selectedBoardKey.value, dateKey, difficulty)]: puzzle,
     },
   };
   saveRecordStore(records.value);
@@ -1123,20 +1109,12 @@ function loadPuzzleForDate(
   dateKey: string,
   difficulty = selectedDifficulty.value,
 ) {
-  const boardSpecificSaved =
-    records.value.puzzles[
-      getPuzzleStorageKey(selectedBoardKey.value, dateKey, difficulty)
-    ];
-  const saved =
-    boardSpecificSaved ??
-    // Older records were created before board variants were namespaced and
-    // belong to the original Sunday-start layout.
-    (selectedBoardKey.value === "31-0"
-      ? (records.value.puzzles[
-          getLegacyPuzzleStorageKey(dateKey, difficulty)
-        ] ??
-        (difficulty === "hard" ? records.value.puzzles[dateKey] : undefined))
-      : undefined);
+  const saved = getSavedPuzzleRecord(
+    records.value,
+    selectedBoardKey.value,
+    dateKey,
+    difficulty,
+  );
   const piecesById = availablePiecesById.value;
   const nextPlacements: RenderedPiece[] = [];
   const nextOrientations: Record<string, number> = {};
