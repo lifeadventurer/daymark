@@ -21,6 +21,8 @@ Open the local URL printed by Vite. Browser-only state is stored in
 ```bash
 pnpm test                 # Run the test suite
 pnpm test:watch           # Run tests while developing
+pnpm test:e2e             # Run Playwright browser tests
+pnpm test:e2e:subpath     # Run browser tests at the GitHub Pages base path
 pnpm lint                 # Check ESLint rules
 pnpm format:check        # Check Prettier formatting
 pnpm format              # Format the project
@@ -30,7 +32,16 @@ pnpm build               # Type-check and create a production build
 
 Run the relevant checks before opening a pull request. The CI workflow runs
 formatting checks, linting, unit tests, exhaustive puzzle-data validation, and a
-production build.
+production build, and browser tests.
+
+The first local browser-test run may need Chromium installed:
+
+```bash
+pnpm exec playwright install chromium
+```
+
+The subpath browser suite builds with the `/daymark/` deployment base and
+catches service-worker URL regressions that only appear outside the domain root.
 
 ## Working on puzzles
 

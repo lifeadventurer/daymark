@@ -10,6 +10,8 @@
     "prepare": "husky",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "test:e2e:subpath": "BASE_PATH=/daymark/ playwright test",
     "validate:puzzles": "vite-node scripts/validate-puzzles.ts",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
@@ -21,7 +23,9 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.62.1",
     "@tailwindcss/vite": "^4.1.11",
+    "@types/node": "^26.2.0",
     "@vitejs/plugin-vue": "^6.0.1",
     "eslint": "^10.8.1",
     "eslint-config-prettier": "^10.1.8",
