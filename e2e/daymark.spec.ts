@@ -170,6 +170,47 @@ test("reveals a solution from a share link", async ({ page }) => {
   ).toHaveCount(0);
 });
 
+test("can reveal a shared solution after solving the puzzle", async ({
+  page,
+}) => {
+  await page.evaluate(
+    ({ storageKey, placements }) => {
+      localStorage.setItem(
+        storageKey,
+        JSON.stringify({
+          schemaVersion: 1,
+          puzzles: {
+            "31-6:2026-08-08:hard": {
+              placements: [...placements].reverse(),
+              moveCount: 14,
+              completed: true,
+              completedAt: "2026-08-08T12:30:00.000Z",
+            },
+          },
+        }),
+      );
+    },
+    { storageKey: RECORDS_STORAGE_KEY, placements: SOLUTION_PLACEMENTS },
+  );
+  await page.goto(SOLUTION_SHARE_PATH);
+
+  await expect(page.getByLabel("Puzzle complete")).toBeVisible();
+  await expect(page.locator(".placed-piece").first()).toHaveAttribute(
+    "aria-label",
+    "Placed v piece. Use arrow keys to move.",
+  );
+
+  await page.getByRole("button", { name: "Reveal solution" }).click();
+
+  await expect(page.locator(".placed-piece").first()).toHaveAttribute(
+    "aria-label",
+    "Placed p1 piece. Use arrow keys to move.",
+  );
+  await expect(
+    page.getByRole("button", { name: "Reveal solution" }),
+  ).toHaveCount(0);
+});
+
 test("registers the scoped service worker and precaches the app shell", async ({
   page,
 }) => {

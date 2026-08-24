@@ -238,10 +238,7 @@ const solutionStatusMessage = computed(() => {
   return "";
 });
 const solutionPromptVisible = computed(
-  () =>
-    Boolean(sharedSolution.value) &&
-    !solutionRevealed.value &&
-    !completed.value,
+  () => Boolean(sharedSolution.value) && !solutionRevealed.value,
 );
 const shareButtonLabel = computed(() => {
   if (shareStatus.value === "shared") return "Shared!";
